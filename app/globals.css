@@ -1,0 +1,233 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   FONTS: Loaded via next/font in layout.tsx
+   ============================================================ */
+
+/* ============================================================
+   DESIGN TOKENS — DARK (default)
+   ============================================================ */
+:root {
+  --background: 8 8 18;
+  --foreground: 230 238 250;
+  --primary: 0 220 170;
+  --primary-foreground: 8 8 18;
+  --card: 14 14 28;
+  --card-foreground: 230 238 250;
+  --muted: 24 24 44;
+  --muted-foreground: 130 145 175;
+  --border: 35 38 65;
+  --nav: 12 12 24;
+  --nav-border: 35 38 65;
+  --accent: 22 22 42;
+  --accent-foreground: 0 220 170;
+}
+
+/* ============================================================
+   DESIGN TOKENS — LIGHT
+   ============================================================ */
+.light {
+  --background: 246 248 252;
+  --foreground: 12 18 38;
+  --primary: 0 165 128;
+  --primary-foreground: 255 255 255;
+  --card: 255 255 255;
+  --card-foreground: 12 18 38;
+  --muted: 238 242 248;
+  --muted-foreground: 90 108 140;
+  --border: 218 226 240;
+  --nav: 255 255 255;
+  --nav-border: 218 226 240;
+  --accent: 238 242 248;
+  --accent-foreground: 0 165 128;
+}
+
+/* ============================================================
+   BASE RESET
+   ============================================================ */
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    @apply font-body;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  ::selection {
+    background: rgb(var(--primary) / 0.3);
+    color: rgb(var(--foreground));
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgb(var(--background));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--primary) / 0.5);
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--primary) / 0.8);
+  }
+}
+
+/* ============================================================
+   COMPONENT LAYER
+   ============================================================ */
+@layer components {
+
+  /* Primary CTA button */
+  .btn {
+    @apply relative inline-flex items-center justify-center gap-2 
+           overflow-hidden rounded-xl font-semibold
+           bg-primary text-primary-foreground
+           px-7 py-3 text-sm
+           transition-all duration-300
+           shadow-[0_0_20px_rgb(var(--primary)/0.25)]
+           hover:shadow-[0_0_30px_rgb(var(--primary)/0.45)]
+           hover:scale-[1.03] active:scale-[0.97];
+  }
+
+  .btn::before {
+    content: "";
+    @apply absolute inset-0 bg-white/10 translate-x-[-100%]
+           transition-transform duration-500;
+  }
+  .btn:hover::before {
+    @apply translate-x-[100%];
+  }
+
+  /* Outline button */
+  .btn-outline {
+    @apply relative inline-flex items-center justify-center gap-2 
+           overflow-hidden rounded-xl font-semibold
+           border border-primary text-primary
+           px-7 py-3 text-sm
+           transition-all duration-300
+           hover:bg-primary hover:text-primary-foreground
+           hover:shadow-[0_0_25px_rgb(var(--primary)/0.35)]
+           hover:scale-[1.03] active:scale-[0.97];
+  }
+
+  /* Navigation link */
+  .nav-link {
+    @apply relative text-muted-foreground font-medium 
+           transition-colors duration-300 hover:text-primary;
+  }
+  .nav-link::after {
+    content: "";
+    @apply absolute bottom-[-4px] left-0 w-0 h-[2px]
+           bg-primary rounded-full transition-all duration-300;
+  }
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    @apply w-full;
+  }
+  .nav-link.active {
+    @apply text-primary;
+  }
+
+  /* Contact form input */
+  .contact-input {
+    @apply w-full rounded-xl border border-border 
+           bg-card/60 backdrop-blur-sm
+           px-4 py-3 text-sm text-foreground
+           placeholder:text-muted-foreground
+           transition-all duration-300 outline-none
+           focus:border-primary focus:ring-2 focus:ring-primary/20
+           hover:border-primary/40;
+  }
+
+  /* Glass card */
+  .glass-card {
+    @apply bg-card/70 backdrop-blur-md border border-border
+           rounded-2xl shadow-lg;
+  }
+
+  /* Section heading */
+  .section-tag {
+    @apply inline-flex items-center gap-2 px-4 py-1.5
+           rounded-full border border-primary/30 bg-primary/10
+           text-primary text-xs font-semibold tracking-widest uppercase;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, 
+      rgb(var(--primary)) 0%, 
+      rgb(var(--primary) / 0.6) 100%
+    );
+  }
+}
+
+/* ============================================================
+   UTILITY LAYER
+   ============================================================ */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .noise-overlay {
+    position: relative;
+  }
+  .noise-overlay::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    pointer-events: none;
+    opacity: 0.5;
+    z-index: 1;
+  }
+
+  /* Grid dot background */
+  .grid-dots {
+    background-image: radial-gradient(
+      circle, 
+      rgb(var(--primary) / 0.12) 1px, 
+      transparent 1px
+    );
+    background-size: 32px 32px;
+  }
+
+  /* Glow effect */
+  .glow {
+    box-shadow: 0 0 30px rgb(var(--primary) / 0.2);
+  }
+  .glow-lg {
+    box-shadow: 0 0 60px rgb(var(--primary) / 0.25);
+  }
+
+  /* Skills auto-slide */
+  .animate-slide-left {
+    animation: slide-left 30s linear infinite;
+    width: max-content;
+  }
+  .animate-slide-left:hover {
+    animation-play-state: paused;
+  }
+}
+
+/* ============================================================
+   SYNTAX HIGHLIGHTER OVERRIDE
+   ============================================================ */
+.syntax-wrapper pre {
+  margin: 0 !important;
+  border-radius: 12px !important;
+}

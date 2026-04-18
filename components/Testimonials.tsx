@@ -1,0 +1,215 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { Quote, ChevronLeft, ChevronRight } from "lucide-react";
+
+const testimonials = [
+  {
+    id: 1,
+    text: "Charles has an exceptional eye for detail. He approaches UI/UX challenges with creativity while ensuring performance and accessibility aren't compromised. What stands out most is his consistency — he always delivers with precision and a positive attitude, even under tight deadlines.",
+    image: "/img/testimonials/brightnwachukwu.jpeg",
+    name: "Bright Nwachukwu",
+    post: "Product/Project Management | Software Engineering",
+  },
+  {
+    id: 2,
+    text: "Charles is more than just a talented developer — he's a professional who uplifts the entire team. His calm approach under pressure, willingness to mentor others, and ability to translate technical concepts into simple terms make him a rare asset.",
+    image: "/img/testimonials/enoch olisa.jpeg",
+    name: "Enoch Olisa",
+    post: "Software Quality Engineer | Test Automation",
+  },
+  {
+    id: 3,
+    text: "Charles is the kind of engineer every team needs. He's collaborative, reliable, and never shies away from responsibility. Beyond writing excellent code, he brings energy to discussions and motivates others to push their limits.",
+    image: "/img/testimonials/monicaholmsremmen.jpeg",
+    name: "Monica Holm-Remmen",
+    post: "Recruiter & Career Consultant",
+  },
+  {
+    id: 4,
+    text: "What I admire most about Charles is his resilience and curiosity. He doesn't just stop at solving a bug — he digs deeper to understand why it happened and how to prevent it. That mindset reflects his commitment to sustainable solutions.",
+    image: "/img/testimonials/samuelokpe.jpeg",
+    name: "Samuel Okpe",
+    post: "Software Engineer | Business Enthusiast",
+  },
+  {
+    id: 5,
+    text: "I've seen very few engineers who embrace learning as quickly and effectively as Charles. Whether it's mastering new frameworks, adopting best practices, or diving into DevOps tools, he adapts seamlessly and excels.",
+    image: "/img/testimonials/michaelojemoron.jpeg",
+    name: "Michael Ojemoron",
+    post: "Cloud Architect | MERN Stack | Python/Django | AI",
+  },
+  {
+    id: 6,
+    text: "Working with Charles has been an absolute privilege. His ability to break down complex problems into clear, scalable solutions shows not only strong technical skills but also a deep understanding of software engineering principles.",
+    image: "/img/testimonials/nathanielnosa.jpeg",
+    name: "Nathaniel Nosa",
+    post: "Full-Stack Developer | TypeScript | Django | MERN",
+  },
+];
+
+export default function Testimonials() {
+  const [active, setActive] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const go = (next: number, dir: number) => {
+    setDirection(dir);
+    setActive(next);
+  };
+
+  const prev = () => go((active - 1 + testimonials.length) % testimonials.length, -1);
+  const next = () => go((active + 1) % testimonials.length, 1);
+
+  const startAuto = () => {
+    stopAuto();
+    intervalRef.current = setInterval(() => {
+      setDirection(1);
+      setActive((a) => (a + 1) % testimonials.length);
+    }, 5500);
+  };
+  const stopAuto = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  };
+
+  useEffect(() => {
+    startAuto();
+    return stopAuto;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const current = testimonials[active];
+
+  const slideVariants = {
+    enter: (d: number) => ({ opacity: 0, x: d * 60 }),
+    center: { opacity: 1, x: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
+    exit: (d: number) => ({
+      opacity: 0,
+      x: d * -60,
+      transition: { duration: 0.3, ease: "easeIn" },
+    }),
+  };
+
+  return (
+    <section className="relative py-24 overflow-hidden">
+      {/* Background glow */}
+      <div
+        aria-hidden
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+                   w-[500px] h-[500px] bg-primary/5 blur-[110px] pointer-events-none rounded-full"
+      />
+
+      <div className="container mx-auto max-w-4xl px-6 sm:px-10 relative z-10">
+        {/* Heading */}
+        <motion.div
+          className="text-center mb-14"
+          initial={{ opacity: 0, y: -30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+        >
+          <span className="section-tag mb-4 inline-flex">Kind Words</span>
+          <h2 className="font-heading text-4xl sm:text-5xl md:text-6xl font-black text-foreground mt-4">
+            What People <span className="gradient-text">Say</span>
+          </h2>
+        </motion.div>
+
+        {/* Card */}
+        <div className="relative">
+          {/* Giant quote mark */}
+          <Quote
+            className="absolute -top-6 -left-2 sm:-left-8 w-16 h-16 text-primary/10"
+            aria-hidden
+          />
+
+          <div className="glass-card p-8 sm:p-12 relative overflow-hidden min-h-[280px]">
+            {/* Inner glow */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
+
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={current.id}
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                className="relative z-10"
+              >
+                <p className="text-base sm:text-lg text-foreground/80 italic leading-relaxed mb-8 text-balance">
+                  &ldquo;{current.text}&rdquo;
+                </p>
+
+                <div className="flex items-center gap-4">
+                  <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-primary/30 flex-shrink-0">
+                    <Image
+                      src={current.image}
+                      alt={current.name}
+                      fill
+                      className="object-cover"
+                      sizes="56px"
+                    />
+                  </div>
+                  <div>
+                    <h4 className="font-heading font-bold text-foreground text-sm sm:text-base">
+                      {current.name}
+                    </h4>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
+                      {current.post}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Navigation */}
+          <div className="flex items-center justify-between mt-6">
+            {/* Prev / Next */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => { prev(); startAuto(); }}
+                aria-label="Previous testimonial"
+                className="p-2.5 rounded-full border border-border bg-card/60
+                           hover:border-primary/50 hover:bg-accent transition-all duration-200"
+              >
+                <ChevronLeft className="w-4 h-4 text-foreground" />
+              </button>
+              <button
+                onClick={() => { next(); startAuto(); }}
+                aria-label="Next testimonial"
+                className="p-2.5 rounded-full border border-border bg-card/60
+                           hover:border-primary/50 hover:bg-accent transition-all duration-200"
+              >
+                <ChevronRight className="w-4 h-4 text-foreground" />
+              </button>
+            </div>
+
+            {/* Dots */}
+            <div className="flex gap-2">
+              {testimonials.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => { go(i, i > active ? 1 : -1); startAuto(); }}
+                  aria-label={`Testimonial ${i + 1}`}
+                  className={`transition-all duration-300 rounded-full ${
+                    i === active
+                      ? "w-6 h-2.5 bg-primary"
+                      : "w-2.5 h-2.5 bg-muted-foreground/30 hover:bg-muted-foreground/60"
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Counter */}
+            <span className="text-xs text-muted-foreground font-mono">
+              {String(active + 1).padStart(2, "0")} / {String(testimonials.length).padStart(2, "0")}
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
