@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { ExternalLink, Github } from "lucide-react";
+import { ExternalLink } from "lucide-react";
+import { FaGithub } from "react-icons/fa"; // FIX #4 — Github removed from lucide-react v1.x
 
 const portfolioProjects = [
   {
@@ -148,13 +149,11 @@ export default function Portfolio() {
       ? portfolioProjects
       : portfolioProjects.filter((p) => p.category === activeCategory);
 
-  // GSAP horizontal scroll (dynamic import for SSR safety)
   const buildScroll = useCallback(async () => {
     const { default: gsap } = await import("gsap");
     const { ScrollTrigger } = await import("gsap/ScrollTrigger");
     gsap.registerPlugin(ScrollTrigger);
 
-    // Kill old
     ScrollTrigger.getAll()
       .filter((st) => st.vars?.id === "portfolio-h")
       .forEach((st) => st.kill());
@@ -198,31 +197,21 @@ export default function Portfolio() {
   }, [activeCategory, filteredProjects.length, buildScroll]);
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative min-h-screen overflow-hidden"
-    >
+    <section ref={sectionRef} className="relative min-h-screen overflow-hidden">
       <div className="flex flex-col lg:flex-row h-full min-h-screen">
         {/* ── Left panel ── */}
         <div className="w-full lg:w-[35%] flex flex-col justify-center px-6 sm:px-10 lg:px-14 py-10 lg:py-0 relative z-10">
-          <span className="section-tag mb-5 self-start lg:self-auto">My Work</span>
+          <span className="section-tag mb-5 self-start">My Work</span>
 
           <h2 className="font-heading font-black tracking-tight leading-none mb-6">
-            <span className="block text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-primary">
-              My
-            </span>
-            <span className="block text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-primary/40 italic">
-              creative
-            </span>
-            <span className="block text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-primary">
-              projects
-            </span>
+            <span className="block text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-primary">My</span>
+            <span className="block text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-primary/40 italic">creative</span>
+            <span className="block text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-primary">projects</span>
           </h2>
 
           <p className="text-sm sm:text-base text-muted-foreground leading-relaxed mb-8 max-w-sm">
-            A curated collection spanning full-stack apps, frontends, and
-            backend APIs — each reflecting clean code, scalable architecture,
-            and thoughtful design.
+            A curated collection spanning full-stack apps, frontends, and backend APIs — each
+            reflecting clean code, scalable architecture, and thoughtful design.
           </p>
 
           {/* Filters */}
@@ -232,10 +221,9 @@ export default function Portfolio() {
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
                 className={`px-4 py-2 text-xs font-bold rounded-full border transition-all duration-300
-                            ${
-                              activeCategory === cat.id
-                                ? "bg-primary text-primary-foreground border-primary shadow-[0_0_16px_rgb(var(--primary)/0.3)]"
-                                : "bg-card/60 text-muted-foreground border-border hover:border-primary/40 hover:text-primary"
+                            ${activeCategory === cat.id
+                              ? "bg-primary text-primary-foreground border-primary shadow-[0_0_16px_rgb(var(--primary)/0.3)]"
+                              : "bg-card/60 text-muted-foreground border-border hover:border-primary/40 hover:text-primary"
                             }`}
               >
                 {cat.name}
@@ -245,9 +233,8 @@ export default function Portfolio() {
           </div>
         </div>
 
-        {/* ── Right: horizontal slide ── */}
+        {/* ── Horizontal slide ── */}
         <div className="w-full lg:w-[65%] flex items-center relative overflow-hidden">
-          {/* Left fade */}
           <div className="absolute left-0 top-0 bottom-0 w-20 lg:w-32 z-10 pointer-events-none bg-gradient-to-r from-background to-transparent" />
 
           <div
@@ -260,19 +247,11 @@ export default function Portfolio() {
                 className="group relative overflow-hidden rounded-2xl
                            bg-card/80 backdrop-blur-sm border border-border
                            shadow-lg hover:shadow-2xl hover:shadow-primary/10
-                           flex-shrink-0 w-[280px] sm:w-[320px]
-                           transition-all duration-500"
-                style={{
-                  transform: `rotate(${index % 2 === 0 ? -2.5 : 2.5}deg)`,
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.transform = "rotate(0deg) scale(1.03)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.transform = `rotate(${index % 2 === 0 ? -2.5 : 2.5}deg)`)
-                }
+                           flex-shrink-0 w-[280px] sm:w-[320px] transition-all duration-500"
+                style={{ transform: `rotate(${index % 2 === 0 ? -2.5 : 2.5}deg)` }}
+                onMouseEnter={(e) => (e.currentTarget.style.transform = "rotate(0deg) scale(1.03)")}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = `rotate(${index % 2 === 0 ? -2.5 : 2.5}deg)`)}
               >
-                {/* Image */}
                 <div className="relative overflow-hidden h-44 sm:h-52">
                   <Image
                     src={project.image}
@@ -282,7 +261,6 @@ export default function Portfolio() {
                     sizes="320px"
                   />
 
-                  {/* Category badge */}
                   <span
                     className={`absolute top-3 left-3 px-3 py-1 text-[10px] font-bold
                                 uppercase tracking-widest rounded-lg text-white
@@ -293,11 +271,9 @@ export default function Portfolio() {
                   </span>
 
                   {/* Hover overlay */}
-                  <div
-                    className="absolute inset-0 bg-primary/85 backdrop-blur-sm
-                                flex items-center justify-center gap-5
-                                opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  >
+                  <div className="absolute inset-0 bg-primary/85 backdrop-blur-sm
+                                  flex items-center justify-center gap-5
+                                  opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <a
                       href={project.demoLink}
                       target="_blank"
@@ -308,6 +284,7 @@ export default function Portfolio() {
                     >
                       <ExternalLink size={18} />
                     </a>
+                    {/* FIX #4 — FaGithub from react-icons (Github is not in lucide-react v1.x) */}
                     <a
                       href={project.githubLink}
                       target="_blank"
@@ -316,12 +293,11 @@ export default function Portfolio() {
                       className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center
                                  text-white hover:bg-white/35 transition-colors duration-200"
                     >
-                      <Github size={18} />
+                      <FaGithub size={18} />
                     </a>
                   </div>
                 </div>
 
-                {/* Info */}
                 <div className="p-5">
                   <h3 className="font-heading text-base font-bold text-foreground mb-1.5 line-clamp-1">
                     {project.title}

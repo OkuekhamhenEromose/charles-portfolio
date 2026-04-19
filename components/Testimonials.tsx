@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants, type Transition } from "framer-motion";
 import { Quote, ChevronLeft, ChevronRight } from "lucide-react";
 
 const testimonials = [
@@ -50,6 +50,27 @@ const testimonials = [
   },
 ];
 
+// FIX #7 — Framer Motion requires ease bezier curves to be typed as a 4-tuple,
+// not a plain number[]. Using `as const` on the array satisfies the `Easing` constraint.
+// The variants also can't be typed as `Variants` because the custom function variant
+// doesn't fit the Variants index signature — so we type it correctly as a plain object
+// and pass it directly; Framer Motion accepts this at runtime.
+const enterTransition: Transition = {
+  duration: 0.5,
+  ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+};
+const exitTransition: Transition = {
+  duration: 0.3,
+  ease: "easeIn" as const,
+};
+
+// Custom variant object — typed inline rather than as Variants to allow function values
+const slideVariants = {
+  enter: (d: number) => ({ opacity: 0, x: d * 60 }),
+  center: { opacity: 1, x: 0, transition: enterTransition },
+  exit: (d: number) => ({ opacity: 0, x: d * -60, transition: exitTransition }),
+};
+
 export default function Testimonials() {
   const [active, setActive] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -70,6 +91,7 @@ export default function Testimonials() {
       setActive((a) => (a + 1) % testimonials.length);
     }, 5500);
   };
+
   const stopAuto = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
   };
@@ -82,19 +104,8 @@ export default function Testimonials() {
 
   const current = testimonials[active];
 
-  const slideVariants = {
-    enter: (d: number) => ({ opacity: 0, x: d * 60 }),
-    center: { opacity: 1, x: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
-    exit: (d: number) => ({
-      opacity: 0,
-      x: d * -60,
-      transition: { duration: 0.3, ease: "easeIn" },
-    }),
-  };
-
   return (
     <section className="relative py-24 overflow-hidden">
-      {/* Background glow */}
       <div
         aria-hidden
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
@@ -118,14 +129,9 @@ export default function Testimonials() {
 
         {/* Card */}
         <div className="relative">
-          {/* Giant quote mark */}
-          <Quote
-            className="absolute -top-6 -left-2 sm:-left-8 w-16 h-16 text-primary/10"
-            aria-hidden
-          />
+          <Quote className="absolute -top-6 -left-2 sm:-left-8 w-16 h-16 text-primary/10" aria-hidden />
 
           <div className="glass-card p-8 sm:p-12 relative overflow-hidden min-h-[280px]">
-            {/* Inner glow */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
 
             <AnimatePresence mode="wait" custom={direction}>
@@ -138,7 +144,7 @@ export default function Testimonials() {
                 exit="exit"
                 className="relative z-10"
               >
-                <p className="text-base sm:text-lg text-foreground/80 italic leading-relaxed mb-8 text-balance">
+                <p className="text-base sm:text-lg text-foreground/80 italic leading-relaxed mb-8">
                   &ldquo;{current.text}&rdquo;
                 </p>
 
@@ -156,9 +162,7 @@ export default function Testimonials() {
                     <h4 className="font-heading font-bold text-foreground text-sm sm:text-base">
                       {current.name}
                     </h4>
-                    <p className="text-xs sm:text-sm text-muted-foreground">
-                      {current.post}
-                    </p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{current.post}</p>
                   </div>
                 </div>
               </motion.div>
@@ -167,7 +171,6 @@ export default function Testimonials() {
 
           {/* Navigation */}
           <div className="flex items-center justify-between mt-6">
-            {/* Prev / Next */}
             <div className="flex gap-2">
               <button
                 onClick={() => { prev(); startAuto(); }}
@@ -187,7 +190,7 @@ export default function Testimonials() {
               </button>
             </div>
 
-            {/* Dots */}
+            {/* Dot indicators */}
             <div className="flex gap-2">
               {testimonials.map((_, i) => (
                 <button
@@ -203,9 +206,9 @@ export default function Testimonials() {
               ))}
             </div>
 
-            {/* Counter */}
             <span className="text-xs text-muted-foreground font-mono">
-              {String(active + 1).padStart(2, "0")} / {String(testimonials.length).padStart(2, "0")}
+              {String(active + 1).padStart(2, "0")} /{" "}
+              {String(testimonials.length).padStart(2, "0")}
             </span>
           </div>
         </div>

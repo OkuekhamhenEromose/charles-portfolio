@@ -12,12 +12,15 @@ const menuVariants: Variants = {
   show: {
     x: 0,
     opacity: 1,
-    transition: { ease: [0.6, 0.01, -0.05, 0.9], duration: 0.55 },
+    transition: {
+      ease: [0.6, 0.01, -0.05, 0.9] as [number, number, number, number],
+      duration: 0.55,
+    },
   },
   exit: {
     x: "100%",
     opacity: 0,
-    transition: { ease: "easeIn", duration: 0.35 },
+    transition: { ease: "easeIn" as const, duration: 0.35 },
   },
 };
 
@@ -43,28 +46,30 @@ interface MobileNavProps {
 
 export default function MobileNav({ theme, toggleTheme }: MobileNavProps) {
   const [openMenu, setOpenMenu] = useState(false);
+  const [menuPath, setMenuPath] = useState("");
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
+  const isMenuOpen = openMenu && menuPath === pathname;
+
+  const handleOpenMenu = () => {
+    setMenuPath(pathname);
+    setOpenMenu(true);
+  };
+
+  const handleCloseMenu = () => {
+    setOpenMenu(false);
+  };
+
   useEffect(() => {
-    if (openMenu) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
+    document.body.style.overflow = isMenuOpen ? "hidden" : "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [openMenu]);
-
-  // Close menu on route change
-  useEffect(() => {
-    setOpenMenu(false);
-  }, [pathname]);
+  }, [isMenuOpen]);
 
   return (
     <nav className="flex items-center gap-2">
-      {/* Theme toggle */}
       <motion.button
         onClick={toggleTheme}
         aria-label="Toggle theme"
@@ -80,9 +85,8 @@ export default function MobileNav({ theme, toggleTheme }: MobileNavProps) {
         )}
       </motion.button>
 
-      {/* Hamburger */}
       <motion.button
-        onClick={() => setOpenMenu(true)}
+        onClick={handleOpenMenu}
         aria-label="Open menu"
         className="p-2 rounded-xl hover:bg-accent transition-colors duration-200"
         whileHover={{ scale: 1.05 }}
@@ -91,9 +95,8 @@ export default function MobileNav({ theme, toggleTheme }: MobileNavProps) {
         <Menu className="w-6 h-6 text-foreground" />
       </motion.button>
 
-      {/* Backdrop + slide-in panel */}
       <AnimatePresence>
-        {openMenu && (
+        {isMenuOpen && (
           <>
             <motion.div
               key="backdrop"
@@ -102,7 +105,7 @@ export default function MobileNav({ theme, toggleTheme }: MobileNavProps) {
               initial="hidden"
               animate="show"
               exit="exit"
-              onClick={() => setOpenMenu(false)}
+              onClick={handleCloseMenu}
             />
 
             <motion.div
@@ -113,10 +116,8 @@ export default function MobileNav({ theme, toggleTheme }: MobileNavProps) {
               animate="show"
               exit="exit"
               className="fixed top-0 right-0 z-[60] h-screen w-[80vw] max-w-[320px]
-                         bg-card border-l border-border shadow-2xl
-                         flex flex-col"
+                         bg-card border-l border-border shadow-2xl flex flex-col"
             >
-              {/* Close + theme button row */}
               <div className="flex items-center justify-between px-6 py-5">
                 <span className="text-lg font-heading font-bold text-primary">
                   CE<span className="text-muted-foreground">.</span>
@@ -136,7 +137,7 @@ export default function MobileNav({ theme, toggleTheme }: MobileNavProps) {
                     )}
                   </motion.button>
                   <motion.button
-                    onClick={() => setOpenMenu(false)}
+                    onClick={handleCloseMenu}
                     aria-label="Close menu"
                     className="p-2 rounded-full bg-muted border border-border hover:border-primary/40 transition-all"
                     whileHover={{ scale: 1.1 }}
@@ -147,10 +148,8 @@ export default function MobileNav({ theme, toggleTheme }: MobileNavProps) {
                 </div>
               </div>
 
-              {/* Divider */}
               <div className="h-px bg-border mx-6" />
 
-              {/* Nav links */}
               <div className="flex-1 flex flex-col justify-center px-6">
                 <ul className="space-y-1">
                   {navItems.map((item, index) => (
@@ -162,7 +161,7 @@ export default function MobileNav({ theme, toggleTheme }: MobileNavProps) {
                     >
                       <Link
                         href={item.href}
-                        onClick={() => setOpenMenu(false)}
+                        onClick={handleCloseMenu}
                         className="flex items-center gap-3 px-4 py-3 rounded-xl
                                    text-lg font-heading font-semibold text-muted-foreground
                                    hover:text-primary hover:bg-accent transition-all duration-200"
@@ -177,7 +176,6 @@ export default function MobileNav({ theme, toggleTheme }: MobileNavProps) {
                 </ul>
               </div>
 
-              {/* Socials footer */}
               <div className="px-6 pb-8">
                 <div className="h-px bg-border mb-6" />
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3 text-center">

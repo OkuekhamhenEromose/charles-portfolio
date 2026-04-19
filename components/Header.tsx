@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+// import { usePathname } from "next/navigation";
 import { Sun, Moon, Share2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "./ThemeProvider";
@@ -23,7 +23,7 @@ export default function Header() {
   const [isVisible, setIsVisible] = useState(true);
   const [scrolled, setScrolled] = useState(false);
   const [socialsOpen, setSocialsOpen] = useState(false);
-  const pathname = usePathname();
+//   const pathname = usePathname();
 
   useEffect(() => {
     let lastY = window.scrollY;

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import Link from "next/link";
+import Link from "next/link"; // FIX #2 — next/link for internal navigation
 import {
   FaPalette, FaCode, FaMobile, FaServer, FaCloud, FaDatabase,
 } from "react-icons/fa";
@@ -70,7 +70,6 @@ const cardVariants: Variants = {
 export default function Services() {
   return (
     <section className="relative py-24 overflow-hidden">
-      {/* Subtle background glow */}
       <div
         aria-hidden
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
@@ -113,10 +112,10 @@ export default function Services() {
                 whileHover={{ y: -8, scale: 1.02 }}
                 className="glass-card p-6 group cursor-default
                            hover:border-primary/40 hover:shadow-xl
-                           hover:shadow-primary/5 transition-all duration-400
+                           hover:shadow-primary/5 transition-all duration-300
                            flex flex-col gap-4 relative overflow-hidden"
               >
-                {/* Number */}
+                {/* Background number */}
                 <span className="absolute top-4 right-5 font-heading font-black text-5xl text-primary/5 pointer-events-none select-none">
                   0{item.id}
                 </span>
@@ -128,11 +127,9 @@ export default function Services() {
                 </span>
 
                 {/* Icon */}
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center
-                               bg-muted/60 group-hover:bg-primary transition-colors duration-400"
-                >
-                  <Icon className="text-lg text-primary group-hover:text-primary-foreground transition-colors duration-400" />
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center
+                                bg-muted/60 group-hover:bg-primary transition-colors duration-300">
+                  <Icon className="text-lg text-primary group-hover:text-primary-foreground transition-colors duration-300" />
                 </div>
 
                 {/* Content */}
@@ -146,15 +143,15 @@ export default function Services() {
                   </p>
                 </div>
 
-                {/* CTA */}
-                <a
+                {/* FIX #2 — next/link instead of <a> for internal routes */}
+                <Link
                   href="/#portfolio"
                   className="mt-auto inline-flex items-center gap-1.5 text-xs font-semibold
                                text-primary opacity-0 group-hover:opacity-100 transition-all duration-300
                                hover:underline underline-offset-2"
                 >
                   See examples <ArrowUpRight className="w-3 h-3" />
-                </a>
+                </Link>
               </motion.div>
             );
           })}

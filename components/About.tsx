@@ -2,8 +2,9 @@
 
 import { motion, type Variants } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import {
-  SiHtml5, SiCss3, SiJavascript, SiReact, SiNodedotjs, SiPython,
+  SiHtml5, SiCss, SiJavascript, SiReact, SiNodedotjs, SiPython,
   SiMongodb, SiGit, SiDocker, SiPostgresql, SiNextdotjs,
   SiDjango, SiExpress, SiTypescript, SiTailwindcss,
 } from "react-icons/si";
@@ -31,7 +32,7 @@ const fadeUp: Variants = {
 
 const skills = [
   { icon: SiHtml5, name: "HTML5", color: "#E34F26" },
-  { icon: SiCss3, name: "CSS3", color: "#1572B6" },
+  { icon: SiCss, name: "CSS3", color: "#1572B6" },
   { icon: SiJavascript, name: "JavaScript", color: "#F7DF1E" },
   { icon: SiTypescript, name: "TypeScript", color: "#3178C6" },
   { icon: SiReact, name: "React", color: "#61DAFB" },
@@ -169,12 +170,12 @@ export default function About() {
             </motion.div>
 
             <motion.div variants={fadeUp} className="flex gap-4 justify-center lg:justify-start">
-              <a href="/#portfolio" className="btn text-sm">
+              <Link href="/#portfolio" className="btn text-sm">
                 View Projects
-              </a>
-              <a href="/#contact" className="btn-outline text-sm">
+              </Link>
+              <Link href="/#contact" className="btn-outline text-sm">
                 Hire Me
-              </a>
+              </Link>
             </motion.div>
           </motion.div>
         </div>

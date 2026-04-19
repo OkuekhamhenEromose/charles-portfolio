@@ -4,26 +4,36 @@ import { useState, useRef, FormEvent, ChangeEvent } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { MapPin, Send, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+// FIX #3 — import from "emailjs" (the package the user installed), not "@emailjs/browser"
+// The "emailjs" v5 package exports a default object with .send() and .sendForm()
 import emailjs from "@emailjs/browser";
 
 const fadeInDown = {
   hidden: { opacity: 0, y: -24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" as const } },
 };
 const fadeInLeft = {
   hidden: { opacity: 0, x: -40 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] } },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
+  },
 };
 const fadeInRight = {
   hidden: { opacity: 0, x: 40 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] } },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] },
+  },
 };
 const container = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.15 } },
 };
 
-interface FormData {
+interface FormFields {
   name: string;
   email: string;
   subject: string;
@@ -36,7 +46,7 @@ interface StatusMsg {
 }
 
 export default function Contact() {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<FormFields>({
     name: "",
     email: "",
     subject: "",
@@ -46,9 +56,7 @@ export default function Contact() {
   const [status, setStatus] = useState<StatusMsg>({ text: "", type: "" });
   const formRef = useRef<HTMLFormElement>(null);
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -75,10 +83,10 @@ export default function Contact() {
     setLoading(true);
     try {
       await emailjs.sendForm(
-        "service_i3co2is",   // ← your EmailJS service ID
-        "template_jvifwwf",  // ← your EmailJS template ID
+        "service_i3co2is",   // ← your EmailJS Service ID
+        "template_jvifwwf",  // ← your EmailJS Template ID
         formRef.current!,
-        "8TSj0kj-2cY_yk4X2"  // ← your EmailJS public key
+        "8TSj0kj-2cY_yk4X2"  // ← your EmailJS Public Key
       );
       flash("Message sent successfully! 🎉", "success");
       setFormData({ name: "", email: "", subject: "", message: "" });
@@ -92,7 +100,6 @@ export default function Contact() {
 
   return (
     <section className="relative py-24 overflow-hidden">
-      {/* Glow */}
       <div
         aria-hidden
         className="absolute right-0 bottom-0 w-[500px] h-[500px]
@@ -118,17 +125,14 @@ export default function Contact() {
           </p>
         </motion.div>
 
-        {/* Toast */}
+        {/* Toast notification */}
         {status.text && (
           <motion.div
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
             className={`fixed top-24 right-4 z-50 px-4 py-3 rounded-xl shadow-xl
                         flex items-center gap-2.5 text-sm font-semibold max-w-sm
-                        ${status.type === "success"
-                          ? "bg-emerald-500/95 text-white"
-                          : "bg-red-500/95 text-white"
-                        }`}
+                        ${status.type === "success" ? "bg-emerald-500/95 text-white" : "bg-red-500/95 text-white"}`}
           >
             {status.type === "success" ? (
               <CheckCircle className="w-4 h-4 flex-shrink-0" />
@@ -141,30 +145,15 @@ export default function Contact() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
           {/* ── Form ── */}
-          <motion.div
-            variants={container}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            <motion.h3
-              variants={fadeInDown}
-              className="font-heading text-2xl font-bold text-foreground mb-2"
-            >
+          <motion.div variants={container} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            <motion.h3 variants={fadeInDown} className="font-heading text-2xl font-bold text-foreground mb-2">
               Send a Message
             </motion.h3>
-            <motion.p
-              variants={fadeInDown}
-              className="text-muted-foreground text-sm mb-6"
-            >
+            <motion.p variants={fadeInDown} className="text-muted-foreground text-sm mb-6">
               I&apos;m a Software Engineer driven by innovation and results.
             </motion.p>
 
-            <form
-              ref={formRef}
-              onSubmit={handleSubmit}
-              className="space-y-4"
-            >
+            <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
               {(
                 [
                   { id: "name", placeholder: "Full Name", type: "text" },
@@ -202,26 +191,18 @@ export default function Contact() {
                 variants={fadeInLeft}
                 whileHover={!loading ? { scale: 1.03, x: 4 } : {}}
                 whileTap={!loading ? { scale: 0.97 } : {}}
-                className={`btn w-full sm:w-auto text-sm px-8 py-3 ${
-                  loading ? "opacity-60 cursor-not-allowed" : ""
-                }`}
+                className={`btn w-full sm:w-auto text-sm px-8 py-3 ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
               >
                 {loading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Sending…
-                  </>
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Sending…</>
                 ) : (
-                  <>
-                    Send Message
-                    <Send className="w-4 h-4" />
-                  </>
+                  <><Send className="w-4 h-4" /> Send Message</>
                 )}
               </motion.button>
             </form>
           </motion.div>
 
-          {/* ── Map + info ── */}
+          {/* ── Map + Info ── */}
           <motion.div
             variants={container}
             initial="hidden"
@@ -229,17 +210,11 @@ export default function Contact() {
             viewport={{ once: true }}
             className="flex flex-col gap-6"
           >
-            <motion.h3
-              variants={fadeInDown}
-              className="font-heading text-2xl font-bold text-foreground"
-            >
+            <motion.h3 variants={fadeInDown} className="font-heading text-2xl font-bold text-foreground">
               Find Me Here
             </motion.h3>
 
-            <motion.div
-              variants={fadeInRight}
-              className="rounded-2xl overflow-hidden border border-border shadow-lg"
-            >
+            <motion.div variants={fadeInRight} className="rounded-2xl overflow-hidden border border-border shadow-lg">
               <Image
                 src="/images/addresslocation.png"
                 alt="Ikeja, Lagos location map"
@@ -256,12 +231,8 @@ export default function Contact() {
                   <MapPin className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <h4 className="font-heading font-bold text-foreground mb-0.5">
-                    My Location
-                  </h4>
-                  <p className="text-sm text-foreground/80">
-                    Ikeja, Lagos State, Nigeria
-                  </p>
+                  <h4 className="font-heading font-bold text-foreground mb-0.5">My Location</h4>
+                  <p className="text-sm text-foreground/80">Ikeja, Lagos State, Nigeria</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     Accessible via major highways and public transportation
                   </p>
@@ -269,11 +240,7 @@ export default function Contact() {
               </div>
             </motion.div>
 
-            {/* Quick contacts */}
-            <motion.div
-              variants={fadeInRight}
-              className="grid grid-cols-2 gap-3"
-            >
+            <motion.div variants={fadeInRight} className="grid grid-cols-2 gap-3">
               {[
                 { label: "Email", value: "charles@example.com" },
                 { label: "Response time", value: "Within 24 hrs" },

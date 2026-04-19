@@ -1,6 +1,14 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useSyncExternalStore,
+  ReactNode,
+} from "react";
 
 type Theme = "light" | "dark";
 
@@ -14,28 +22,39 @@ const ThemeContext = createContext<ThemeContextValue>({
   toggleTheme: () => {},
 });
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("dark");
-  const [mounted, setMounted] = useState(false);
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
-  useEffect(() => {
-    const stored = localStorage.getItem("theme") as Theme | null;
-    const preferred = stored || "dark";
-    setTheme(preferred);
-    document.documentElement.classList.toggle("light", preferred === "light");
-    setMounted(true);
-  }, []);
+const emptySubscribe = () => () => {};
+
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const isClient = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === "undefined") return "dark";
+    return (localStorage.getItem("theme") as Theme) || "dark";
+  });
+
+  useIsomorphicLayoutEffect(() => {
+    document.documentElement.classList.toggle("light", theme === "light");
+  }, [theme]);
 
   const toggleTheme = () => {
     const next: Theme = theme === "light" ? "dark" : "light";
     setTheme(next);
     localStorage.setItem("theme", next);
-    document.documentElement.classList.toggle("light", next === "light");
   };
 
-  // Avoid flash of wrong theme on mount
-  if (!mounted) {
-    return <div style={{ visibility: "hidden" }}>{children}</div>;
+  if (!isClient) {
+    return (
+      <ThemeContext.Provider value={{ theme, toggleTheme }}>
+        <div style={{ visibility: "hidden" }}>{children}</div>
+      </ThemeContext.Provider>
+    );
   }
 
   return (

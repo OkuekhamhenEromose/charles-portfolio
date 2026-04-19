@@ -12,7 +12,7 @@ export default function ServiceSummary() {
   useEffect(() => {
     let gsap: typeof import("gsap").default;
     let ScrollTrigger: typeof import("gsap/ScrollTrigger").ScrollTrigger;
-    let cleanup: (() => void)[] = [];
+    const cleanup: (() => void)[] = [];
 
     (async () => {
       const gsapModule = await import("gsap");

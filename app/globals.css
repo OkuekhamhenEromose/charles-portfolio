@@ -1,10 +1,25 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* ============================================================
-   FONTS: Loaded via next/font in layout.tsx
-   ============================================================ */
+/* Expose semantic tokens to Tailwind utilities */
+@theme inline {
+  --color-background: rgb(var(--background));
+  --color-foreground: rgb(var(--foreground));
+  --color-primary: rgb(var(--primary));
+  --color-primary-foreground: rgb(var(--primary-foreground));
+  --color-card: rgb(var(--card));
+  --color-card-foreground: rgb(var(--card-foreground));
+  --color-muted: rgb(var(--muted));
+  --color-muted-foreground: rgb(var(--muted-foreground));
+  --color-border: rgb(var(--border));
+  --color-nav: rgb(var(--nav));
+  --color-nav-border: rgb(var(--nav-border));
+  --color-accent: rgb(var(--accent));
+  --color-accent-foreground: rgb(var(--accent-foreground));
+
+  --font-body: var(--font-dm-sans);
+  --font-heading: var(--font-syne);
+  --font-mono: var(--font-fira-code);
+}
 
 /* ============================================================
    DESIGN TOKENS — DARK (default)
@@ -43,7 +58,6 @@
   --accent: 238 242 248;
   --accent-foreground: 0 165 128;
 }
-
 /* ============================================================
    BASE RESET
    ============================================================ */

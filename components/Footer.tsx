@@ -71,12 +71,12 @@ export default function Footer() {
               Open to full-time roles, freelance projects, and collaborations.
               Reach out — let&apos;s build something great together.
             </p>
-            <a
+            <Link
               href="/#contact"
               className="btn text-sm inline-flex"
             >
               Hire Me
-            </a>
+            </Link>
           </div>
         </div>
 
