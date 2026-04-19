@@ -20,7 +20,10 @@ const zoomIn: Variants = {
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 1.5, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+    transition: {
+      duration: 1.5,
+      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+    },
   },
 };
 
@@ -35,28 +38,31 @@ const fadeUp: Variants = {
 
 /* ── Code snapshot ───────────────────────────────────── */
 const codeLines = [
-  { t: "kw",  v: "const " },
-  { t: "fn",  v: "profile" },
-  { t: "op",  v: ": DeveloperProfile = {" },
+  { t: "kw", v: "const " },
+  { t: "fn", v: "profile" },
+  { t: "op", v: ": DeveloperProfile = {" },
   { t: "str", v: '  name:         "Charles Eromose",' },
   { t: "str", v: '  role:         "Full Stack Engineer",' },
   { t: "str", v: '  experience:   "4+ years",' },
-  { t: "cm",  v: "  stack: {" },
-  { t: "str", v: '    frontend: ["React", "Next.js", "TypeScript", "Tailwind"],' },
+  { t: "cm", v: "  stack: {" },
+  {
+    t: "str",
+    v: '    frontend: ["React", "Next.js", "TypeScript", "Tailwind"],',
+  },
   { t: "str", v: '    backend:  ["Django", "Node.js", "Python", "Express"],' },
   { t: "str", v: '    database: ["PostgreSQL", "MongoDB", "MySQL"],' },
   { t: "str", v: '    cloud:    ["AWS", "Docker", "Vercel", "Netlify"],' },
-  { t: "cm",  v: "  }," },
+  { t: "cm", v: "  }," },
   { t: "str", v: '  availability: "Open to opportunities 🚀",' },
-  { t: "op",  v: "};" },
+  { t: "op", v: "};" },
 ];
 
 const colors: Record<string, string> = {
-  kw:  "#569CD6",
-  fn:  "#DCDCAA",
-  op:  "#D4D4D4",
+  kw: "#569CD6",
+  fn: "#DCDCAA",
+  op: "#D4D4D4",
   str: "#CE9178",
-  cm:  "#9CDCFE",
+  cm: "#9CDCFE",
 };
 
 function CodeBlock() {
@@ -70,13 +76,17 @@ function CodeBlock() {
         <span className="w-3 h-3 rounded-full bg-red-500/70" />
         <span className="w-3 h-3 rounded-full bg-yellow-400/70" />
         <span className="w-3 h-3 rounded-full bg-green-500/70" />
-        <span className="ml-3 text-[11px] font-mono text-white/30 tracking-wider">profile.ts</span>
+        <span className="ml-3 text-[11px] font-mono text-white/30 tracking-wider">
+          profile.ts
+        </span>
       </div>
       {/* Code */}
       <pre className="p-4 text-[0.68rem] leading-[1.5] font-mono overflow-x-auto">
         {codeLines.map((line, i) => (
           <div key={i}>
-            <span className="select-none text-white/20 mr-3 text-[0.6rem]">{String(i + 1).padStart(2, "0")}</span>
+            <span className="select-none text-white/20 mr-3 text-[0.6rem]">
+              {String(i + 1).padStart(2, "0")}
+            </span>
             <span style={{ color: colors[line.t] }}>{line.v}</span>
           </div>
         ))}
@@ -95,7 +105,6 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
-
       {/* ── Left half radial glow (teal) ── */}
       <div
         aria-hidden
@@ -105,10 +114,11 @@ export default function Hero() {
       />
 
       {/* ── Main content ── */}
-      <div className="container mx-auto relative z-10
+      <div
+        className="container mx-auto relative z-10
                       flex flex-col lg:flex-row items-center justify-between
-                      gap-10 px-4 sm:px-6 lg:px-8 pt-28 pb-16">
-
+                      gap-10 px-4 sm:px-6 lg:px-8 pt-28 pb-16"
+      >
         {/* LEFT — text + code */}
         <motion.div
           className="w-full lg:w-[52%] flex flex-col items-center lg:items-start text-center lg:text-left order-2 lg:order-1"
@@ -130,8 +140,7 @@ export default function Hero() {
             className="font-heading font-black leading-[1.02] tracking-tight text-foreground mb-3
                        text-4xl xs:text-5xl md:text-6xl lg:text-[4.5rem]"
           >
-            I&apos;m{" "}
-            <span className="gradient-text">Charles</span>
+            I&apos;m <span className="gradient-text">Charles</span>
             <br />
             <span className="text-foreground/35">Eromose</span>
           </motion.h1>
@@ -140,7 +149,8 @@ export default function Hero() {
             variants={fadeDown}
             className="text-muted-foreground text-base md:text-lg mb-7 max-w-md leading-relaxed"
           >
-            Full Stack Engineer — scalable apps, powerful APIs &amp; cloud solutions.
+            Full Stack Engineer — scalable apps, powerful APIs &amp; cloud
+            solutions.
           </motion.p>
 
           {/* Code block */}
@@ -149,7 +159,10 @@ export default function Hero() {
           </motion.div>
 
           {/* CTAs */}
-          <motion.div variants={stagger} className="flex flex-wrap gap-4 justify-center lg:justify-start">
+          <motion.div
+            variants={stagger}
+            className="flex flex-wrap gap-4 justify-center lg:justify-start"
+          >
             <motion.a
               href="/#portfolio"
               variants={fadeUp}
@@ -178,7 +191,11 @@ export default function Hero() {
           className="w-full lg:w-[46%] flex justify-center lg:justify-end order-1 lg:order-2"
           initial={{ opacity: 0, x: 70 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1.0, delay: 0.25, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+          transition={{
+            duration: 1.0,
+            delay: 0.25,
+            ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+          }}
         >
           <div className="relative">
             {/* Glow halo behind globe */}
@@ -195,7 +212,9 @@ export default function Hero() {
                 muted
                 playsInline
                 className="w-full h-full object-contain drop-shadow-2xl"
-                style={{ filter: "drop-shadow(0 0 60px rgb(var(--primary) / 0.2))" }}
+                style={{
+                  filter: "drop-shadow(0 0 60px rgb(var(--primary) / 0.2))",
+                }}
               >
                 {/* glob_transparent.webm — transparent background so cloud.mp4 shows through */}
                 {/* <source src="/video/glob_transparent.webm" type="video/webm" /> */}
@@ -217,7 +236,9 @@ export default function Hero() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.8, duration: 0.6 }}
       >
-        <span className="text-[10px] uppercase tracking-[0.2em] font-semibold">Scroll</span>
+        <span className="text-[10px] uppercase tracking-[0.2em] font-semibold">
+          Scroll
+        </span>
         <motion.div
           animate={{ y: [0, 7, 0] }}
           transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
