@@ -16,7 +16,9 @@ export default function HomePage() {
 
   return (
     <div className="relative">
-      {/* ── Shared video backgrounds ── */}
+      {/* ── Full-page background videos ── */}
+
+      {/* Light mode: cloud video fills entire page */}
       <video
         autoPlay
         loop
@@ -27,9 +29,10 @@ export default function HomePage() {
           theme === "light" ? "opacity-100" : "opacity-0"
         }`}
       >
-        <source src="/videos/cloud.mp4" type="video/mp4" />
+        <source src="/video/cloud.mp4" type="video/mp4" />
       </video>
 
+      {/* Dark mode: space video */}
       <video
         autoPlay
         loop
@@ -43,17 +46,19 @@ export default function HomePage() {
         <source src="/videos/space.mp4" type="video/mp4" />
       </video>
 
-      {/* Shared overlay */}
+      {/* Overlay — softens video so text stays readable */}
       <div
         className={`fixed inset-0 z-[1] transition-colors duration-700 ${
-          theme === "light" ? "bg-white/35" : "bg-black/50"
+          theme === "light"
+            ? "bg-white/25 backdrop-brightness-105"
+            : "bg-black/55"
         }`}
       />
 
-      {/* Grid dot overlay for texture */}
-      <div className="fixed inset-0 z-[2] grid-dots opacity-40 pointer-events-none" />
+      {/* Dot-grid texture */}
+      <div className="fixed inset-0 z-[2] grid-dots opacity-30 pointer-events-none" />
 
-      {/* Content */}
+      {/* ── Page content ── */}
       <div className="relative z-10">
         <Header />
 

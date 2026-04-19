@@ -4,18 +4,15 @@ import { useRef, useEffect } from "react";
 import { motion, type Variants } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 
-// FIX #5 — react-syntax-highlighter has no bundled types and @types package may not
-// exist for the installed version. We use dynamic import with a typed wrapper below.
-// This avoids needing to install extra @types packages.
-
-const fadeInDown: Variants = {
-  hidden: { opacity: 0, y: -24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease: "easeOut" as const } },
+/* ── Animation variants ──────────────────────────────── */
+const fadeDown: Variants = {
+  hidden: { opacity: 0, y: -28 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease: "easeOut" } },
 };
 
 const stagger: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.14, delayChildren: 0.2 } },
+  visible: { transition: { staggerChildren: 0.13, delayChildren: 0.15 } },
 };
 
 const zoomIn: Variants = {
@@ -23,138 +20,136 @@ const zoomIn: Variants = {
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 1.6, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+    transition: { duration: 1.5, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
   },
 };
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 28 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { type: "spring", stiffness: 110, damping: 14 },
+    transition: { type: "spring", stiffness: 100, damping: 14 },
   },
 };
 
-const codeString = `const profile: DeveloperProfile = {
-  name: "Charles Eromose",
-  role: "Full Stack Engineer",
-  experience: "4+ years",
-  stack: {
-    frontend: ["React.js", "Next.js", "TypeScript", "Tailwind"],
-    backend: ["Django", "Node.js", "Express.js", "Python"],
-    database: ["PostgreSQL", "MongoDB", "MySQL"],
-    cloud: ["AWS", "Docker", "Vercel", "Netlify"],
-  },
-  skills: ["UI/UX", "API Dev", "Cloud", "Auth"],
-  availability: "Open to opportunities 🚀",
-};`;
+/* ── Code snapshot ───────────────────────────────────── */
+const codeLines = [
+  { t: "kw",  v: "const " },
+  { t: "fn",  v: "profile" },
+  { t: "op",  v: ": DeveloperProfile = {" },
+  { t: "str", v: '  name:         "Charles Eromose",' },
+  { t: "str", v: '  role:         "Full Stack Engineer",' },
+  { t: "str", v: '  experience:   "4+ years",' },
+  { t: "cm",  v: "  stack: {" },
+  { t: "str", v: '    frontend: ["React", "Next.js", "TypeScript", "Tailwind"],' },
+  { t: "str", v: '    backend:  ["Django", "Node.js", "Python", "Express"],' },
+  { t: "str", v: '    database: ["PostgreSQL", "MongoDB", "MySQL"],' },
+  { t: "str", v: '    cloud:    ["AWS", "Docker", "Vercel", "Netlify"],' },
+  { t: "cm",  v: "  }," },
+  { t: "str", v: '  availability: "Open to opportunities 🚀",' },
+  { t: "op",  v: "};" },
+];
 
-// ── Inline code block — no external highlighter dependency ──────────────────
-// This removes the react-syntax-highlighter TS issue entirely while keeping
-// a visually identical dark code block with token colouring via CSS.
-function CodeBlock({ code }: { code: string }) {
-  // Simple token coloriser: keywords, strings, punctuation
-  const colorised = code
-    .replace(
-      /\b(const|type|interface|string|number|boolean|true|false|null|undefined|export|default|import|from|as)\b/g,
-      '<span style="color:#569CD6">$1</span>'
-    )
-    .replace(/"([^"]*)"/g, '<span style="color:#CE9178">"$1"</span>')
-    .replace(/\b([A-Z][A-Za-z]+)\b/g, '<span style="color:#4EC9B0">$1</span>')
-    .replace(/\/\/.*/g, '<span style="color:#6A9955">$&</span>');
+const colors: Record<string, string> = {
+  kw:  "#569CD6",
+  fn:  "#DCDCAA",
+  op:  "#D4D4D4",
+  str: "#CE9178",
+  cm:  "#9CDCFE",
+};
 
+function CodeBlock() {
   return (
     <div
-      className="relative rounded-xl overflow-hidden border border-border
-                 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
-      style={{ background: "rgba(14,14,28,0.97)" }}
+      className="rounded-xl overflow-hidden border border-border/60 shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
+      style={{ background: "rgba(10,10,22,0.93)" }}
     >
-      {/* Fake window chrome */}
-      <div className="flex items-center gap-1.5 px-4 py-3 border-b border-border/50">
+      {/* Window chrome */}
+      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/5">
         <span className="w-3 h-3 rounded-full bg-red-500/70" />
-        <span className="w-3 h-3 rounded-full bg-yellow-500/70" />
+        <span className="w-3 h-3 rounded-full bg-yellow-400/70" />
         <span className="w-3 h-3 rounded-full bg-green-500/70" />
-        <span className="ml-3 text-[11px] text-muted-foreground font-mono">
-          profile.ts
-        </span>
+        <span className="ml-3 text-[11px] font-mono text-white/30 tracking-wider">profile.ts</span>
       </div>
-      <pre
-        className="p-4 text-[0.7rem] leading-5 font-mono overflow-x-auto text-gray-300"
-        dangerouslySetInnerHTML={{ __html: colorised }}
-      />
+      {/* Code */}
+      <pre className="p-4 text-[0.68rem] leading-[1.5] font-mono overflow-x-auto">
+        {codeLines.map((line, i) => (
+          <div key={i}>
+            <span className="select-none text-white/20 mr-3 text-[0.6rem]">{String(i + 1).padStart(2, "0")}</span>
+            <span style={{ color: colors[line.t] }}>{line.v}</span>
+          </div>
+        ))}
+      </pre>
     </div>
   );
 }
 
+/* ── Component ───────────────────────────────────────── */
 export default function Hero() {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const globeRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.play().catch(() => {});
-    }
+    globeRef.current?.play().catch(() => {});
   }, []);
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Radial glow */}
+
+      {/* ── Left half radial glow (teal) ── */}
       <div
         aria-hidden
-        className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2
-                   w-[600px] h-[600px] rounded-full bg-primary/5 blur-[120px] pointer-events-none"
+        className="absolute -left-40 top-1/2 -translate-y-1/2
+                   w-[700px] h-[700px] rounded-full
+                   bg-primary/8 blur-[130px] pointer-events-none"
       />
 
-      <div
-        className="container mx-auto relative z-10
-                   flex flex-col lg:flex-row items-center justify-between
-                   gap-12 px-4 sm:px-6 lg:px-8 pt-28 pb-16"
-      >
-        {/* ── Left: Text + Code ── */}
+      {/* ── Main content ── */}
+      <div className="container mx-auto relative z-10
+                      flex flex-col lg:flex-row items-center justify-between
+                      gap-10 px-4 sm:px-6 lg:px-8 pt-28 pb-16">
+
+        {/* LEFT — text + code */}
         <motion.div
-          className="w-full lg:w-[55%] flex flex-col items-center lg:items-start text-center lg:text-left"
+          className="w-full lg:w-[52%] flex flex-col items-center lg:items-start text-center lg:text-left order-2 lg:order-1"
           variants={stagger}
           initial="hidden"
           animate="visible"
         >
-          {/* Status badge */}
-          <motion.div variants={fadeInDown} className="mb-4">
+          {/* Available badge */}
+          <motion.div variants={fadeDown} className="mb-5">
             <span className="section-tag">
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
               Available for hire
             </span>
           </motion.div>
 
-          {/* Heading */}
+          {/* Headline */}
           <motion.h1
-            variants={fadeInDown}
-            className="font-heading text-4xl xs:text-5xl md:text-6xl lg:text-7xl
-                       font-black leading-[1.05] tracking-tight text-foreground mb-4"
+            variants={fadeDown}
+            className="font-heading font-black leading-[1.02] tracking-tight text-foreground mb-3
+                       text-4xl xs:text-5xl md:text-6xl lg:text-[4.5rem]"
           >
             I&apos;m{" "}
             <span className="gradient-text">Charles</span>
             <br />
-            <span className="text-foreground/40">Eromose</span>
+            <span className="text-foreground/35">Eromose</span>
           </motion.h1>
 
-          {/* Subtitle */}
           <motion.p
-            variants={fadeInDown}
-            className="text-muted-foreground text-base md:text-lg mb-6 max-w-md"
+            variants={fadeDown}
+            className="text-muted-foreground text-base md:text-lg mb-7 max-w-md leading-relaxed"
           >
-            Full Stack Engineer crafting scalable web applications, powerful APIs &amp; cloud solutions.
+            Full Stack Engineer — scalable apps, powerful APIs &amp; cloud solutions.
           </motion.p>
 
-          {/* Code block — custom, no external type issues */}
-          <motion.div variants={zoomIn} className="w-full max-w-xl mb-8">
-            <CodeBlock code={codeString} />
+          {/* Code block */}
+          <motion.div variants={zoomIn} className="w-full max-w-[540px] mb-8">
+            <CodeBlock />
           </motion.div>
 
           {/* CTAs */}
-          <motion.div
-            variants={stagger}
-            className="flex flex-wrap gap-4 justify-center lg:justify-start"
-          >
+          <motion.div variants={stagger} className="flex flex-wrap gap-4 justify-center lg:justify-start">
             <motion.a
               href="/#portfolio"
               variants={fadeUp}
@@ -178,29 +173,33 @@ export default function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* ── Right: Rotating Earth ── */}
+        {/* RIGHT — rotating globe */}
         <motion.div
-          className="w-full lg:w-[42%] flex justify-center lg:justify-end"
-          initial={{ opacity: 0, x: 60 }}
+          className="w-full lg:w-[46%] flex justify-center lg:justify-end order-1 lg:order-2"
+          initial={{ opacity: 0, x: 70 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+          transition={{ duration: 1.0, delay: 0.25, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
         >
-          <div className="relative animate-float">
+          <div className="relative">
+            {/* Glow halo behind globe */}
             <div
               aria-hidden
-              className="absolute inset-0 rounded-full blur-2xl opacity-30 bg-primary scale-90"
+              className="absolute inset-0 rounded-full blur-3xl opacity-25 bg-primary scale-75 animate-pulse"
             />
-            <div className="relative w-[260px] h-[260px] sm:w-[340px] sm:h-[340px] md:w-[420px] md:h-[420px]">
+            {/* Globe video — transparent webm so cloud shows through */}
+            <div className="relative w-[280px] h-[280px] sm:w-[360px] sm:h-[360px] md:w-[440px] md:h-[440px] lg:w-[480px] lg:h-[480px]">
               <video
-                ref={videoRef}
+                ref={globeRef}
                 autoPlay
                 loop
                 muted
                 playsInline
                 className="w-full h-full object-contain drop-shadow-2xl"
+                style={{ filter: "drop-shadow(0 0 60px rgb(var(--primary) / 0.2))" }}
               >
-                <source src="/videos/rotatingearth.webm" type="video/webm" />
-                <source src="/videos/rotatingearth.mp4" type="video/mp4" />
+                {/* glob_transparent.webm — transparent background so cloud.mp4 shows through */}
+                {/* <source src="/video/glob_transparent.webm" type="video/webm" /> */}
+                <source src="/video/glob_transparent.webm" type="video/webm" />
               </video>
             </div>
           </div>
@@ -214,14 +213,14 @@ export default function Hero() {
         className="absolute bottom-8 left-1/2 -translate-x-1/2
                    flex flex-col items-center gap-2 text-muted-foreground
                    hover:text-primary transition-colors duration-300"
-        initial={{ opacity: 0, y: 10 }}
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.5, duration: 0.6 }}
+        transition={{ delay: 1.8, duration: 0.6 }}
       >
-        <span className="text-[10px] uppercase tracking-widest font-semibold">Scroll</span>
+        <span className="text-[10px] uppercase tracking-[0.2em] font-semibold">Scroll</span>
         <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+          animate={{ y: [0, 7, 0] }}
+          transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
         >
           <ArrowDown className="w-4 h-4" />
         </motion.div>
