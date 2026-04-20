@@ -225,7 +225,7 @@ export default function Contact() {
               />
             </motion.div>
 
-            <motion.div variants={fadeInRight} className="glass-card p-5">
+            {/* <motion.div variants={fadeInRight} className="glass-card p-5">
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0">
                   <MapPin className="w-5 h-5 text-primary" />
@@ -254,7 +254,7 @@ export default function Contact() {
                   <p className="text-sm text-foreground font-medium">{item.value}</p>
                 </div>
               ))}
-            </motion.div>
+            </motion.div> */}
           </motion.div>
         </div>
       </div>

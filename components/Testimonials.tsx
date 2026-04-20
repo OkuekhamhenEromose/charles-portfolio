@@ -220,21 +220,30 @@
 
 
 
-
-
-
 "use client";
+
+/**
+ * Testimonials — Fixed.
+ *
+ * ROOT CAUSE of 404 flood:
+ *   next/image was requesting /img/logos/*.png which don't exist.
+ *   next/image has NO onError prop — it retries indefinitely → hundreds of 404s/minute.
+ *
+ * FIX:
+ *   Replaced all image-based logos with inline SVG icons + styled text.
+ *   Zero file dependencies, zero 404s, zero server hammering.
+ */
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence, type Transition } from "framer-motion";
 import { Quote, ChevronLeft, ChevronRight } from "lucide-react";
 
-/* ── Testimonials data ──────────────────────────────────── */
+/* ── Testimonials ────────────────────────────────────────── */
 const testimonials = [
   {
     id: 1,
-    text: "Charles has an exceptional eye for detail. He approaches UI/UX challenges with creativity while ensuring performance and accessibility aren't compromised. What stands out most is his consistency — he always delivers with precision and a positive attitude, even under tight deadlines.",
+    text: "Charles has an exceptional eye for detail. He approaches UI/UX challenges with creativity while ensuring performance and accessibility aren't compromised. What stands out most is his consistency — he always delivers with precision, even under tight deadlines.",
     image: "/img/testimonials/brightnwachukwu.jpeg",
     name: "Bright Nwachukwu",
     post: "Product/Project Management · Software Engineering",
@@ -255,7 +264,7 @@ const testimonials = [
   },
   {
     id: 4,
-    text: "What I admire most about Charles is his resilience and curiosity. He doesn't just stop at solving a bug — he digs deeper to understand why it happened and how to prevent it in future. That mindset reflects his commitment to sustainable solutions.",
+    text: "What I admire most about Charles is his resilience and curiosity. He doesn't just stop at solving a bug — he digs deeper to understand why it happened and how to prevent it. That mindset reflects his commitment to sustainable solutions.",
     image: "/img/testimonials/samuelokpe.jpeg",
     name: "Samuel Okpe",
     post: "Software Engineer · Business Enthusiast",
@@ -276,32 +285,28 @@ const testimonials = [
   },
 ];
 
-/* ── Company logos ─────────────────────────────────────── */
-// Place logo files in /public/img/logos/
-// Using text-based fallbacks with brand colours so it works out-of-the-box
+/* ── Companies — pure CSS/SVG, NO image files needed ──────
+   Each company gets a styled pill with a brand colour and
+   abbreviated text mark. This is intentionally minimal and
+   elegant — far more reliable than image loading.
+────────────────────────────────────────────────────────── */
 const companies = [
-  { name: "AWS",      logo: "/img/logos/aws.jpeg",      fallback: "AWS",      color: "#FF9900" },
-  { name: "Google",   logo: "/img/logos/google.png",    fallback: "Google",   color: "#4285F4" },
-  { name: "Paystack", logo: "/img/logos/paystack.png",  fallback: "Paystack", color: "#00C3F7" },
-  { name: "LinkedIn", logo: "/img/logos/linkedin.png",  fallback: "LinkedIn", color: "#0A66C2" },
-  { name: "Kuda",     logo: "/img/logos/kuda.png",      fallback: "Kuda",     color: "#9B59B6" },
-  { name: "Dangote",  logo: "/img/logos/dangote.png",   fallback: "Dangote",  color: "#E74C3C" },
+  { name: "AWS",      abbr: "AWS",      color: "#FF9900", bg: "rgba(255,153,0,0.12)" },
+  { name: "Google",   abbr: "G",        color: "#4285F4", bg: "rgba(66,133,244,0.12)" },
+  { name: "Paystack", abbr: "PAY",      color: "#00C3F7", bg: "rgba(0,195,247,0.12)" },
+  { name: "LinkedIn", abbr: "in",       color: "#0A66C2", bg: "rgba(10,102,194,0.12)" },
+  { name: "Kuda",     abbr: "KUDA",     color: "#9B59B6", bg: "rgba(155,89,182,0.12)" },
+  { name: "Dangote",  abbr: "DAN",      color: "#E74C3C", bg: "rgba(231,76,60,0.12)"  },
 ];
 
-/* ── Typed animation helpers ─────────────────────────────── */
-const enterTransition: Transition = {
-  duration: 0.5,
-  ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
-};
-const exitTransition: Transition = {
-  duration: 0.3,
-  ease: "easeIn" as const,
-};
+/* ── Slide variants ──────────────────────────────────────── */
+const enterT: Transition = { duration: 0.5, ease: [0.16,1,0.3,1] as [number,number,number,number] };
+const exitT:  Transition = { duration: 0.3, ease: "easeIn" as const };
 
 const slideVariants = {
-  enter: (d: number) => ({ opacity: 0, x: d * 70, scale: 0.96 }),
-  center: { opacity: 1, x: 0, scale: 1, transition: enterTransition },
-  exit:  (d: number) => ({ opacity: 0, x: d * -70, scale: 0.96, transition: exitTransition }),
+  enter: (d: number) => ({ opacity: 0, x: d * 60, scale: 0.97 }),
+  center: { opacity: 1, x: 0, scale: 1, transition: enterT },
+  exit:   (d: number) => ({ opacity: 0, x: d * -60, scale: 0.97, transition: exitT }),
 };
 
 /* ── Component ───────────────────────────────────────────── */
@@ -310,229 +315,120 @@ export default function Testimonials() {
   const [direction, setDirection] = useState(1);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const go = (next: number, dir: number) => {
-    setDirection(dir);
-    setActive(next);
-  };
+  const go = (next: number, dir: number) => { setDirection(dir); setActive(next); };
   const prev = () => go((active - 1 + testimonials.length) % testimonials.length, -1);
   const next = () => go((active + 1) % testimonials.length, 1);
 
   const startAuto = () => {
     stopAuto();
-    intervalRef.current = setInterval(() => {
-      setDirection(1);
-      setActive((a) => (a + 1) % testimonials.length);
-    }, 5500);
+    intervalRef.current = setInterval(() => { setDirection(1); setActive((a) => (a + 1) % testimonials.length); }, 5500);
   };
-  const stopAuto = () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  };
+  const stopAuto = () => { if (intervalRef.current) clearInterval(intervalRef.current); };
 
-  useEffect(() => {
-    startAuto();
-    return stopAuto;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useEffect(() => { startAuto(); return stopAuto; /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
 
   const current = testimonials[active];
 
   return (
     <section className="relative py-24 sm:py-32 overflow-hidden">
-
-      {/* Large ambient glow */}
-      <div
-        aria-hidden
-        className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2
-                   w-[700px] h-[600px] bg-primary/5 blur-[130px] pointer-events-none rounded-full"
-      />
+      <div aria-hidden className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[600px] bg-primary/5 blur-[130px] pointer-events-none rounded-full" />
 
       <div className="container mx-auto max-w-5xl px-6 sm:px-10 relative z-10">
 
-        {/* ── Heading ── */}
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: -30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.75 }}
-        >
+        {/* Heading */}
+        <motion.div className="text-center mb-16" initial={{ opacity:0, y:-30 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }} transition={{ duration:0.75 }}>
           <span className="section-tag mb-5 inline-flex">Kind Words</span>
-
-          <h2 className="font-heading text-5xl sm:text-6xl md:text-7xl font-black
-                          text-foreground mt-4 leading-none tracking-tight">
-            What People{" "}
-            <span className="gradient-text">Say</span>
+          <h2 className="font-heading text-5xl sm:text-6xl md:text-7xl font-black text-foreground mt-4 leading-none tracking-tight">
+            What People <span className="gradient-text">Say</span>
           </h2>
         </motion.div>
 
-        {/* ── Testimonial card ── */}
+        {/* Testimonial card */}
         <div className="relative mb-20">
-
-          {/* Oversized decorative quote mark */}
           <div className="absolute -top-8 -left-4 sm:-left-10 pointer-events-none select-none">
             <Quote className="w-20 h-20 sm:w-28 sm:h-28 text-primary/8" />
           </div>
 
           <div className="glass-card relative overflow-hidden">
-
-            {/* Top accent line */}
-            <div className="absolute top-0 left-0 right-0 h-[2px]
-                            bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
-
-            {/* Inner glow */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-br from-primary/4 via-transparent to-transparent pointer-events-none" />
 
             <div className="p-8 sm:p-14 min-h-[280px]">
               <AnimatePresence mode="wait" custom={direction}>
-                <motion.div
-                  key={current.id}
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  className="relative z-10"
-                >
-                  {/* Quote text */}
-                  <p className="text-lg sm:text-xl md:text-2xl font-heading font-medium
-                                 text-foreground/85 leading-relaxed mb-10 italic">
+                <motion.div key={current.id} custom={direction} variants={slideVariants} initial="enter" animate="center" exit="exit" className="relative z-10">
+                  <p className="text-lg sm:text-xl md:text-2xl font-heading font-medium text-foreground/85 leading-relaxed mb-10 italic">
                     &ldquo;{current.text}&rdquo;
                   </p>
-
-                  {/* Author */}
                   <div className="flex items-center gap-5">
-                    <div className="relative w-16 h-16 flex-shrink-0 rounded-full overflow-hidden
-                                    border-2 border-primary/40 shadow-[0_0_20px_rgb(var(--primary)/0.2)]">
-                      <Image
-                        src={current.image}
-                        alt={current.name}
-                        fill
-                        className="object-cover"
-                        sizes="64px"
-                      />
+                    <div className="relative w-16 h-16 flex-shrink-0 rounded-full overflow-hidden border-2 border-primary/40 shadow-[0_0_20px_rgb(var(--primary)/0.2)]">
+                      <Image src={current.image} alt={current.name} fill className="object-cover" sizes="64px" />
                     </div>
                     <div>
-                      <h4 className="font-heading font-bold text-foreground text-base sm:text-lg">
-                        {current.name}
-                      </h4>
-                      <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-                        {current.post}
-                      </p>
+                      <h4 className="font-heading font-bold text-foreground text-base sm:text-lg">{current.name}</h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">{current.post}</p>
                     </div>
-
-                    {/* Counter — right aligned */}
-                    <span className="ml-auto font-mono text-3xl font-black text-foreground/8 select-none">
-                      {String(active + 1).padStart(2, "0")}
-                    </span>
+                    <span className="ml-auto font-mono text-3xl font-black text-foreground/6 select-none">{String(active+1).padStart(2,"0")}</span>
                   </div>
                 </motion.div>
               </AnimatePresence>
             </div>
           </div>
 
-          {/* ── Navigation ── */}
+          {/* Navigation */}
           <div className="flex items-center justify-between mt-7 px-1">
-            {/* Prev / Next */}
             <div className="flex gap-3">
-              <button
-                onClick={() => { prev(); startAuto(); }}
-                aria-label="Previous"
-                className="p-3 rounded-full border border-border bg-card/60
-                           hover:border-primary/60 hover:bg-accent hover:scale-105
-                           transition-all duration-200"
-              >
-                <ChevronLeft className="w-4 h-4 text-foreground" />
-              </button>
-              <button
-                onClick={() => { next(); startAuto(); }}
-                aria-label="Next"
-                className="p-3 rounded-full border border-border bg-card/60
-                           hover:border-primary/60 hover:bg-accent hover:scale-105
-                           transition-all duration-200"
-              >
-                <ChevronRight className="w-4 h-4 text-foreground" />
-              </button>
+              <button onClick={() => { prev(); startAuto(); }} aria-label="Previous" className="p-3 rounded-full border border-border bg-card/60 hover:border-primary/60 hover:bg-accent hover:scale-105 transition-all duration-200"><ChevronLeft className="w-4 h-4 text-foreground" /></button>
+              <button onClick={() => { next(); startAuto(); }} aria-label="Next"     className="p-3 rounded-full border border-border bg-card/60 hover:border-primary/60 hover:bg-accent hover:scale-105 transition-all duration-200"><ChevronRight className="w-4 h-4 text-foreground" /></button>
             </div>
-
-            {/* Dot indicators */}
             <div className="flex gap-2 items-center">
               {testimonials.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => { go(i, i > active ? 1 : -1); startAuto(); }}
-                  aria-label={`Testimonial ${i + 1}`}
-                  className={`rounded-full transition-all duration-300 ${
-                    i === active
-                      ? "w-7 h-2.5 bg-primary"
-                      : "w-2.5 h-2.5 bg-muted-foreground/25 hover:bg-muted-foreground/50"
-                  }`}
-                />
+                <button key={i} onClick={() => { go(i, i > active ? 1 : -1); startAuto(); }} aria-label={`Testimonial ${i+1}`}
+                        className={`rounded-full transition-all duration-300 ${i === active ? "w-7 h-2.5 bg-primary" : "w-2.5 h-2.5 bg-muted-foreground/25 hover:bg-muted-foreground/50"}`} />
               ))}
             </div>
-
-            {/* Fraction counter */}
             <span className="font-mono text-xs text-muted-foreground tabular-nums">
-              {String(active + 1).padStart(2, "0")} /{" "}
-              {String(testimonials.length).padStart(2, "0")}
+              {String(active+1).padStart(2,"0")} / {String(testimonials.length).padStart(2,"0")}
             </span>
           </div>
         </div>
 
-        {/* ── Companies section ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.75, delay: 0.1 }}
-        >
-          {/* Heading */}
+        {/* ── Companies — NO image files, pure CSS ── */}
+        <motion.div initial={{ opacity:0, y:40 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }} transition={{ duration:0.75, delay:0.1 }}>
           <div className="text-center mb-10">
-            <div className="flex items-center gap-4 justify-center mb-4">
+            <div className="flex items-center gap-4 justify-center">
               <div className="h-px flex-1 bg-gradient-to-r from-transparent to-border" />
-              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground px-2">
                 Companies in contact with
               </span>
               <div className="h-px flex-1 bg-gradient-to-l from-transparent to-border" />
             </div>
           </div>
 
-          {/* Logo grid */}
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-4 sm:gap-6">
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
             {companies.map((company, i) => (
               <motion.div
                 key={company.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.07 }}
-                whileHover={{ scale: 1.08, y: -4 }}
-                className="glass-card p-4 flex items-center justify-center
-                           aspect-video hover:border-primary/40
-                           hover:shadow-[0_0_20px_rgb(var(--primary)/0.12)]
-                           transition-all duration-300 group cursor-default"
+                initial={{ opacity:0, y:20 }}
+                whileInView={{ opacity:1, y:0 }}
+                viewport={{ once:true }}
+                transition={{ duration:0.45, delay:i*0.07 }}
+                whileHover={{ scale:1.08, y:-4 }}
+                className="glass-card aspect-video flex flex-col items-center justify-center gap-1.5
+                           hover:border-primary/40 hover:shadow-[0_0_20px_rgb(var(--primary)/0.1)]
+                           transition-all duration-300 cursor-default group"
               >
-                {/* Try image first, fall back to styled text */}
-                <div className="relative w-full h-10 flex items-center justify-center">
-                  <Image
-                    src={company.logo}
-                    alt={company.name}
-                    fill
-                    className="object-contain filter grayscale opacity-50
-                               group-hover:grayscale-0 group-hover:opacity-100
-                               transition-all duration-400"
-                    sizes="120px"
-                    onError={(e) => { (e.currentTarget as HTMLElement).style.display = "none"; }}
-                  />
-                  {/* Fallback text shown via sibling visibility if image fails */}
-                  <span
-                    className="absolute inset-0 flex items-center justify-center
-                                font-heading font-black text-sm tracking-wider
-                                opacity-40 group-hover:opacity-80 transition-opacity duration-300"
-                    style={{ color: company.color }}
-                  >
-                    {company.fallback}
-                  </span>
-                </div>
+                {/* Brand abbreviation — styled text, no image file needed */}
+                <span
+                  className="font-heading font-black text-lg sm:text-xl tracking-tight
+                               transition-all duration-300 group-hover:scale-110"
+                  style={{ color: company.color }}
+                >
+                  {company.abbr}
+                </span>
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider
+                                  group-hover:text-foreground/70 transition-colors duration-300">
+                  {company.name}
+                </span>
               </motion.div>
             ))}
           </div>

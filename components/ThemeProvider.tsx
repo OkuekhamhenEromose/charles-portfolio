@@ -12,12 +12,12 @@ import {
 
 type Theme = "light" | "dark";
 
-interface ThemeContextValue {
+interface ThemeCtx {
   theme: Theme;
   toggleTheme: () => void;
 }
 
-const ThemeContext = createContext<ThemeContextValue>({
+const ThemeContext = createContext<ThemeCtx>({
   theme: "dark",
   toggleTheme: () => {},
 });
@@ -36,7 +36,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window === "undefined") return "dark";
-    return (localStorage.getItem("theme") as Theme) || "dark";
+
+    const stored = localStorage.getItem("theme");
+    if (stored === "light" || stored === "dark") return stored;
+
+    return document.documentElement.classList.contains("light")
+      ? "light"
+      : "dark";
   });
 
   useIsomorphicLayoutEffect(() => {
@@ -51,7 +57,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   if (!isClient) {
     return (
-      <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      <ThemeContext.Provider value={{ theme: "dark", toggleTheme }}>
         <div style={{ visibility: "hidden" }}>{children}</div>
       </ThemeContext.Provider>
     );
