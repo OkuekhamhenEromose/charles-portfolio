@@ -57,12 +57,12 @@ export default function ServiceSummary() {
       className="relative flex flex-col items-start justify-center
                  overflow-hidden py-3 md:py-5"
     >
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent" />
-      <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent" />
+      {/* <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent" />
+      <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent" /> */}
 
       {/* Row 1 — LEFT */}
       <div data-row="left"
-           className={`${base} ${sizes} flex whitespace-nowrap pl-4 leading-none`}>
+           className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-none`}>
         <span className="text-primary/15">Architecture</span>
         <span className="text-primary/8 mx-4">Systems</span>
         <span className="text-primary/15">Architecture</span>
@@ -71,7 +71,7 @@ export default function ServiceSummary() {
 
       {/* Row 2 — RIGHT */}
       <div data-row="right"
-           className={`${base} ${sizes} flex whitespace-nowrap pl-4 leading-none`}>
+           className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-none`}>
         <span className="text-primary">Development</span>
         <span className="text-primary/20 mx-4">Deployment</span>
         <span className="text-primary">Development</span>
@@ -80,7 +80,7 @@ export default function ServiceSummary() {
 
       {/* Row 3 — LEFT */}
       <div data-row="left"
-           className={`${base} ${sizes} flex whitespace-nowrap pl-4 leading-none`}>
+           className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-none`}>
         <span className="text-primary/20">APIs</span>
         <span className="text-primary mx-4">Frontends</span>
         <span className="text-primary/20 mx-4">Scalability</span>
@@ -90,7 +90,7 @@ export default function ServiceSummary() {
 
       {/* Row 4 — RIGHT */}
       <div data-row="right"
-           className={`${base} ${sizes} flex whitespace-nowrap pl-4 leading-none`}>
+           className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-none`}>
         <span className="text-primary">Databases</span>
         <span className="text-primary/20 mx-4">Cloud</span>
         <span className="text-primary">Databases</span>

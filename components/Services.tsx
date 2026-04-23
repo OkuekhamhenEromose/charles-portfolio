@@ -254,7 +254,7 @@ export default function Services() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section className="relative py-28 overflow-hidden">
+    <section className="relative py-12 overflow-hidden">
 
       {/* Background glow */}
       <div
@@ -274,13 +274,13 @@ export default function Services() {
           viewport={{ once: true }}
           transition={{ duration: 0.75, ease: "easeOut" }}
         >
-          <span className="section-tag mb-5 inline-flex">What I Offer</span>
+          <span className="section-tag mb-2 inline-flex">What I Offer</span>
 
-          <h2 className="font-heading text-5xl sm:text-6xl md:text-7xl font-black text-foreground mt-4 leading-none tracking-tight">
+          <h2 className="font-heading text-5xl sm:text-6xl md:text-7xl font-black text-foreground mt-3 leading-none tracking-tight">
             My <span className="gradient-text">Services</span>
           </h2>
 
-          <p className="text-muted-foreground mt-5 max-w-lg mx-auto text-base leading-relaxed">
+          <p className="text-muted-foreground mt-4 max-w-lg mx-auto text-base leading-relaxed">
             From concept to cloud — full-spectrum engineering and design tailored to your goals.
           </p>
         </motion.div>

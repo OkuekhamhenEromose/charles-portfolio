@@ -1,299 +1,3 @@
-// "use client";
-
-// /**
-//  * FIXES vs broken version:
-//  *  1. REMOVED `import { useGSAP } from "@gsap/react"` — not installed.
-//  *     All GSAP done via dynamic import() inside useEffect.
-//  *  2. <img> with onError replaces next/image — next/image has no onError
-//  *     and retries 404s in an infinite loop flooding the server.
-//  *  3. Category switch: kills ScrollTrigger + resets x:0 BEFORE re-render
-//  *     so new cards paint at their natural position, not off-screen.
-//  */
-
-// import { useRef, useState, useEffect } from "react";
-// import { motion, AnimatePresence } from "framer-motion";
-// import { ExternalLink } from "lucide-react";
-// import { FaGithub } from "react-icons/fa";
-
-// const portfolioProjects = [
-//   { id:1,  category:"Full-Stack", title:"Shopa — E-Commerce",   description:"Scalable multi-vendor marketplace — Next.js + Django + Paystack + Redis.", image:"/img/portfolio/shopa.png",         demoLink:"https://retsyapp.vercel.app/",                 githubLink:"https://github.com/OkuekhamhenEromose/retsyapp" },
-//   { id:2,  category:"Full-Stack", title:"Trellify — Kanban",    description:"Real-time Kanban — MERN + Socket.io + JWT + OTP auth.",                   image:"/img/portfolio/trellify.png",       demoLink:"https://trello-next-blush.vercel.app/",        githubLink:"https://github.com/OkuekhamhenEromose/trello-next" },
-//   { id:3,  category:"Frontend",   title:"EthaHospital App",     description:"Hospital frontend — TypeScript + Tailwind + Framer Motion.",               image:"/img/portfolio/ethahospital.png",   demoLink:"https://ettahospitalclone.vercel.app/",        githubLink:"https://github.com/OkuekhamhenEromose/hospitaltypescriptreact" },
-//   { id:4,  category:"Frontend",   title:"CH-Travels",           description:"Travel agency — React + Framer Motion smooth animations.",                 image:"/img/portfolio/chtravels.png",      demoLink:"https://shiny-scone-6fc98c.netlify.app",       githubLink:"https://github.com/OkuekhamhenEromose/chardevtravel" },
-//   { id:5,  category:"Full-Stack", title:"CHBlog Platform",      description:"Full-stack blog — role-based auth + protected routes + CRUD.",             image:"/img/portfolio/chblog.png",         demoLink:"https://multiblogapp.netlify.app/blog",        githubLink:"https://github.com/ehihameneromosele/fullblogc" },
-//   { id:6,  category:"Backend",    title:"Listings API",         description:"Property listings REST API — Django + DRF.",                               image:"/img/portfolio/insomnia1.png",      demoLink:"https://housing-properties.onrender.com",     githubLink:"https://github.com/OkuekhamhenEromose/housing_properties" },
-//   { id:7,  category:"Frontend",   title:"Real Estate Site",     description:"Responsive real estate frontend — sale and rental listings.",              image:"/img/portfolio/realestate-img.png", demoLink:"https://dancing-youtiao-914380.netlify.app",  githubLink:"https://github.com/OkuekhamhenEromose/RealEstateModern" },
-//   { id:8,  category:"Backend",    title:"Resume Builder",       description:"DRF-powered resume builder — structured professional output.",             image:"/img/portfolio/resumebuilder.png",  demoLink:"https://renewschool-1.onrender.com",          githubLink:"https://github.com/OkuekhamhenEromose/myresume" },
-//   { id:9,  category:"Full-Stack", title:"Hospital Management",  description:"Production hospital system — admin dashboard + Google OAuth.",            image:"/img/portfolio/ethahospital.png",   demoLink:"https://dhospitalback.onrender.com/api/",     githubLink:"https://github.com/OkuekhamhenEromose/dhospitalback" },
-//   { id:10, category:"Frontend",   title:"Portfolio v1",         description:"Original personal portfolio — HTML + CSS + vanilla JS.",                  image:"/img/portfolio/portfolio.png",      demoLink:"https://timely-axolotl-0f4be3.netlify.app/", githubLink:"https://github.com/OkuekhamhenEromose/portfolio-original" },
-//   { id:11, category:"Frontend",   title:"Advanced Portfolio",   description:"Next.js portfolio — Framer Motion + full SEO optimisation.",              image:"/img/portfolio/nextportfolio.png",  demoLink:"https://charleseromose.netlify.app",          githubLink:"https://github.com/OkuekhamhenEromose/nextportfoliooriginal" },
-// ];
-
-// const categories = [
-//   { id:"all",        label:"All",        count:11 },
-//   { id:"Full-Stack", label:"Full-Stack", count:4  },
-//   { id:"Frontend",   label:"Frontend",   count:5  },
-//   { id:"Backend",    label:"Backend",    count:2  },
-// ];
-
-// const badgeColors: Record<string, string> = {
-//   "Full-Stack": "from-violet-500 to-indigo-600",
-//   Frontend:     "from-cyan-500 to-blue-600",
-//   Backend:      "from-emerald-500 to-teal-600",
-// };
-
-// const placeholderGradients: Record<string, string> = {
-//   "Full-Stack": "from-violet-900/70 to-indigo-900/70",
-//   Frontend:     "from-cyan-900/70 to-blue-900/70",
-//   Backend:      "from-emerald-900/70 to-teal-900/70",
-// };
-
-// export default function Portfolio() {
-//   const [activeCategory, setActiveCategory] = useState("all");
-//   const [switching, setSwitching]           = useState(false);
-//   const workRef  = useRef<HTMLDivElement>(null);
-//   const stripRef = useRef<HTMLDivElement>(null);
-
-//   const filtered =
-//     activeCategory === "all"
-//       ? portfolioProjects
-//       : portfolioProjects.filter((p) => p.category === activeCategory);
-
-//   /* ─── Kill GSAP + reset x:0 THEN switch category ─────── */
-//   const switchCategory = async (id: string) => {
-//     if (id === activeCategory || switching) return;
-//     setSwitching(true);
-
-//     const { default: gsap } = await import("gsap");
-//     const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-//     gsap.registerPlugin(ScrollTrigger);
-
-//     ScrollTrigger.getAll()
-//       .filter((st) => String(st.vars?.id ?? "").startsWith("ptf-"))
-//       .forEach((st) => st.kill());
-
-//     if (stripRef.current) {
-//       gsap.set(stripRef.current, { clearProps: "transform,x" });
-//       stripRef.current.style.transform = "";
-//     }
-
-//     setActiveCategory(id);
-//     setSwitching(false);
-//   };
-
-//   /* ─── Build GSAP horizontal scroll — NO @gsap/react ──── */
-//   useEffect(() => {
-//     if (typeof window === "undefined") return;
-
-//     let tid: ReturnType<typeof setTimeout>;
-//     let killFn: (() => void) | undefined;
-
-//     (async () => {
-//       const { default: gsap } = await import("gsap");
-//       const { ScrollTrigger } = await import("gsap/ScrollTrigger");
-//       gsap.registerPlugin(ScrollTrigger);
-
-//       ScrollTrigger.getAll()
-//         .filter((st) => String(st.vars?.id ?? "").startsWith("ptf-"))
-//         .forEach((st) => st.kill());
-
-//       if (stripRef.current) {
-//         gsap.set(stripRef.current, { clearProps: "transform,x" });
-//       }
-
-//       await new Promise<void>((r) => { tid = setTimeout(r, 200); });
-
-//       const work  = workRef.current;
-//       const strip = stripRef.current;
-//       if (!work || !strip) return;
-
-//       const projectsWidth  = strip.scrollWidth;
-//       const scrollDistance = projectsWidth - window.innerWidth;
-//       if (scrollDistance <= 0) return;
-
-//       const tween = gsap.to(strip, {
-//         x: -scrollDistance,
-//         ease: "linear",
-//         scrollTrigger: {
-//           id:                  "ptf-slider",
-//           trigger:              work,
-//           start:               "center center",
-//           end:                 () => `+=${projectsWidth}`,
-//           pin:                  true,
-//           scrub:                1,
-//           anticipatePin:        1,
-//           invalidateOnRefresh:  true,
-//         },
-//       });
-
-//       ScrollTrigger.refresh();
-
-//       killFn = () => {
-//         tween.scrollTrigger?.kill();
-//         tween.kill();
-//         if (strip) gsap.set(strip, { clearProps: "transform,x" });
-//       };
-//     })();
-
-//     return () => { clearTimeout(tid); killFn?.(); };
-//   }, [activeCategory, filtered.length]);
-
-//   return (
-//     <div ref={workRef} id="portfolio"
-//          className="min-h-screen py-24 lg:py-36 overflow-hidden bg-transparent">
-
-//       {/* Header */}
-//       <div className="px-6 sm:px-10 lg:px-14 pb-10 lg:pb-14
-//                       flex flex-col md:flex-row gap-6 md:gap-0
-//                       justify-between items-start md:items-end">
-//         <div className="max-w-md">
-//           <span className="section-tag mb-4 inline-flex">My Work</span>
-//           <h2 className="font-heading font-black tracking-tight leading-[0.9]
-//                           text-4xl sm:text-5xl lg:text-6xl text-foreground mt-3">
-//             Selected <span className="gradient-text">Projects</span>
-//           </h2>
-//           <p className="mt-3 text-muted-foreground text-base leading-relaxed max-w-sm">
-//             A showcase of selected work — designed to inspire, engage, and deliver real results.
-//           </p>
-//         </div>
-//         <div className="flex flex-col items-start md:items-end gap-3">
-//           <div className="flex flex-wrap gap-2">
-//             {categories.map((cat) => (
-//               <button key={cat.id} onClick={() => switchCategory(cat.id)}
-//                       disabled={switching}
-//                       className={`px-4 py-1.5 text-xs font-bold rounded-full border
-//                                   transition-all duration-300 disabled:opacity-50 disabled:cursor-wait
-//                                   ${activeCategory === cat.id
-//                                     ? "bg-primary text-primary-foreground border-primary shadow-[0_0_14px_rgb(var(--primary)/0.45)]"
-//                                     : "bg-card/50 text-muted-foreground border-border hover:border-primary/50 hover:text-primary"}`}>
-//                 {cat.label}<span className="ml-1 opacity-40">({cat.count})</span>
-//               </button>
-//             ))}
-//           </div>
-//           <p className="font-mono text-[11px] text-muted-foreground">
-//             {filtered.length} project{filtered.length !== 1 ? "s" : ""}
-//           </p>
-//         </div>
-//       </div>
-
-//       {/* Strip wrapper — ml offset NOT inside the translated element */}
-//       <div className="overflow-hidden">
-//         <div className="ml-0 md:ml-[25%] lg:ml-[38%]">
-//           <div ref={stripRef}
-//                className="flex gap-5 lg:gap-7 mt-4 pr-16 will-change-transform"
-//                style={{ width: "max-content" }}>
-//             <AnimatePresence mode="popLayout">
-//               {filtered.map((project, index) => (
-//                 <ProjectCard key={project.id} project={project}
-//                              index={index} total={filtered.length} />
-//               ))}
-//             </AnimatePresence>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// /* ─── Card ────────────────────────────────────────────────── */
-// interface Project {
-//   id: number; title: string; description: string;
-//   category: string; image: string; demoLink: string; githubLink: string;
-// }
-
-// function ProjectCard({ project, index, total }: { project: Project; index: number; total: number }) {
-//   const [imgFailed, setImgFailed] = useState(false);
-
-//   return (
-//     <motion.div
-//       layout
-//       initial={{ opacity: 0, scale: 0.92, y: 20 }}
-//       animate={{ opacity: 1, scale: 1,    y: 0  }}
-//       exit={{    opacity: 0, scale: 0.88, y:-10  }}
-//       transition={{ duration: 0.45, ease:[0.16,1,0.3,1], delay: Math.min(index * 0.06, 0.28) }}
-//       className="group relative flex-none rounded-2xl overflow-hidden
-//                  w-[80vw] sm:w-[55vw] md:w-[400px] lg:w-[460px] xl:w-[500px]
-//                  bg-card/80 backdrop-blur-sm border border-border shadow-xl
-//                  transition-shadow duration-300
-//                  hover:shadow-[0_20px_50px_rgb(var(--primary)/0.15)]"
-//     >
-//       <div className="relative h-56 sm:h-64 lg:h-72 overflow-hidden">
-//         {imgFailed ? (
-//           /* ── Gradient placeholder when image file is missing ── */
-//           <div className={`w-full h-full bg-gradient-to-br
-//                            ${placeholderGradients[project.category] ?? "from-card to-muted"}
-//                            flex items-center justify-center`}>
-//             <span className="font-heading font-black text-white/15 text-7xl select-none">
-//               {String(index + 1).padStart(2, "0")}
-//             </span>
-//           </div>
-//         ) : (
-//           /* ── Plain <img> — has onError, unlike next/image ── */
-//           // eslint-disable-next-line @next/next/no-img-element
-//           <img src={project.image} alt={project.title}
-//                onError={() => setImgFailed(true)}
-//                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-//         )}
-
-//         <div className="absolute inset-0 bg-gradient-to-t from-card/60 via-transparent to-transparent" />
-
-//         <span className={`absolute top-4 left-4 px-3 py-1 text-[10px] font-black
-//                           uppercase tracking-widest rounded-full text-white shadow-lg
-//                           bg-gradient-to-r ${badgeColors[project.category] ?? "from-primary to-primary/60"}`}>
-//           {project.category}
-//         </span>
-//         <span className="absolute top-4 right-4 font-mono text-xs font-bold
-//                           text-white/70 bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full">
-//           {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
-//         </span>
-
-//         <div className="absolute inset-0 bg-primary/88 backdrop-blur-sm
-//                         flex items-center justify-center gap-8
-//                         opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-//           <a href={project.demoLink} target="_blank" rel="noreferrer" aria-label="Live demo"
-//              onClick={(e) => e.stopPropagation()}
-//              className="flex flex-col items-center gap-2 text-white hover:scale-110 transition-transform">
-//             <span className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/40 transition-colors">
-//               <ExternalLink size={20} />
-//             </span>
-//             <span className="text-[10px] font-bold uppercase tracking-wider">Live</span>
-//           </a>
-//           <a href={project.githubLink} target="_blank" rel="noreferrer" aria-label="GitHub"
-//              onClick={(e) => e.stopPropagation()}
-//              className="flex flex-col items-center gap-2 text-white hover:scale-110 transition-transform">
-//             <span className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/40 transition-colors">
-//               <FaGithub size={20} />
-//             </span>
-//             <span className="text-[10px] font-bold uppercase tracking-wider">Code</span>
-//           </a>
-//         </div>
-//       </div>
-
-//       <div className="p-5 flex items-start justify-between gap-3">
-//         <div className="flex-1 min-w-0">
-//           <h3 className="font-heading text-base lg:text-lg font-bold text-foreground
-//                           group-hover:text-primary transition-colors duration-300 line-clamp-1">
-//             {project.title}
-//           </h3>
-//           <p className="text-xs text-muted-foreground leading-relaxed mt-1 line-clamp-2">
-//             {project.description}
-//           </p>
-//         </div>
-//         <span className="flex-shrink-0 w-8 h-8 rounded-full border border-primary/30
-//                           flex items-center justify-center text-primary text-sm
-//                           group-hover:bg-primary group-hover:text-primary-foreground
-//                           group-hover:border-primary transition-all duration-300">→</span>
-//       </div>
-
-//       <div className="h-[2px] bg-border/50">
-//         <div className="h-full bg-gradient-to-r from-primary to-primary/40"
-//              style={{ width:`${((index+1)/total)*100}%` }} />
-//       </div>
-//     </motion.div>
-//   );
-// }
-
-
 "use client";
 
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
@@ -302,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ExternalLink } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
+import Image from "next/image";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -346,8 +51,7 @@ const portfolioProjects: PortfolioProject[] = [
     category: "Frontend",
     image: "/img/portfolio/ethahospital.png",
     demoLink: "https://ettahospitalclone.vercel.app/",
-    githubLink:
-      "https://github.com/OkuekhamhenEromose/hospitaltypescriptreact",
+    githubLink: "https://github.com/OkuekhamhenEromose/hospitaltypescriptreact",
   },
   {
     id: 4,
@@ -377,8 +81,7 @@ const portfolioProjects: PortfolioProject[] = [
     category: "Backend",
     image: "/img/portfolio/insomnia1.png",
     demoLink: "https://housing-properties.onrender.com",
-    githubLink:
-      "https://github.com/OkuekhamhenEromose/housing_properties",
+    githubLink: "https://github.com/OkuekhamhenEromose/housing_properties",
   },
   {
     id: 7,
@@ -388,8 +91,7 @@ const portfolioProjects: PortfolioProject[] = [
     category: "Frontend",
     image: "/img/portfolio/realestate-img.png",
     demoLink: "https://dancing-youtiao-914380.netlify.app",
-    githubLink:
-      "https://github.com/OkuekhamhenEromose/RealEstateModern",
+    githubLink: "https://github.com/OkuekhamhenEromose/RealEstateModern",
   },
   {
     id: 8,
@@ -404,7 +106,8 @@ const portfolioProjects: PortfolioProject[] = [
   {
     id: 9,
     title: "EthaHospital Management",
-    description: "Production-ready hospital management system with Google OAuth.",
+    description:
+      "Production-ready hospital management system with Google OAuth.",
     category: "Full-Stack",
     image: "/img/portfolio/ethahospital.png",
     demoLink: "https://dhospitalback.onrender.com/api/",
@@ -418,8 +121,7 @@ const portfolioProjects: PortfolioProject[] = [
     category: "Frontend",
     image: "/img/portfolio/portfolio.png",
     demoLink: "https://timely-axolotl-0f4be3.netlify.app/",
-    githubLink:
-      "https://github.com/OkuekhamhenEromose/portfolio-original",
+    githubLink: "https://github.com/OkuekhamhenEromose/portfolio-original",
   },
   {
     id: 11,
@@ -429,15 +131,14 @@ const portfolioProjects: PortfolioProject[] = [
     category: "Frontend",
     image: "/img/portfolio/nextportfolio.png",
     demoLink: "https://charleseromose.netlify.app",
-    githubLink:
-      "https://github.com/OkuekhamhenEromose/nextportfoliooriginal",
+    githubLink: "https://github.com/OkuekhamhenEromose/nextportfoliooriginal",
   },
 ];
 
 const Portfolio = () => {
-  const [activeCategory, setActiveCategory] = useState<
-    "all" | ProjectCategory
-  >("all");
+  const [activeCategory, setActiveCategory] = useState<"all" | ProjectCategory>(
+    "all",
+  );
   const [isMobile, setIsMobile] = useState(false);
 
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -469,7 +170,8 @@ const Portfolio = () => {
       {
         id: "Frontend" as const,
         name: "Frontend",
-        count: portfolioProjects.filter((p) => p.category === "Frontend").length,
+        count: portfolioProjects.filter((p) => p.category === "Frontend")
+          .length,
       },
       {
         id: "Backend" as const,
@@ -477,13 +179,15 @@ const Portfolio = () => {
         count: portfolioProjects.filter((p) => p.category === "Backend").length,
       },
     ],
-    []
+    [],
   );
 
   const filteredProjects = useMemo(() => {
     return activeCategory === "all"
       ? portfolioProjects
-      : portfolioProjects.filter((project) => project.category === activeCategory);
+      : portfolioProjects.filter(
+          (project) => project.category === activeCategory,
+        );
   }, [activeCategory]);
 
   const killPortfolioScrollTrigger = useCallback(() => {
@@ -554,7 +258,12 @@ const Portfolio = () => {
       window.clearTimeout(timeout);
       killPortfolioScrollTrigger();
     };
-  }, [activeCategory, filteredProjects.length, buildScrollAnimation, killPortfolioScrollTrigger]);
+  }, [
+    activeCategory,
+    filteredProjects.length,
+    buildScrollAnimation,
+    killPortfolioScrollTrigger,
+  ]);
 
   useGSAP(
     () => {
@@ -581,7 +290,7 @@ const Portfolio = () => {
         },
       });
     },
-    { scope: sectionRef }
+    { scope: sectionRef },
   );
 
   return (
@@ -591,7 +300,7 @@ const Portfolio = () => {
       className="portfolio-section relative min-h-screen overflow-hidden"
     >
       <div className="flex min-h-screen h-full flex-col lg:flex-row">
-        <div className="relative z-10 flex w-full flex-col justify-center px-6 py-8 sm:px-10 lg:w-[35%] lg:px-14 lg:py-0">
+        <div className="relative z-10 flex w-full flex-col justify-center px-6 py-4 sm:px-10 lg:w-[35%] lg:px-14 lg:py-0">
           <div className="overflow-hidden">
             <h2 className="portfolio-title-line text-4xl font-black leading-[0.95] tracking-tight text-primary sm:text-5xl md:text-6xl lg:text-7xl">
               My
@@ -612,8 +321,8 @@ const Portfolio = () => {
 
           <p className="portfolio-desc mb-8 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
             A curated collection of projects spanning full-stack apps,
-            frontends, and backend APIs — each reflecting clean code,
-            scalable architecture, and thoughtful design.
+            frontends, and backend APIs — each reflecting clean code, scalable
+            architecture, and thoughtful design.
           </p>
 
           <div className="flex flex-wrap gap-2">
@@ -672,8 +381,14 @@ const Portfolio = () => {
                   }}
                 >
                   <div className="relative h-48 overflow-hidden sm:h-56">
-                          <img src={project.image} alt={project.title}
-               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      sizes="(max-width: 640px) 280px, (max-width: 1024px) 340px, 340px"
+                      className="object-cover group-hover:scale-110 transition-transform duration-700"
+                      priority={index < 2} // preload first visible cards for LCP
+                    />
                     <span className="absolute left-3 top-3 rounded-lg bg-primary/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground backdrop-blur-sm">
                       {project.category}
                     </span>

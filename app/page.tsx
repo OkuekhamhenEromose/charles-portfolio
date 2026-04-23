@@ -10,6 +10,7 @@ import About from "@/components/About";
 import ServiceSummary from "@/components/ServiceSummary";
 import Services from "@/components/Services";
 import Portfolio from "@/components/Portfolio";
+import Testimonials from "@/components/Testimonials";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 
@@ -68,6 +69,7 @@ export default function HomePage() {
             <ServiceSummary />
             <section id="services"><Services /></section>
             <Portfolio />
+            <Testimonials />
             <section id="contact"><Contact /></section>
           </main>
 

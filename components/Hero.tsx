@@ -154,7 +154,7 @@ export default function Hero() {
           Sits at the very top of the hero below the header.
       ══════════════════════════════════════════════════════ */}
       <div className="mt-20 sm:mt-24 overflow-hidden border-y border-border/20
-                      bg-card/10 backdrop-blur-sm">
+                      bg-card/10">
         {/* sliderRef — GSAP parallaxes this (like dennis's slider ref) */}
         <div ref={sliderRef} className="flex items-center">
           {/*
@@ -172,7 +172,7 @@ export default function Hero() {
           <p ref={secondTextRef}
              className="font-heading font-black uppercase tracking-tighter
                         text-3xl sm:text-4xl md:text-5xl whitespace-nowrap
-                        text-foreground/80 py-3 pr-8 inline-block will-change-transform">
+                        text-foreground/80 inline-block will-change-transform">
             Freelance Developer&nbsp;—&nbsp;
           </p>
         </div>
@@ -183,7 +183,7 @@ export default function Hero() {
       ══════════════════════════════════════════════════════ */}
       <div className="flex-1 container mx-auto relative z-10
                       flex flex-col lg:flex-row items-center justify-between
-                      gap-10 px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+                      gap-10 px-4 sm:px-6 lg:px-8 py-2 lg:py-4">
 
         {/* LEFT */}
         <motion.div

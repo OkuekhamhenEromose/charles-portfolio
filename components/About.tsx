@@ -66,7 +66,7 @@ const stats = [
 
 export default function About() {
   return (
-    <section className="relative min-h-screen flex items-center py-24 overflow-hidden">
+    <section className="relative min-h-screen flex items-center py-8 overflow-hidden">
 
       <div aria-hidden
            className="absolute right-0 top-1/2 -translate-y-1/2
@@ -74,7 +74,7 @@ export default function About() {
                       blur-[110px] pointer-events-none" />
 
       <motion.div
-        className="container mx-auto relative z-10 px-4 sm:px-6 lg:px-8 pt-8"
+        className="container mx-auto relative z-10 px-4 sm:px-6 lg:px-8 pt-2"
         initial="hidden" whileInView="visible"
         viewport={{ once: true, amount: 0.08 }}
         variants={container}
