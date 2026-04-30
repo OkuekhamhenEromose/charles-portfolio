@@ -69,7 +69,7 @@ export default function HomePage() {
             <ServiceSummary />
             <section id="services"><Services /></section>
             <Portfolio />
-            <Testimonials />
+            <Testimonials ready={preloaderDone} />
             <section id="contact"><Contact /></section>
           </main>
 

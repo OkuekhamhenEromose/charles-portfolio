@@ -57,9 +57,6 @@ export default function ServiceSummary() {
       className="relative flex flex-col items-start justify-center
                  overflow-hidden py-3 md:py-5"
     >
-      {/* <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent" />
-      <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-primary/25 to-transparent" /> */}
-
       {/* Row 1 — LEFT */}
       <div data-row="left"
            className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-none`}>
