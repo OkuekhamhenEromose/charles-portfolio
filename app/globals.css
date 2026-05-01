@@ -60,6 +60,21 @@
   --surface:            245 248 252;
 }
 
+/* @keyframes slide-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-33.333%); }
+} */
+
+@keyframes scroll-left {
+  to { transform: translateX(calc(-50% - 0.5rem)); }
+}
+
+@keyframes scroll-right {
+  /* Reverse: start at -50% (showing set 2), animate to 0 (showing set 1).
+     Visually identical to scrolling right continuously. */
+  from { transform: translateX(calc(-50% - 0.5rem)); }
+  to   { transform: translateX(0); }
+}
 @keyframes slide-left {
   from { transform: translateX(0); }
   to   { transform: translateX(-33.333%); }
@@ -74,7 +89,7 @@
   ::-webkit-scrollbar-track  { background: rgb(var(--background)); }
   ::-webkit-scrollbar-thumb  { background: rgb(var(--primary) / 0.5); border-radius: 99px; }
   ::-webkit-scrollbar-thumb:hover { background: rgb(var(--primary) / 0.8); }
-}
+
 
 @layer components {
   .btn {
@@ -294,23 +309,59 @@
   .glow-lg { box-shadow: 0 0 60px rgb(var(--primary) / 0.28); }
   .glow-highlight { box-shadow: 0 0 30px rgb(var(--highlight) / 0.25); }
 
+  /* ── Left-scrolling text tags ─────────────────────────────────────────── */
+  .skills-scroll-left {
+    display: flex;
+    gap: 1rem;
+    width: max-content;
+    flex-wrap: nowrap;
+    animation: scroll-left 25s linear infinite;
+  }
+
+  /* ── Right-scrolling icons ────────────────────────────────────────────── */
+  /* FIX: use animation-direction:reverse on the SAME keyframe.
+     The old approach (`from { translateX(-50%) }`) caused a visible
+     jump on first paint because the element snapped to -50% instantly.
+     Reversing the existing keyframe starts from 0 and goes right → seamless. */
+  .skills-scroll-right {
+    display: flex;
+    gap: 1.5rem;
+    width: max-content;
+    flex-wrap: nowrap;
+    animation: scroll-left 30s linear infinite reverse;
+  }
+
+  .skills-scroll-left:hover,
+  .skills-scroll-right:hover {
+    animation-play-state: paused;
+  }
+
+  /* Kelvin's edge-fade mask */
+  .skills-mask {
+    -webkit-mask: linear-gradient(90deg, transparent, white 15%, white 85%, transparent);
+    mask: linear-gradient(90deg, transparent, white 15%, white 85%, transparent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .skills-scroll-left,
+    .skills-scroll-right {
+      animation: none;
+      flex-wrap: wrap;
+      width: auto;
+      justify-content: center;
+    }
+  }
+
   .animate-slide-left {
     animation: slide-left 35s linear infinite;
     width: max-content;
   }
   .animate-slide-left:hover { animation-play-state: paused; }
-  
 }
+
 @media (max-width: 640px) {
   .trav-card {
     display: block;
-    /* grid-template-columns: repeat(2, 1fr);
-    gap: 0;
-    background: rgb(var(--card));
-    border: 1px solid rgb(var(--border));
-    margin-bottom: 2rem; */
     overflow: hidden;
-    /* will-change: transform, opacity; */
   }
   .trav-card img {
     height: 240px;
@@ -322,4 +373,5 @@
   .trav-header h1 {
     font-size: 2rem;
   }
+}
 }

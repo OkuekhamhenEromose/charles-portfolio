@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useSyncExternalStore, useState } from "react";
 import { motion } from "framer-motion";
 
 const WORDS = ["Hello", "Bonjour", "Ciao", "Olá", "やあ", "Hej", "Hallo"];
@@ -9,36 +9,33 @@ interface Props {
   onComplete: () => void;
 }
 
-type Dimensions = {
-  w: number;
-  h: number;
-};
+function subscribe(callback: () => void) {
+  window.addEventListener("resize", callback);
+  return () => window.removeEventListener("resize", callback);
+}
+
+function getSnapshot() {
+  return {
+    w: window.innerWidth,
+    h: window.innerHeight,
+  };
+}
+
+function getServerSnapshot() {
+  return {
+    w: 0,
+    h: 0,
+  };
+}
 
 export default function Preloader({ onComplete }: Props) {
   const [wordIndex, setWordIndex] = useState(0);
 
-  const [dim, setDim] = useState<Dimensions>(() => {
-    if (typeof window === "undefined") {
-      return { w: 0, h: 0 };
-    }
-
-    return {
-      w: window.innerWidth,
-      h: window.innerHeight,
-    };
-  });
-
-  useEffect(() => {
-    const handleResize = () => {
-      setDim({
-        w: window.innerWidth,
-        h: window.innerHeight,
-      });
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const dim = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot
+  );
 
   useEffect(() => {
     if (wordIndex === WORDS.length - 1) {
@@ -47,9 +44,7 @@ export default function Preloader({ onComplete }: Props) {
     }
 
     const delay = wordIndex === 0 ? 800 : 130;
-    const timer = setTimeout(() => {
-      setWordIndex((i) => i + 1);
-    }, delay);
+    const timer = setTimeout(() => setWordIndex((i) => i + 1), delay);
 
     return () => clearTimeout(timer);
   }, [wordIndex, onComplete]);
@@ -116,15 +111,10 @@ export default function Preloader({ onComplete }: Props) {
 
           <div
             className="absolute bottom-8 right-8 flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest"
-            style={{ color: "rgb(0,220,170,0.5)" }}
+            style={{ color: "rgba(0,220,170,0.5)" }}
           >
-            <span style={{ color: "rgba(0,220,170,0.5)" }}>
-              Loading portfolio
-            </span>
-            <span
-              className="animate-pulse"
-              style={{ color: "rgb(0,220,170)" }}
-            >
+            <span>Loading portfolio</span>
+            <span className="animate-pulse" style={{ color: "rgb(0,220,170)" }}>
               •
             </span>
           </div>
