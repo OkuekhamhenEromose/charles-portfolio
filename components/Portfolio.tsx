@@ -29,7 +29,7 @@ const portfolioProjects: PortfolioProject[] = [
     description:
       "A scalable multi-vendor marketplace built with Next.js and Django, featuring secure Paystack payments and Redis-powered performance.",
     category: "Full-Stack",
-    image: "/img/portfolio/shopa.png",
+    image: "/images/portfolio/shopa.png",
     demoLink: "https://retsyapp.vercel.app/",
     githubLink: "https://github.com/OkuekhamhenEromose/retsyapp",
   },
@@ -39,7 +39,7 @@ const portfolioProjects: PortfolioProject[] = [
     description:
       "A real-time collaborative Kanban app built with the MERN stack, featuring Socket.io live updates and advanced JWT + OTP authentication.",
     category: "Full-Stack",
-    image: "/img/portfolio/trellify.png",
+    image: "/images/portfolio/trellify.png",
     demoLink: "https://trello-next-blush.vercel.app/",
     githubLink: "https://github.com/OkuekhamhenEromose/trello-next",
   },
@@ -49,7 +49,7 @@ const portfolioProjects: PortfolioProject[] = [
     description:
       "A frontend clone of a hospital website built with TypeScript, Tailwind CSS, and Framer Motion.",
     category: "Frontend",
-    image: "/img/portfolio/ethahospital.png",
+    image: "/images/portfolio/ethahospital.png",
     demoLink: "https://ettahospitalclone.vercel.app/",
     githubLink: "https://github.com/OkuekhamhenEromose/hospitaltypescriptreact",
   },
@@ -59,7 +59,7 @@ const portfolioProjects: PortfolioProject[] = [
     description:
       "A modern travel agency website built with React and Framer Motion with smooth animations and engaging UI transitions.",
     category: "Frontend",
-    image: "/img/portfolio/chtravels.png",
+    image: "/images/portfolio/chtravels.png",
     demoLink: "https://shiny-scone-6fc98c.netlify.app",
     githubLink: "https://github.com/OkuekhamhenEromose/chardevtravel",
   },
@@ -69,7 +69,7 @@ const portfolioProjects: PortfolioProject[] = [
     description:
       "A full-stack blogging platform with role-based authentication, protected routes, and CRUD operations.",
     category: "Full-Stack",
-    image: "/img/portfolio/chblog.png",
+    image: "/images/portfolio/chblog.png",
     demoLink: "https://multiblogapp.netlify.app/blog",
     githubLink: "https://github.com/ehihameneromosele/fullblogc",
   },
@@ -79,7 +79,7 @@ const portfolioProjects: PortfolioProject[] = [
     description:
       "A backend-driven property listings API built with Django and Django REST Framework.",
     category: "Backend",
-    image: "/img/portfolio/insomnia1.png",
+    image: "/images/portfolio/insomnia1.png",
     demoLink: "https://housing-properties.onrender.com",
     githubLink: "https://github.com/OkuekhamhenEromose/housing_properties",
   },
@@ -89,7 +89,7 @@ const portfolioProjects: PortfolioProject[] = [
     description:
       "A responsive real estate frontend for showcasing properties for sale and rent.",
     category: "Frontend",
-    image: "/img/portfolio/realestate-img.png",
+    image: "/images/portfolio/realestate-img.png",
     demoLink: "https://dancing-youtiao-914380.netlify.app",
     githubLink: "https://github.com/OkuekhamhenEromose/RealEstateModern",
   },
@@ -99,7 +99,7 @@ const portfolioProjects: PortfolioProject[] = [
     description:
       "A Django REST Framework–powered resume builder that generates structured, professional resumes.",
     category: "Backend",
-    image: "/img/portfolio/resumebuilder.png",
+    image: "/images/portfolio/resumebuilder.png",
     demoLink: "https://renewschool-1.onrender.com",
     githubLink: "https://github.com/OkuekhamhenEromose/myresume",
   },
@@ -109,7 +109,7 @@ const portfolioProjects: PortfolioProject[] = [
     description:
       "Production-ready hospital management system with Google OAuth.",
     category: "Full-Stack",
-    image: "/img/portfolio/ethahospital.png",
+    image: "/images/portfolio/ethahospital.png",
     demoLink: "https://dhospitalback.onrender.com/api/",
     githubLink: "https://github.com/OkuekhamhenEromose/dhospitalback",
   },
@@ -119,7 +119,7 @@ const portfolioProjects: PortfolioProject[] = [
     description:
       "A personal portfolio website built with HTML, CSS, and JavaScript.",
     category: "Frontend",
-    image: "/img/portfolio/portfolio.png",
+    image: "/images/portfolio/portfolio.png",
     demoLink: "https://timely-axolotl-0f4be3.netlify.app/",
     githubLink: "https://github.com/OkuekhamhenEromose/portfolio-original",
   },
@@ -129,7 +129,7 @@ const portfolioProjects: PortfolioProject[] = [
     description:
       "A next-generation portfolio built with Next.js and Framer Motion with SEO optimization.",
     category: "Frontend",
-    image: "/img/portfolio/nextportfolio.png",
+    image: "/images/portfolio/nextportfolio.png",
     demoLink: "https://charleseromose.netlify.app",
     githubLink: "https://github.com/OkuekhamhenEromose/nextportfoliooriginal",
   },

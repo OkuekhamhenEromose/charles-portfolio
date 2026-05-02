@@ -102,7 +102,7 @@ export default function Contact() {
     <section className="relative py-24 overflow-hidden">
       <div
         aria-hidden
-        className="absolute right-0 bottom-0 w-[500px] h-[500px]
+        className="absolute right-0 bottom-0 w-125 h-125
                    bg-primary/5 blur-[100px] pointer-events-none rounded-full"
       />
 
@@ -135,9 +135,9 @@ export default function Contact() {
                         ${status.type === "success" ? "bg-emerald-500/95 text-white" : "bg-red-500/95 text-white"}`}
           >
             {status.type === "success" ? (
-              <CheckCircle className="w-4 h-4 flex-shrink-0" />
+              <CheckCircle className="w-4 h-4 shrink-0" />
             ) : (
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <AlertCircle className="w-4 h-4 shrink-0" />
             )}
             <span>{status.text}</span>
           </motion.div>
@@ -216,45 +216,14 @@ export default function Contact() {
 
             <motion.div variants={fadeInRight} className="rounded-2xl overflow-hidden border border-border shadow-lg">
               <Image
-                src="/images/addresslocation.png"
+                src="/images/contact/addresslocation.png"
                 alt="Ikeja, Lagos location map"
                 width={600}
-                height={400}
+                height={600}
                 className="w-full object-cover"
-                style={{ minHeight: 300 }}
+                style={{ minHeight: 400 }}
               />
             </motion.div>
-
-            {/* <motion.div variants={fadeInRight} className="glass-card p-5">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0">
-                  <MapPin className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                  <h4 className="font-heading font-bold text-foreground mb-0.5">My Location</h4>
-                  <p className="text-sm text-foreground/80">Ikeja, Lagos State, Nigeria</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Accessible via major highways and public transportation
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div variants={fadeInRight} className="grid grid-cols-2 gap-3">
-              {[
-                { label: "Email", value: "charles@example.com" },
-                { label: "Response time", value: "Within 24 hrs" },
-                { label: "Location", value: "Lagos, Nigeria" },
-                { label: "Status", value: "Open to work 🟢" },
-              ].map((item) => (
-                <div key={item.label} className="glass-card p-4">
-                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-1">
-                    {item.label}
-                  </p>
-                  <p className="text-sm text-foreground font-medium">{item.value}</p>
-                </div>
-              ))}
-            </motion.div> */}
           </motion.div>
         </div>
       </div>

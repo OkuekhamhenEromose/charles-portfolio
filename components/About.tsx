@@ -94,12 +94,12 @@ export default function About() {
       <div
         aria-hidden
         className="absolute right-0 top-1/2 -translate-y-1/2
-                      w-[520px] h-[520px] rounded-full bg-primary/6
+                      w-130 h-130 rounded-full bg-primary/6
                       blur-[110px] pointer-events-none"
       />
 
       <motion.div
-        className="container mx-auto relative z-10 px-4 sm:px-6 lg:px-8 pt-2"
+        className="container mx-auto relative z-10 px-12 sm:px-14 lg:px-16 pt-2"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.08 }}
@@ -115,10 +115,10 @@ export default function About() {
         <div className="flex flex-col lg:flex-row items-center gap-14 lg:gap-20">
           {/* Photo */}
           <motion.div
-            className="w-full lg:w-[38%] flex justify-center flex-shrink-0"
+            className="w-full lg:w-[38%] flex justify-center shrink-0"
             variants={slideRight}
           >
-            <div className="relative group max-w-[340px] w-full">
+              <div className="relative group max-w-85 w-full">
               <motion.div
                 className="absolute -inset-3 rounded-3xl blur-xl opacity-50
                            group-hover:opacity-90 transition-opacity duration-500"
@@ -132,9 +132,9 @@ export default function About() {
               <div className="absolute -top-3 -left-3 w-8 h-8 border-t-2 border-l-2 border-primary/60 rounded-tl-xl z-20" />
               <div className="absolute -bottom-3 -right-3 w-8 h-8 border-b-2 border-r-2 border-primary/60 rounded-br-xl z-20" />
 
-              <div className="relative rounded-2xl overflow-hidden border border-border shadow-2xl">
+              <div className="relative rounded-2xl overflow-hidden">
                 <Image
-                  src="/images/about.png"
+                  src="/images/about/about.png"
                   alt="Charles Eromose"
                   width={400}
                   height={500}
@@ -143,7 +143,7 @@ export default function About() {
                 />
                 <div
                   className="absolute bottom-0 left-0 right-0 h-24
-                                bg-gradient-to-t from-background/70 to-transparent"
+                                bg-linear-to-t from-background/70 to-transparent"
                 />
               </div>
 
@@ -233,16 +233,9 @@ export default function About() {
           </motion.div>
         </div>
 
-        {/* ══════════════════════════════════════════════════════════
-            SKILLS SLIDER
-            FIX: edge gradient divs REMOVED — they caused the white
-            translucent ends in light mode. The slider is now fully
-            seamless. The animation uses CSS keyframe slide-left
-            (0 → -33.333%) which perfectly matches the tripled strip.
-        ══════════════════════════════════════════════════════════ */}
         <motion.div variants={fadeUp} className="mt-20">
           <p
-            className="text-center text-[11px] font-bold uppercase tracking-[0.22em]
+            className="text-center text-[16px] font-bold uppercase tracking-[0.22em]
                 text-muted-foreground mb-8"
           >
             Technologies I Work With
@@ -255,7 +248,7 @@ export default function About() {
               {skills.map((skill) => (
                 <span
                   key={`tag-a-${skill.name}`}
-                  className="inline-flex items-center gap-2 px-4 py-2 flex-shrink-0
+                  className="inline-flex items-center gap-2 px-4 py-2 shrink-0
                      rounded-full border border-border/60 bg-card/50
                      text-[11px] font-bold uppercase tracking-widest
                      text-muted-foreground whitespace-nowrap
@@ -264,7 +257,7 @@ export default function About() {
                 >
                   {/* Coloured dot — mirrors Kelvin's list-item style */}
                   <span
-                    className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                    className="w-1.5 h-1.5 rounded-full shrink-0"
                     style={{
                       background:
                         skill.color === "currentColor"
@@ -284,7 +277,7 @@ export default function About() {
                 <span
                   key={`tag-b-${skill.name}`}
                   aria-hidden="true"
-                  className="inline-flex items-center gap-2 px-4 py-2 flex-shrink-0
+                  className="inline-flex items-center gap-2 px-4 py-2 shrink-0
                      rounded-full border border-border/60 bg-card/50
                      text-[11px] font-bold uppercase tracking-widest
                      text-muted-foreground whitespace-nowrap
@@ -292,7 +285,7 @@ export default function About() {
                      hover:bg-primary/10 transition-colors duration-200 cursor-default"
                 >
                   <span
-                    className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                    className="w-1.5 h-1.5 rounded-full shrink-0"
                     style={{
                       background:
                         skill.color === "currentColor"
@@ -316,8 +309,8 @@ export default function About() {
                 return (
                   <div
                     key={`icon-a-${skill.name}`}
-                    className="flex flex-col items-center gap-2 flex-shrink-0
-                       min-w-[64px] group cursor-default"
+                    className="flex flex-col items-center gap-2 shrink-0
+                       min-w-16 group cursor-default"
                   >
                     <div
                       className="p-2.5 rounded-xl bg-card/50 border border-border/50
@@ -327,7 +320,7 @@ export default function About() {
                     >
                       <Icon
                         style={{
-                          fontSize: "1.7rem",
+                          fontSize: "3.4rem",
                           color:
                             skill.color === "currentColor"
                               ? "rgb(var(--foreground))"
@@ -353,8 +346,8 @@ export default function About() {
                   <div
                     key={`icon-b-${skill.name}`}
                     aria-hidden="true"
-                    className="flex flex-col items-center gap-2 flex-shrink-0
-                       min-w-[64px] group cursor-default"
+                    className="flex flex-col items-center gap-2 shrink-0
+                       min-w-16 group cursor-default"
                   >
                     <div
                       className="p-2.5 rounded-xl bg-card/50 border border-border/50
@@ -364,7 +357,7 @@ export default function About() {
                     >
                       <Icon
                         style={{
-                          fontSize: "1.7rem",
+                          fontSize: "3.4rem",
                           color:
                             skill.color === "currentColor"
                               ? "rgb(var(--foreground))"

@@ -24,7 +24,7 @@ export default function ServiceSummary() {
 
       const rows = section.querySelectorAll<HTMLElement>("[data-row]");
       rows.forEach((row) => {
-        const dir    = row.dataset.row === "left" ? -1 : 1;
+        const dir = row.dataset.row === "left" ? -1 : 1;
         const startX = dir * -120;
         gsap.set(row, { x: `${startX}vw` });
 
@@ -34,20 +34,28 @@ export default function ServiceSummary() {
           scrollTrigger: {
             trigger: section,
             start: "top 90%",
-            end:   "center 40%",
+            end: "center 40%",
             scrub: 1.5,
           },
         });
-        kills.push(() => { tween.scrollTrigger?.kill(); tween.kill(); });
+        kills.push(() => {
+          tween.scrollTrigger?.kill();
+          tween.kill();
+        });
       });
     })();
 
     return () => kills.forEach((fn) => fn());
   }, []);
 
-  const base  = "font-heading font-black uppercase tracking-tighter select-none will-change-transform";
+  const base =
+    "font-heading font-black uppercase tracking-tighter select-none will-change-transform";
   /* FIX: reduced text sizes one step each for tighter layout */
-  const sizes = "text-[2rem] sm:text-[3rem] md:text-[4.2rem] lg:text-[5.5rem] xl:text-[6.5rem]";
+  const sizes =
+    "text-[2rem] sm:text-[3rem] md:text-[4.2rem] lg:text-[5.5rem] xl:text-[6.5rem]";
+  const primary = "text-primary";
+  const baseText = "text-foreground/90"; // softer but still readable
+  const strongText = "text-foreground";
 
   return (
     <section
@@ -58,40 +66,48 @@ export default function ServiceSummary() {
                  overflow-hidden py-3 md:py-5"
     >
       {/* Row 1 — LEFT */}
-      <div data-row="left"
-           className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-none`}>
-        <span className="text-primary/15">Architecture</span>
-        <span className="text-primary/8 mx-4">Systems</span>
-        <span className="text-primary/15">Architecture</span>
-        <span className="text-primary/8 mx-4">Systems</span>
+      <div
+        data-row="left"
+        className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-none`}
+      >
+        <span className={baseText}>Architecture</span>
+        <span className={`${primary} mx-4`}>Systems</span>
+        <span className={baseText}>Architecture</span>
+        <span className={`${primary} mx-4`}>Systems</span>
       </div>
 
       {/* Row 2 — RIGHT */}
-      <div data-row="right"
-           className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-none`}>
-        <span className="text-primary">Development</span>
-        <span className="text-primary/20 mx-4">Deployment</span>
-        <span className="text-primary">Development</span>
-        <span className="text-primary/20 mx-4">Deployment</span>
+      <div
+        data-row="right"
+        className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-none`}
+      >
+        <span className={primary}>Development</span>
+        <span className={`${strongText} mx-4`}>Deployment</span>
+        <span className={primary}>Development</span>
+        <span className={`${strongText} mx-4`}>Deployment</span>
       </div>
 
       {/* Row 3 — LEFT */}
-      <div data-row="left"
-           className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-none`}>
-        <span className="text-primary/20">APIs</span>
-        <span className="text-primary mx-4">Frontends</span>
-        <span className="text-primary/20 mx-4">Scalability</span>
-        <span className="text-primary mx-4">Frontends</span>
-        <span className="text-primary/20">Scalability</span>
+      <div
+        data-row="left"
+        className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-none`}
+      >
+        <span className={strongText}>APIs</span>
+        <span className={`${primary} mx-4`}>Frontends</span>
+        <span className={`${strongText} mx-4`}>Scalability</span>
+        <span className={`${primary} mx-4`}>Frontends</span>
+        <span className={strongText}>Scalability</span>
       </div>
 
       {/* Row 4 — RIGHT */}
-      <div data-row="right"
-           className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-none`}>
-        <span className="text-primary">Databases</span>
-        <span className="text-primary/20 mx-4">Cloud</span>
-        <span className="text-primary">Databases</span>
-        <span className="text-primary/20 mx-4">Cloud</span>
+      <div
+        data-row="right"
+        className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-none`}
+      >
+        <span className={primary}>Databases</span>
+        <span className={`${strongText} mx-4`}>Cloud</span>
+        <span className={primary}>Databases</span>
+        <span className={`${strongText} mx-4`}>Cloud</span>
       </div>
     </section>
   );
