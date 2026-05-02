@@ -209,8 +209,7 @@ export default function Hero() {
       ══════════════════════════════════════════════════════ */}
       <div
         className="flex-1 container mx-auto relative z-10
-                      flex flex-col lg:flex-row items-center justify-between
-                      gap-10 px-4 sm:px-6 lg:px-8 py-2 lg:py-4"
+                      flex flex-col lg:flex-row items-center justify-between px-8 sm:px-10 lg:px-12 py-2 lg:py-4"
       >
         {/* LEFT */}
         <motion.div
@@ -224,7 +223,7 @@ export default function Hero() {
           <motion.h1
             variants={fadeDown}
             className="font-heading font-black leading-[1.02] tracking-tight
-                       text-foreground mb-3
+                       text-foreground mb-1
                        text-4xl xs:text-5xl md:text-6xl lg:text-[4.5rem]"
           >
             I&apos;m <span className="text-primary">Charles</span>
@@ -234,7 +233,7 @@ export default function Hero() {
 
           <motion.p
             variants={fadeDown}
-            className="text-foreground text-base md:text-lg mb-7 max-w-md leading-relaxed"
+            className="text-foreground text-base md:text-lg mb-2 max-w-md leading-normal"
           >
             Full Stack Engineer — delivering scalable web systems, high-performance APIs & cloud solutions used in production.
           </motion.p>
