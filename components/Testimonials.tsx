@@ -8,9 +8,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-type TestimonialsProps = {
-  ready: boolean;
-};
+type TestimonialsProps = { ready: boolean };
 
 const testimonials = [
   {
@@ -53,47 +51,121 @@ const testimonials = [
 export default function Testimonials({ ready }: TestimonialsProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
 
+  // useEffect(() => {
+  //   // Gate: wait until preloader has fully exited and page is visible
+  //   if (!ready) return;
+
+  //   let ctx: gsap.Context;
+
+  //   // rAF + setTimeout: ensures fonts have loaded and Portfolio's pin
+  //   // has settled its scroll-height before GSAP measures positions
+  //   const raf = requestAnimationFrame(() => {
+  //     const timer = setTimeout(() => {
+  //       ctx = gsap.context(() => {
+  //         const cards = gsap.utils.toArray<HTMLElement>(".trav-card");
+  //         if (!cards.length) return;
+
+  //         // Hide cards NOW (after delay) — not at mount — so there's
+  //         // no invisible-content flash during the preloader phase
+  //         gsap.set(cards, { autoAlpha: 0 });
+
+  //         cards.forEach((card, index) => {
+  //           // Matches Traversy exactly:
+  //           // even index (0,2,4) → slide from LEFT; odd (1,3) → from RIGHT
+  //           const fromX = index % 2 === 0 ? -150 : 150;
+
+  //           gsap.fromTo(
+  //             card,
+  //             { autoAlpha: 0, x: fromX, y: 25 },
+  //             {
+  //               autoAlpha: 1,
+  //               x: 0,
+  //               y: 0,
+  //               duration: 0.85,
+  //               ease: "power3.out",
+  //               scrollTrigger: {
+  //                 trigger: card,
+  //                 start: "top 85%",
+  //                 end: "top 35%",
+  //                 // "play"    → scroll down into view   → animate in
+  //                 // "none"    → scroll down past card   → stay visible
+  //                 // "none"    → scroll back into view   → stay visible
+  //                 // "reverse" → scroll back up past start → animate out
+  //                 toggleActions: "play none none reverse",
+  //                 invalidateOnRefresh: true,
+  //               },
+  //             }
+  //           );
+  //         });
+
+  //         // Recalculate all offsets after Portfolio pin settles
+  //         ScrollTrigger.refresh();
+  //       }, sectionRef);
+  //     }, 400); // > PAGE.TSX motion.div transition (0.7s) so layout is stable
+
+  //     return () => clearTimeout(timer);
+  //   });
+
+  //   return () => {
+  //     cancelAnimationFrame(raf);
+  //     ctx?.revert();
+  //   };
+  // }, [ready]);
+
   useLayoutEffect(() => {
-    if (!ready || !sectionRef.current) return;
+  if (!ready || !sectionRef.current) return;
 
-    const ctx = gsap.context(() => {
-      const cards = gsap.utils.toArray<HTMLElement>(".trav-card");
+  const ctx = gsap.context(() => {
+    const cards = gsap.utils.toArray<HTMLElement>(".trav-card");
 
-      cards.forEach((card, index) => {
-        const fromX = index % 2 === 0 ? -220 : 220;
+    cards.forEach((card, index) => {
+      const fromX = index % 2 === 0 ? -180 : 180;
 
-        gsap.fromTo(
-          card,
-          {
-            opacity: 0,
-            x: fromX,
-            y: 60,
-            scale: 0.96,
-          },
-          {
-            opacity: 1,
-            x: 0,
-            y: 0,
-            scale: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: card,
-              start: "top 90%",
-              end: "top 45%",
-              scrub: 0.8,
-              invalidateOnRefresh: true,
-            },
-          }
-        );
+      gsap.set(card, {
+        autoAlpha: 0,
+        x: fromX,
+        y: 70,
+        scale: 0.96,
       });
 
-      setTimeout(() => {
-        ScrollTrigger.refresh();
-      }, 300);
-    }, sectionRef);
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: card,
+          start: "top 92%",
+          end: "bottom 18%",
+          scrub: 0.9,
+          invalidateOnRefresh: true,
+        },
+      })
+      .to(card, {
+        autoAlpha: 1,
+        x: 0,
+        y: 0,
+        scale: 1,
+        ease: "power2.out",
+        duration: 0.35,
+      })
+      .to(card, {
+        autoAlpha: 1,
+        x: 0,
+        y: 0,
+        scale: 1,
+        duration: 0.35,
+      })
+      .to(card, {
+        autoAlpha: 0,
+        y: -70,
+        scale: 0.96,
+        ease: "power2.in",
+        duration: 0.3,
+      });
+    });
 
-    return () => ctx.revert();
-  }, [ready]);
+    setTimeout(() => ScrollTrigger.refresh(), 300);
+  }, sectionRef);
+
+  return () => ctx.revert();
+}, [ready]);
 
   return (
     <section
@@ -105,33 +177,25 @@ export default function Testimonials({ ready }: TestimonialsProps) {
         <h1>
           <span>Client</span> Testimonials
         </h1>
-        <p>
-          Real feedback from people I&apos;ve had the privilege of working with.
-        </p>
+        <p>Real feedback from people I&apos;ve had the privilege of working with.</p>
       </header>
 
       <div className="trav-container">
-        {testimonials.map((testimonial) => (
-          <article key={testimonial.id} className="trav-card">
+        {testimonials.map((t) => (
+          <article key={t.id} className="trav-card">
             <Image
-              src={testimonial.image}
-              alt={`${testimonial.name} testimonial`}
+              src={t.image}
+              alt={`${t.name} testimonial`}
               width={600}
               height={400}
-              priority={testimonial.id === 1}
+              priority={t.id === 1}
             />
-
             <div className="trav-card-body">
-              <h3>{testimonial.name}</h3>
-              <p className="trav-card-role">{testimonial.role}</p>
-
+              <h3>{t.name}</h3>
+              <p className="trav-card-role">{t.role}</p>
               <Quote className="trav-quote-icon" aria-hidden="true" />
-
-              <blockquote>&ldquo;{testimonial.text}&rdquo;</blockquote>
-
-              <a href="#contact" className="trav-btn">
-                Get In Touch
-              </a>
+              <blockquote>&ldquo;{t.text}&rdquo;</blockquote>
+              <a href="#contact" className="trav-btn">Get In Touch</a>
             </div>
           </article>
         ))}

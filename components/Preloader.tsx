@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useSyncExternalStore, useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const WORDS = ["Hello", "Bonjour", "Ciao", "Olá", "やあ", "Hej", "Hallo"];
@@ -9,57 +9,46 @@ interface Props {
   onComplete: () => void;
 }
 
-function subscribe(callback: () => void) {
-  window.addEventListener("resize", callback);
-  return () => window.removeEventListener("resize", callback);
-}
-
-function getSnapshot() {
-  return {
-    w: window.innerWidth,
-    h: window.innerHeight,
-  };
-}
-
-function getServerSnapshot() {
-  return {
-    w: 0,
-    h: 0,
-  };
-}
-
 export default function Preloader({ onComplete }: Props) {
   const [wordIndex, setWordIndex] = useState(0);
 
-  const dim = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot
-  );
+  // ── FIX: ALWAYS start with {w:0, h:0} on both server AND client.
+  // The old lazy initializer `useState(() => window.innerWidth)` ran
+  // on the client during SSR simulation and returned real dimensions,
+  // while the server returned {0,0} → React hydration tree mismatch →
+  // entire page re-rendered → GSAP measured elements mid-animation.
+  const [dim, setDim] = useState({ w: 0, h: 0 });
+
+  useEffect(() => {
+    // Set real dimensions only after mount (client-only, safe)
+    setDim({ w: window.innerWidth, h: window.innerHeight });
+
+    const handleResize = () =>
+      setDim({ w: window.innerWidth, h: window.innerHeight });
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     if (wordIndex === WORDS.length - 1) {
       const timer = setTimeout(onComplete, 600);
       return () => clearTimeout(timer);
     }
-
     const delay = wordIndex === 0 ? 800 : 130;
     const timer = setTimeout(() => setWordIndex((i) => i + 1), delay);
-
     return () => clearTimeout(timer);
   }, [wordIndex, onComplete]);
 
   const { w, h } = dim;
 
-  const initialPath =
-    w > 0
-      ? `M0 0 L${w} 0 L${w} ${h} Q${w / 2} ${h + 300} 0 ${h} L0 0`
-      : "M0 0";
+  const initialPath = w > 0
+    ? `M0 0 L${w} 0 L${w} ${h} Q${w / 2} ${h + 300} 0 ${h} L0 0`
+    : "M0 0";
 
-  const targetPath =
-    w > 0
-      ? `M0 0 L${w} 0 L${w} ${h} Q${w / 2} ${h} 0 ${h} L0 0`
-      : "M0 0";
+  const targetPath = w > 0
+    ? `M0 0 L${w} 0 L${w} ${h} Q${w / 2} ${h} 0 ${h} L0 0`
+    : "M0 0";
 
   return (
     <motion.div
@@ -113,10 +102,8 @@ export default function Preloader({ onComplete }: Props) {
             className="absolute bottom-8 right-8 flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest"
             style={{ color: "rgba(0,220,170,0.5)" }}
           >
-            <span>Loading portfolio</span>
-            <span className="animate-pulse" style={{ color: "rgb(0,220,170)" }}>
-              •
-            </span>
+            <span style={{ color: "rgba(0,220,170,0.5)" }}>Loading portfolio</span>
+            <span className="animate-pulse" style={{ color: "rgb(0,220,170)" }}>•</span>
           </div>
         </>
       )}

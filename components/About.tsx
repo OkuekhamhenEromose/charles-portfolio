@@ -80,12 +80,6 @@ const skills = [
   { icon: SiWordpress, name: "WordPress", color: "#21759B" } /* NEW */,
 ];
 
-/*
- * Triple for seamless loop.
- * CSS keyframe slide-left animates 0 → -33.333% (exactly one set).
- * At -33.333% the pattern repeats identically → gap-free infinite scroll.
- */
-const tripled = [...skills, ...skills, ...skills];
 
 const stats = [
   { value: "4+", label: "Years Exp." },
@@ -180,10 +174,10 @@ export default function About() {
 
             <motion.p
               variants={fadeUp}
-              className="text-muted-foreground leading-relaxed text-base sm:text-lg"
+              className="text-primary1 leading-relaxed text-base sm:text-lg"
             >
               I&apos;m{" "}
-              <strong className="text-foreground">
+              <strong className="text-primary">
                 Charles Eromose Okuekhahmen
               </strong>
               , a Full Stack Engineer with 4+ years building everything from
@@ -193,7 +187,7 @@ export default function About() {
 
             <motion.p
               variants={fadeUp}
-              className="text-muted-foreground leading-relaxed text-base sm:text-lg"
+              className="text-forground leading-relaxed text-base sm:text-lg"
             >
               I thrive on simplifying complex problems — through query
               optimisation, secure auth flows, or cloud deployments on AWS.
