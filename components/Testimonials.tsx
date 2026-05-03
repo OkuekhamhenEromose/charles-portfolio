@@ -195,7 +195,7 @@ export default function Testimonials({ ready }: TestimonialsProps) {
               <p className="trav-card-role">{t.role}</p>
               <Quote className="trav-quote-icon" aria-hidden="true" />
               <blockquote>&ldquo;{t.text}&rdquo;</blockquote>
-              <a href="#contact" className="trav-btn">Get In Touch</a>
+              <a href="#contact" className="btn mt-7 w-fit uppercase tracking-[0.07em]">Get In Touch</a>
             </div>
           </article>
         ))}

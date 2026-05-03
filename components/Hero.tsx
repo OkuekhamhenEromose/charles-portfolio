@@ -288,8 +288,8 @@ export default function Hero() {
                                         bg-primary scale-75 animate-pulse"
             />
             <div
-              className="relative w-[260px] h-[260px] sm:w-[340px] sm:h-[340px]
-                            md:w-[420px] md:h-[420px] lg:w-[460px] lg:h-[460px]"
+              className="relative w-65 h-65 sm:w-85 sm:h-85
+                            md:w-105 md:h-105 lg:w-115 lg:h-115"
             >
               <video
                 ref={globeRef}
