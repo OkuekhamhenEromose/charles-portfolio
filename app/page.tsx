@@ -30,11 +30,6 @@ export default function HomePage() {
       {/* ── Main site — fades in after preloader exits ── */}
       <motion.div
         className="relative"
-        /*
-         * dennis's landing uses slideUp (y: 300 → 0, delay: 2.5s).
-         * We use a simple opacity fade with a small delay to match
-         * the preloader exit animation duration (~1s total).
-         */
         initial={{ opacity: 0 }}
         animate={{ opacity: preloaderDone ? 1 : 0 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
@@ -53,11 +48,11 @@ export default function HomePage() {
         </video>
 
         {/* Readability overlay */}
-        <div className={`fixed inset-0 z-[1] transition-colors duration-700
+        <div className={`fixed inset-0 z-1 transition-colors duration-700
                          ${theme === "light" ? "bg-white/20" : "bg-black/50"}`} />
 
         {/* Dot-grid texture */}
-        <div className="fixed inset-0 z-[2] grid-dots opacity-25 pointer-events-none" />
+        <div className="fixed inset-0 z-2 grid-dots opacity-25 pointer-events-none" />
 
         {/* Page content */}
         <div className="relative z-10">
