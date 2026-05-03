@@ -242,7 +242,7 @@ export default function About() {
           </p>
 
           {/* ── ROW 1: Text tags → LEFT ──────────────────────────────── */}
-          <div className="overflow-hidden skills-mask mb-4">
+          <div className="overflow-hidden skills-mask mb-6">
             <div className="skills-scroll-left">
               {/* Original set */}
               {skills.map((skill) => (
@@ -269,10 +269,6 @@ export default function About() {
                   {skill.name}
                 </span>
               ))}
-
-              {/* Duplicated set — aria-hidden so screen readers skip it.
-          This is Kelvin's exact technique: duplicate in markup,
-          not in JS, so it works with JS disabled too. */}
               {skills.map((skill) => (
                 <span
                   key={`tag-b-${skill.name}`}
@@ -301,7 +297,7 @@ export default function About() {
           </div>
 
           {/* ── ROW 2: Icons → RIGHT ─────────────────────────────────── */}
-          <div className="overflow-hidden skills-mask">
+          <div className="overflow-visible skills-mask">
             <div className="skills-scroll-right">
               {/* Original set */}
               {skills.map((skill) => {

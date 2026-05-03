@@ -75,7 +75,7 @@ function CodeBlock() {
           profile.ts
         </span>
       </div>
-      <pre className="p-4 text-[0.68rem] leading-[1.5] font-mono overflow-x-auto">
+      <pre className="p-4 text-[0.68rem] leading-normal font-mono overflow-x-auto">
         {codeLines.map((line, i) => (
           <div key={i}>
             <span className="select-none text-white/20 mr-3 text-[0.6rem]">
@@ -164,7 +164,7 @@ export default function Hero() {
       <div
         aria-hidden
         className="absolute -left-40 top-1/2 -translate-y-1/2
-                      w-[700px] h-[700px] rounded-full bg-primary/8
+                      w-175 h-175 rounded-full bg-primary/8
                       blur-[130px] pointer-events-none"
       />
 
@@ -239,7 +239,7 @@ export default function Hero() {
           </motion.p>
 
           {/* Code block */}
-          <motion.div variants={zoomIn} className="w-full max-w-[540px] mb-8">
+          <motion.div variants={zoomIn} className="w-full max-w-135 mb-8">
             <CodeBlock />
           </motion.div>
 

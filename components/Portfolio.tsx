@@ -300,7 +300,7 @@ const Portfolio = () => {
       className="portfolio-section relative min-h-screen overflow-hidden"
     >
       <div className="flex min-h-screen h-full flex-col lg:flex-row">
-        <div className="relative z-10 flex w-full flex-col justify-center px-6 py-4 sm:px-10 lg:w-[35%] lg:px-14 lg:py-0">
+        {/* <div className="relative z-10 flex w-full flex-col justify-center px-6 py-4 sm:px-10 lg:w-[35%] lg:px-14 lg:py-0">
           <div className="overflow-hidden">
             <h2 className="portfolio-title-line text-4xl font-black leading-[0.95] tracking-tight text-primary sm:text-5xl md:text-6xl lg:text-7xl">
               My
@@ -346,15 +346,55 @@ const Portfolio = () => {
               );
             })}
           </div>
-        </div>
+        </div> */}
+        <div className="relative z-10 flex w-full flex-col justify-center px-6 py-10 sm:px-10 lg:w-[35%] lg:px-14 lg:py-0">
+          <div className="overflow-hidden">
+            <h2 className="portfolio-title-line section-title text-foreground">
+              My <span className="gradient-text">creative</span>
+            </h2>
+          </div>
 
+          <div className="mb-6 overflow-hidden">
+            <h2 className="portfolio-title-line section-title text-foreground">
+              projects
+            </h2>
+          </div>
+
+          <p className="portfolio-desc body-text mb-8 max-w-md">
+            A curated collection of projects spanning full-stack apps,
+            frontends, and backend APIs — each reflecting clean code, scalable
+            architecture, and thoughtful design.
+          </p>
+
+          <div className="flex flex-wrap gap-2">
+            {categories.map((cat) => {
+              const isActive = activeCategory === cat.id;
+
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`rounded-full border px-4 py-2 font-body text-xs font-semibold transition-all duration-300 sm:text-sm ${
+                    isActive
+                      ? "border-primary bg-primary text-primary-foreground shadow-lg"
+                      : "border-border bg-card/60 text-muted-foreground hover:border-primary/30 hover:bg-primary/10 hover:text-primary"
+                  }`}
+                >
+                  {cat.name}
+                  <span className="ml-1 opacity-60">({cat.count})</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
         <div
           className="relative flex w-full items-center lg:w-[65%]"
           style={{
             WebkitMaskImage:
-              "linear-gradient(to right, transparent 0%, black 50%, black 100%)",
+              "linear-gradient(to right, transparent -10%, black 50%, black 100%)",
             maskImage:
-              "linear-gradient(to right, transparent 0%, black 50%, black 100%)",
+              "linear-gradient(to right, transparent -10%, black 50%, black 100%)",
           }}
         >
           <div
@@ -367,7 +407,7 @@ const Portfolio = () => {
               return (
                 <article
                   key={project.id}
-                  className="group relative w-[280px] flex-shrink-0 overflow-hidden rounded-2xl border border-border/40 shadow-lg transition-all duration-500 hover:shadow-2xl sm:w-[340px]"
+                  className="group relative w-70 shrink-0 overflow-hidden rounded-2xl border border-border bg-card shadow-lg transition-all duration-500 hover:shadow-2xl sm:w-85"
                   style={{
                     transform: `rotate(${baseRotation}deg)`,
                     transition: "transform 0.5s ease",
@@ -393,13 +433,13 @@ const Portfolio = () => {
                       {project.category}
                     </span>
 
-                    <div className="absolute inset-0 flex items-center justify-center gap-5 bg-primary/80 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    <div className="absolute inset-0 flex items-center justify-center gap-5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       <a
                         href={project.demoLink}
                         target="_blank"
                         rel="noreferrer"
                         aria-label={`Open live demo for ${project.title}`}
-                        className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-foreground/20 text-primary-foreground backdrop-blur-sm transition-colors duration-200 hover:bg-primary-foreground/40"
+                         className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)]"
                       >
                         <ExternalLink size={20} />
                       </a>
@@ -409,18 +449,19 @@ const Portfolio = () => {
                         target="_blank"
                         rel="noreferrer"
                         aria-label={`Open GitHub repository for ${project.title}`}
-                        className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-foreground/20 text-primary-foreground backdrop-blur-sm transition-colors duration-200 hover:bg-primary-foreground/40"
+                         className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)]"
                       >
                         <FaGithub size={20} />
                       </a>
                     </div>
                   </div>
 
-                  <div className="bg-card/40 p-5 backdrop-blur-md">
-                    <h3 className="mb-2 line-clamp-1 text-base font-bold text-primary sm:text-lg">
+                  <div className="bg-card/40 p-5">
+                    <h3 className="card-title mb-2 line-clamp-1 text-base text-primary sm:text-lg">
                       {project.title}
                     </h3>
-                    <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+
+                    <p className="small-text line-clamp-3">
                       {project.description}
                     </p>
                   </div>

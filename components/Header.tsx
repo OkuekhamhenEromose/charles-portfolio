@@ -67,7 +67,7 @@ export default function Header() {
     <header
   className={`fixed left-0 right-0 top-0 z-50 transition-all duration-500 ${
     isScrolled
-      ? "border-b border-border/60 bg-card/70 py-3 shadow-[0_18px_60px_rgb(0_0_0/0.18)] backdrop-blur-2xl supports-[backdrop-filter]:bg-card/55"
+      ? "border-b border-border/60 bg-card/70 py-3 shadow-[0_18px_60px_rgb(0_0_0/0.18)] backdrop-blur-2xl supports-backdrop-filter:bg-card/55"
       : "border-b border-transparent bg-transparent py-5"
   }`}
 >
@@ -89,7 +89,7 @@ export default function Header() {
   className={`hidden md:flex items-center gap-0.5 px-5 py-2.5 rounded-full
               transition-all duration-300 border backdrop-blur-2xl ${
                 isScrolled
-                  ? "bg-card/70 backdrop-blur-2xl supports-[backdrop-filter]:bg-card/55"
+                  ? "bg-card/70 backdrop-blur-2xl supports-backdrop-filter:bg-card/55"
                   : "bg-card/45 border-border/50 shadow-[0_4px_20px_rgba(0,0,0,0.16)]"
               }`}
 >
@@ -140,7 +140,7 @@ export default function Header() {
                   className="absolute top-full right-0 mt-3
                              bg-card/95 backdrop-blur-xl
                              border border-border rounded-2xl
-                             shadow-2xl p-3 min-w-[160px] z-50"
+                             shadow-2xl p-3 min-w-40 z-50"
                 >
                   <p
                     className="text-[10px] font-semibold text-muted-foreground
