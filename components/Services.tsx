@@ -161,7 +161,7 @@ export default function Services() {
                 className="group relative flex cursor-default flex-col gap-5 overflow-hidden rounded-2xl border border-border bg-card p-7 shadow-lg transition-all duration-500 hover:border-primary/50 hover:shadow-[0_20px_60px_rgba(0,0,0,0.25)]"
               >
                 <div
-                  className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${item.accent} opacity-0 transition-opacity duration-500 group-hover:opacity-100`}
+                  className={`pointer-events-none absolute inset-0 bg-linear-to-br ${item.accent} opacity-0 transition-opacity duration-500 group-hover:opacity-100`}
                 />
 
                 <span

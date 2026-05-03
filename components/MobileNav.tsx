@@ -115,7 +115,7 @@ export default function MobileNav({ theme, toggleTheme }: MobileNavProps) {
               initial="hidden"
               animate="show"
               exit="exit"
-              className="fixed top-0 right-0 z-[60] h-screen w-[80vw] max-w-[320px]
+              className="fixed top-0 right-0 z-60 h-screen w-[80vw] max-w-[320px]
                          bg-card border-l border-border shadow-2xl flex flex-col"
             >
               <div className="flex items-center justify-between px-6 py-5">

@@ -185,7 +185,7 @@ export default function Hero() {
     <div className="hero-marquee-group">
       {Array.from({ length: 10 }).map((_, i) => (
         <span key={`g1-${i}`} className="hero-marquee-item">
-          Software Engineer — Scalable Systems — Open to Global Work —
+          Software Engineer — Scalable Systems — Open to All Time Zones —
         </span>
       ))}
     </div>
@@ -194,7 +194,7 @@ export default function Hero() {
     <div className="hero-marquee-group">
       {Array.from({ length: 10 }).map((_, i) => (
         <span key={`g2-${i}`} className="hero-marquee-item">
-          Software Engineer — Scalable Systems — Open to Global Work —
+          Software Engineer — Scalable Systems — Open to All Time Zones —
         </span>
       ))}
     </div>

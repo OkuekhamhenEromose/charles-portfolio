@@ -19,11 +19,8 @@ const navItems = [
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
-  // const [isVisible, setIsVisible] = useState(true);
   const [socialsOpen, setSocialsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  // const [mobileOpen, setMobileOpen] = useState(false);
-
   /* ── Scroll: hide on down, show on up ────────────────── */
  useEffect(() => {
   let lastY = window.scrollY;

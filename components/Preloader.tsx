@@ -20,15 +20,19 @@ export default function Preloader({ onComplete }: Props) {
   const [dim, setDim] = useState({ w: 0, h: 0 });
 
   useEffect(() => {
-    // Set real dimensions only after mount (client-only, safe)
+  const updateDimensions = () => {
     setDim({ w: window.innerWidth, h: window.innerHeight });
+  };
 
-    const handleResize = () =>
-      setDim({ w: window.innerWidth, h: window.innerHeight });
+  const frame = requestAnimationFrame(updateDimensions);
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  window.addEventListener("resize", updateDimensions);
+
+  return () => {
+    cancelAnimationFrame(frame);
+    window.removeEventListener("resize", updateDimensions);
+  };
+}, []);
 
   useEffect(() => {
     if (wordIndex === WORDS.length - 1) {
@@ -61,7 +65,7 @@ export default function Preloader({ onComplete }: Props) {
           delay: 0.15,
         },
       }}
-      className="fixed inset-0 z-[200] flex select-none items-center justify-center"
+      className="fixed inset-0 z-200 flex select-none items-center justify-center"
       style={{ background: "#080812" }}
     >
       {w > 0 && (

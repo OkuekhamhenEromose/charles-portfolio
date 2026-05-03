@@ -136,26 +136,21 @@ const portfolioProjects: PortfolioProject[] = [
 ];
 
 const Portfolio = () => {
-  const [activeCategory, setActiveCategory] = useState<"all" | ProjectCategory>(
-    "all",
-  );
+  const [activeCategory, setActiveCategory] = useState<"all" | ProjectCategory>("all");
   const [isMobile, setIsMobile] = useState(false);
+
+  // Guard against concurrent filter clicks mid-animation
+  const isFilteringRef = useRef(false);
 
   const sectionRef = useRef<HTMLElement | null>(null);
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
 
   useEffect(() => {
-    const checkScreen = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-
+    const checkScreen = () => setIsMobile(window.innerWidth < 1024);
     checkScreen();
     window.addEventListener("resize", checkScreen);
-
-    return () => {
-      window.removeEventListener("resize", checkScreen);
-    };
+    return () => window.removeEventListener("resize", checkScreen);
   }, []);
 
   const categories = useMemo(
@@ -164,14 +159,12 @@ const Portfolio = () => {
       {
         id: "Full-Stack" as const,
         name: "Full-Stack",
-        count: portfolioProjects.filter((p) => p.category === "Full-Stack")
-          .length,
+        count: portfolioProjects.filter((p) => p.category === "Full-Stack").length,
       },
       {
         id: "Frontend" as const,
         name: "Frontend",
-        count: portfolioProjects.filter((p) => p.category === "Frontend")
-          .length,
+        count: portfolioProjects.filter((p) => p.category === "Frontend").length,
       },
       {
         id: "Backend" as const,
@@ -185,12 +178,19 @@ const Portfolio = () => {
   const filteredProjects = useMemo(() => {
     return activeCategory === "all"
       ? portfolioProjects
-      : portfolioProjects.filter(
-          (project) => project.category === activeCategory,
-        );
+      : portfolioProjects.filter((p) => p.category === activeCategory);
   }, [activeCategory]);
 
+  // ─── Kill existing ScrollTrigger ───────────────────────────────────────────
+  // FIX: After killing the pin, we immediately reset the window scroll to the
+  // section's natural offsetTop.  Without this, when GSAP removes its
+  // pinSpacer the browser's scroll position is left past the section, causing
+  // the next section (Testimonials) to flash into view for a moment.
   const killPortfolioScrollTrigger = useCallback(() => {
+    const section = sectionRef.current;
+    // Capture section top BEFORE the kill so the pinSpacer is still in the DOM
+    const sectionTop = section?.offsetTop ?? 0;
+
     if (scrollTriggerRef.current) {
       scrollTriggerRef.current.kill();
       scrollTriggerRef.current = null;
@@ -206,14 +206,66 @@ const Portfolio = () => {
     if (sliderRef.current) {
       gsap.set(sliderRef.current, { x: 0 });
     }
+
+    // Snap scroll back to the section so the next section never bleeds in
+    window.scrollTo(0, sectionTop);
   }, []);
 
+  // ─── Animate cards into view (staggered entrance) ──────────────────────────
+  const animateCardsIn = useCallback(() => {
+    const cards = sliderRef.current?.querySelectorAll<HTMLElement>("article");
+    if (!cards || cards.length === 0) return;
+
+    gsap.fromTo(
+      cards,
+      { opacity: 0, y: 40, scale: 0.92 },
+      {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        stagger: { each: 0.07, from: "start" },
+        duration: 0.55,
+        ease: "back.out(1.4)",
+        // Clear so inline rotate styles + hover handlers regain full control
+        clearProps: "opacity,y,scale",
+      },
+    );
+  }, []);
+
+  // ─── Animate current cards out, then switch filter ─────────────────────────
+  const handleCategoryChange = useCallback(
+    async (categoryId: "all" | ProjectCategory) => {
+      if (categoryId === activeCategory || isFilteringRef.current) return;
+      isFilteringRef.current = true;
+
+      const cards = sliderRef.current?.querySelectorAll<HTMLElement>("article");
+
+      if (cards && cards.length > 0) {
+        // Cards exit: slide up & fade, quick stagger from the end so the
+        // trailing cards vanish first, giving a "sweeping out" feel.
+        await gsap.to(cards, {
+          opacity: 0,
+          y: -20,
+          scale: 0.9,
+          stagger: { each: 0.03, from: "end" },
+          duration: 0.22,
+          ease: "power2.in",
+        });
+      }
+
+      // State change → React re-renders with new cards
+      setActiveCategory(categoryId);
+      isFilteringRef.current = false;
+    },
+    [activeCategory],
+  );
+
+  // ─── Build / rebuild horizontal scroll animation ────────────────────────────
   const buildScrollAnimation = useCallback(() => {
     killPortfolioScrollTrigger();
 
     const section = sectionRef.current;
     const slider = sliderRef.current;
-
     if (!section || !slider) return;
 
     requestAnimationFrame(() => {
@@ -224,7 +276,11 @@ const Portfolio = () => {
         ? totalScrollWidth - viewportWidth + 40
         : totalScrollWidth - viewportWidth * 0.6;
 
-      if (scrollAmount <= 0) return;
+      if (scrollAmount <= 0) {
+        // Nothing to scroll — just animate cards in
+        animateCardsIn();
+        return;
+      }
 
       const timeline = gsap.timeline({
         scrollTrigger: {
@@ -239,17 +295,25 @@ const Portfolio = () => {
         },
       });
 
-      timeline.to(slider, {
-        x: -scrollAmount,
-        ease: "none",
-      });
+      timeline.to(slider, { x: -scrollAmount, ease: "none" });
 
       scrollTriggerRef.current = timeline.scrollTrigger ?? null;
       ScrollTrigger.refresh();
-    });
-  }, [isMobile, killPortfolioScrollTrigger]);
 
+      // Animate the freshly-rendered cards into view
+      animateCardsIn();
+    });
+  }, [isMobile, killPortfolioScrollTrigger, animateCardsIn]);
+
+  // ─── Effect: re-run scroll animation whenever the filter/count changes ──────
   useEffect(() => {
+    // FIX: Immediately hide the newly rendered cards so they don't pop in
+    // before the entrance animation fires.  We reset them to opacity:0 right
+    // after React commits the new DOM, then `buildScrollAnimation` will
+    // reveal them with the staggered `animateCardsIn` entrance.
+    const cards = sliderRef.current?.querySelectorAll<HTMLElement>("article");
+    if (cards) gsap.set(cards, { opacity: 0, y: 20 });
+
     const timeout = window.setTimeout(() => {
       buildScrollAnimation();
     }, 120);
@@ -258,13 +322,9 @@ const Portfolio = () => {
       window.clearTimeout(timeout);
       killPortfolioScrollTrigger();
     };
-  }, [
-    activeCategory,
-    filteredProjects.length,
-    buildScrollAnimation,
-    killPortfolioScrollTrigger,
-  ]);
+  }, [activeCategory, filteredProjects.length, buildScrollAnimation, killPortfolioScrollTrigger]);
 
+  // ─── Section title / description entrance animation ─────────────────────────
   useGSAP(
     () => {
       gsap.from(".portfolio-title-line", {
@@ -300,53 +360,7 @@ const Portfolio = () => {
       className="portfolio-section relative min-h-screen overflow-hidden"
     >
       <div className="flex min-h-screen h-full flex-col lg:flex-row">
-        {/* <div className="relative z-10 flex w-full flex-col justify-center px-6 py-4 sm:px-10 lg:w-[35%] lg:px-14 lg:py-0">
-          <div className="overflow-hidden">
-            <h2 className="portfolio-title-line text-4xl font-black leading-[0.95] tracking-tight text-primary sm:text-5xl md:text-6xl lg:text-7xl">
-              My
-            </h2>
-          </div>
-
-          <div className="overflow-hidden">
-            <h2 className="portfolio-title-line text-4xl font-black italic leading-[0.95] tracking-tight text-primary/60 sm:text-5xl md:text-6xl lg:text-7xl">
-              creative
-            </h2>
-          </div>
-
-          <div className="mb-6 overflow-hidden">
-            <h2 className="portfolio-title-line text-4xl font-black leading-[0.95] tracking-tight text-primary sm:text-5xl md:text-6xl lg:text-7xl">
-              projects
-            </h2>
-          </div>
-
-          <p className="portfolio-desc mb-8 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
-            A curated collection of projects spanning full-stack apps,
-            frontends, and backend APIs — each reflecting clean code, scalable
-            architecture, and thoughtful design.
-          </p>
-
-          <div className="flex flex-wrap gap-2">
-            {categories.map((cat) => {
-              const isActive = activeCategory === cat.id;
-
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setActiveCategory(cat.id)}
-                  className={`rounded-full border px-4 py-2 text-xs font-semibold transition-all duration-300 sm:text-sm ${
-                    isActive
-                      ? "border-primary bg-primary text-primary-foreground shadow-lg"
-                      : "border-border bg-card/60 text-muted-foreground hover:border-primary/30 hover:bg-primary/10 hover:text-primary"
-                  }`}
-                >
-                  {cat.name}
-                  <span className="ml-1 opacity-60">({cat.count})</span>
-                </button>
-              );
-            })}
-          </div>
-        </div> */}
+        {/* ── Left panel: title + filter buttons ─────────────────────────── */}
         <div className="relative z-10 flex w-full flex-col justify-center px-6 py-10 sm:px-10 lg:w-[35%] lg:px-14 lg:py-0">
           <div className="overflow-hidden">
             <h2 className="portfolio-title-line section-title text-foreground">
@@ -374,7 +388,8 @@ const Portfolio = () => {
                 <button
                   key={cat.id}
                   type="button"
-                  onClick={() => setActiveCategory(cat.id)}
+                  // ↓ use handleCategoryChange instead of setActiveCategory
+                  onClick={() => void handleCategoryChange(cat.id)}
                   className={`rounded-full border px-4 py-2 font-body text-xs font-semibold transition-all duration-300 sm:text-sm ${
                     isActive
                       ? "border-primary bg-primary text-primary-foreground shadow-lg"
@@ -388,6 +403,8 @@ const Portfolio = () => {
             })}
           </div>
         </div>
+
+        {/* ── Right panel: horizontal card slider ────────────────────────── */}
         <div
           className="relative flex w-full items-center lg:w-[65%]"
           style={{
@@ -412,34 +429,36 @@ const Portfolio = () => {
                     transform: `rotate(${baseRotation}deg)`,
                     transition: "transform 0.5s ease",
                   }}
-                  onMouseEnter={(event) => {
-                    event.currentTarget.style.transform =
-                      "rotate(0deg) scale(1.03)";
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "rotate(0deg) scale(1.03)";
                   }}
-                  onMouseLeave={(event) => {
-                    event.currentTarget.style.transform = `rotate(${baseRotation}deg)`;
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = `rotate(${baseRotation}deg)`;
                   }}
                 >
+                  {/* ── Card image ── */}
                   <div className="relative h-48 overflow-hidden sm:h-56">
                     <Image
                       src={project.image}
                       alt={project.title}
                       fill
                       sizes="(max-width: 640px) 280px, (max-width: 1024px) 340px, 340px"
-                      className="object-cover group-hover:scale-110 transition-transform duration-700"
-                      priority={index < 2} // preload first visible cards for LCP
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      priority={index < 2}
                     />
+
                     <span className="absolute left-3 top-3 rounded-lg bg-primary/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground backdrop-blur-sm">
                       {project.category}
                     </span>
 
+                    {/* ── Hover overlay: action buttons ── */}
                     <div className="absolute inset-0 flex items-center justify-center gap-5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       <a
                         href={project.demoLink}
                         target="_blank"
                         rel="noreferrer"
                         aria-label={`Open live demo for ${project.title}`}
-                         className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)]"
+                        className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)]"
                       >
                         <ExternalLink size={20} />
                       </a>
@@ -449,21 +468,19 @@ const Portfolio = () => {
                         target="_blank"
                         rel="noreferrer"
                         aria-label={`Open GitHub repository for ${project.title}`}
-                         className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)]"
+                        className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)]"
                       >
                         <FaGithub size={20} />
                       </a>
                     </div>
                   </div>
 
+                  {/* ── Card body ── */}
                   <div className="bg-card/40 p-5">
                     <h3 className="card-title mb-2 line-clamp-1 text-base text-primary sm:text-lg">
                       {project.title}
                     </h3>
-
-                    <p className="small-text line-clamp-3">
-                      {project.description}
-                    </p>
+                    <p className="small-text line-clamp-3">{project.description}</p>
                   </div>
                 </article>
               );
