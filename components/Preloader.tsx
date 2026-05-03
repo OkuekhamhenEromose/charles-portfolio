@@ -11,12 +11,6 @@ interface Props {
 
 export default function Preloader({ onComplete }: Props) {
   const [wordIndex, setWordIndex] = useState(0);
-
-  // ── FIX: ALWAYS start with {w:0, h:0} on both server AND client.
-  // The old lazy initializer `useState(() => window.innerWidth)` ran
-  // on the client during SSR simulation and returned real dimensions,
-  // while the server returned {0,0} → React hydration tree mismatch →
-  // entire page re-rendered → GSAP measured elements mid-animation.
   const [dim, setDim] = useState({ w: 0, h: 0 });
 
   useEffect(() => {
@@ -36,10 +30,10 @@ export default function Preloader({ onComplete }: Props) {
 
   useEffect(() => {
     if (wordIndex === WORDS.length - 1) {
-      const timer = setTimeout(onComplete, 600);
+      const timer = setTimeout(onComplete, 900);
       return () => clearTimeout(timer);
     }
-    const delay = wordIndex === 0 ? 800 : 130;
+    const delay = wordIndex === 0 ? 900 : 330;
     const timer = setTimeout(() => setWordIndex((i) => i + 1), delay);
     return () => clearTimeout(timer);
   }, [wordIndex, onComplete]);
