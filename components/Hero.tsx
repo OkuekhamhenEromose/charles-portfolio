@@ -89,6 +89,31 @@ function CodeBlock() {
   );
 }
 
+function ScrollIndicator({ className = "" }: { className?: string }) {
+  return (
+    <motion.a
+      href="/#about"
+      aria-label="Scroll to about"
+      className={`flex flex-col items-center gap-2 text-muted-foreground
+                  hover:text-primary transition-colors duration-300 ${className}`}
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 1.5, duration: 0.6 }}
+    >
+      <span className="text-[10px] uppercase tracking-[0.2em] font-semibold">
+        Scroll
+      </span>
+
+      <motion.div
+        animate={{ y: [0, 7, 0] }}
+        transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
+      >
+        <ArrowDown className="w-4 h-4" />
+      </motion.div>
+    </motion.a>
+  );
+}
+
 export default function Hero() {
   const globeRef = useRef<HTMLVideoElement>(null);
 
@@ -268,6 +293,7 @@ export default function Hero() {
               Download CV
             </motion.a>
           </motion.div>
+          <ScrollIndicator className="mt-8 md:hidden" />
         </motion.div>
 
         {/* RIGHT — Globe */}
@@ -310,7 +336,7 @@ export default function Hero() {
       </div>
 
       {/* Scroll indicator */}
-      <motion.a
+      {/* <motion.a
         href="/#about"
         aria-label="Scroll to about"
         className="absolute bottom-6 left-1/2 -translate-x-1/2
@@ -329,7 +355,11 @@ export default function Hero() {
         >
           <ArrowDown className="w-4 h-4" />
         </motion.div>
-      </motion.a>
+      </motion.a> */}
+      {/* Desktop scroll indicator */}
+<ScrollIndicator
+  className="hidden md:flex absolute bottom-6 left-1/2 -translate-x-1/2"
+/>
     </section>
   );
 }
