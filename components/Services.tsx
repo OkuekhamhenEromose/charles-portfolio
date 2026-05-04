@@ -117,21 +117,22 @@ export default function Services() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section className="relative overflow-hidden py-12">
+    <section id="services" className="relative overflow-hidden py-12">
       <div
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 h-150 w-200 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/4 blur-[130px]"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-150 w-200
+                   -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/4 blur-[130px]"
       />
 
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-12">
         <motion.div
-          className="mb-20 text-center"
+          className="mb-12 text-center sm:mb-16"
           initial={{ opacity: 0, y: -30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.75, ease: "easeOut" }}
         >
-          <span className="section-tag mb-2 inline-flex">What I Offer</span>
+          <span className="section-tag mb-3 inline-flex">What I Offer</span>
 
           <h2 className="section-title mt-3 text-foreground">
             My <span className="gradient-text">Services</span>
@@ -145,7 +146,9 @@ export default function Services() {
 
         <motion.div
           ref={ref}
-          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid grid-cols-1 place-items-center gap-5
+                     sm:grid-cols-2 sm:place-items-stretch sm:gap-6
+                     lg:grid-cols-3"
           variants={containerVariants}
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
@@ -158,45 +161,79 @@ export default function Services() {
                 key={item.id}
                 variants={cardVariants}
                 whileHover={{ y: -10, scale: 1.02 }}
-                className="group relative flex cursor-default flex-col gap-5 overflow-hidden rounded-2xl border border-border bg-card p-7 shadow-lg transition-all duration-500 hover:border-primary/50 hover:shadow-[0_20px_60px_rgba(0,0,0,0.25)]"
+                className="group relative flex w-[88%] max-w-[22rem] cursor-default flex-col
+                           overflow-hidden rounded-2xl border border-border bg-card p-5
+                           shadow-lg transition-all duration-500
+                           hover:border-primary/50 hover:shadow-[0_20px_60px_rgba(0,0,0,0.25)]
+                           sm:w-full sm:max-w-none sm:gap-5 sm:p-7"
               >
                 <div
-                  className={`pointer-events-none absolute inset-0 bg-linear-to-br ${item.accent} opacity-0 transition-opacity duration-500 group-hover:opacity-100`}
+                  className={`pointer-events-none absolute inset-0 bg-linear-to-br ${item.accent}
+                              opacity-0 transition-opacity duration-500 group-hover:opacity-100`}
                 />
 
                 <span
-                  className={`pointer-events-none absolute bottom-3 right-4 select-none font-heading text-[6rem] font-black leading-none text-muted-foreground/15 transition-colors duration-500 ${item.numberColor}`}
+                  className={`pointer-events-none absolute bottom-3 right-4 select-none
+                              font-heading text-[5rem] font-black leading-none
+                              text-muted-foreground/10 transition-colors duration-500
+                              sm:text-[6rem] sm:text-muted-foreground/15 ${item.numberColor}`}
                 >
                   {String(item.id).padStart(2, "0")}
                 </span>
 
                 <span
-                  className={`relative z-10 self-start rounded-full bg-muted/60 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground transition-colors duration-300 ${item.tagBg} ${item.tagColor}`}
+                  className={`relative z-10 mb-5 self-start rounded-full bg-muted/60 px-3 py-1
+                              text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground
+                              transition-colors duration-300 sm:mb-0 ${item.tagBg} ${item.tagColor}`}
                 >
                   {item.tag}
                 </span>
 
-                <div
-                  className={`relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/70 shadow-sm transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg ${item.iconBg}`}
-                >
-                  <Icon
-                    className={`text-xl text-muted-foreground transition-colors duration-300 ${item.iconColor} group-hover:text-white`}
+                <div className="relative z-10 flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-start gap-3">
+                    <div
+                      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl
+                                  bg-muted/70 shadow-sm transition-all duration-500
+                                  group-hover:scale-110 group-hover:shadow-lg
+                                  sm:h-14 sm:w-14 sm:rounded-2xl ${item.iconBg}`}
+                    >
+                      <Icon
+                        className={`text-base text-muted-foreground transition-colors duration-300
+                                    sm:text-xl ${item.iconColor} group-hover:text-white`}
+                      />
+                    </div>
+
+                    <h3
+                      className="pt-0.5 text-[1rem] font-bold leading-tight text-foreground
+                                 transition-colors duration-300 group-hover:text-primary
+                                 sm:pt-0 sm:text-xl"
+                    >
+                      {item.title}
+                    </h3>
+                  </div>
+
+                  <ArrowUpRight
+                    className="mt-1 h-4 w-4 shrink-0 text-muted-foreground
+                               transition-colors duration-300 group-hover:text-primary
+                               sm:hidden"
                   />
                 </div>
 
-                <div className="relative z-10 flex flex-col gap-2">
-                  <h3 className="card-title text-xl transition-colors duration-300 group-hover:text-primary">
-                    {item.title}
-                  </h3>
-
-                  <p className="small-text transition-colors duration-300 group-hover:text-foreground/80">
-                    {item.desc}
-                  </p>
-                </div>
+                <p
+                  className="relative z-10 mt-2 pl-12 text-[0.82rem] leading-5 text-muted-foreground
+                             transition-colors duration-300 group-hover:text-foreground/80
+                             sm:mt-0 sm:pl-0 sm:text-sm sm:leading-6"
+                >
+                  {item.desc}
+                </p>
 
                 <Link
                   href="/#portfolio"
-                  className="relative z-10 mt-auto inline-flex translate-y-2 items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary opacity-0 transition-all duration-300 hover:underline group-hover:translate-y-0 group-hover:opacity-100"
+                  className="relative z-10 mt-5 inline-flex translate-y-2 items-center
+                             gap-1.5 text-xs font-bold uppercase tracking-wider text-primary
+                             opacity-0 transition-all duration-300 hover:underline
+                             group-hover:translate-y-0 group-hover:opacity-100
+                             sm:mt-auto"
                 >
                   See examples <ArrowUpRight className="h-3.5 w-3.5" />
                 </Link>

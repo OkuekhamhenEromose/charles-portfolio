@@ -83,7 +83,7 @@ const skills = [
 
 const stats = [
   { value: "90%", label: "Performance Boost" },
-  { value: "50+", label: "Projects" },
+  { value: "75+", label: "Projects" },
   { value: "1K+", label: "Concurrent Users" },
   { value: "99.9%", label: "Uptime Reliability" },
 ];
