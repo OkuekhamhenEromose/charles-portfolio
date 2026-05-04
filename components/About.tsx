@@ -82,10 +82,10 @@ const skills = [
 
 
 const stats = [
-  { value: "4+", label: "Years Exp." },
+  { value: "90%", label: "Performance Boost" },
   { value: "20+", label: "Projects" },
-  { value: "10+", label: "Clients" },
-  { value: "∞", label: "Coffee" },
+  { value: "1K+", label: "Concurrent Users" },
+  { value: "99.9%", label: "Uptime Reliability" },
 ];
 
 export default function About() {
@@ -149,7 +149,7 @@ export default function About() {
 
               <div className="absolute -right-4 -top-4 z-30 glass-card px-4 py-2 text-center shadow-lg border border-primary/30 rounded-xl">
                 <div className="text-2xl font-heading font-black text-primary leading-none">
-                  4+
+                  5+
                 </div>
                 <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold mt-0.5">
                   Years
