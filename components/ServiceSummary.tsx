@@ -52,7 +52,7 @@ export default function ServiceSummary() {
     "font-heading font-black uppercase tracking-tighter select-none will-change-transform";
   /* FIX: reduced text sizes one step each for tighter layout */
   const sizes =
-    "text-[2rem] sm:text-[3rem] md:text-[4.2rem] lg:text-[5.5rem] xl:text-[6.5rem]";
+  "text-[2.4rem] sm:text-[3.2rem] md:text-[4.2rem] lg:text-[5.5rem] xl:text-[6.5rem]";
   const primary = "text-primary";
   const baseText = "text-foreground/90"; // softer but still readable
   const strongText = "text-foreground";
@@ -63,12 +63,12 @@ export default function ServiceSummary() {
       /* FIX: py reduced from py-6/py-10 to py-3/py-5 */
       /* FIX: gap reduced from gap-1/gap-2 to gap-0 */
       className="relative flex flex-col items-start justify-center
-                 overflow-hidden py-3 md:py-5"
+                 overflow-hidden py-6 sm:py-8 md:py-5"
     >
       {/* Row 1 — LEFT */}
       <div
         data-row="left"
-        className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-none`}
+        className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-[1.10] mb-2 sm:mb-3 md:mb-0`}
       >
         <span className={baseText}>Architecture</span>
         <span className={`${primary} mx-4`}>Systems</span>
@@ -78,8 +78,7 @@ export default function ServiceSummary() {
 
       {/* Row 2 — RIGHT */}
       <div
-        data-row="right"
-        className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-none`}
+        className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-[1.10] mb-2 sm:mb-3 md:mb-0`}
       >
         <span className={primary}>Development</span>
         <span className={`${strongText} mx-4`}>Deployment</span>
@@ -89,8 +88,7 @@ export default function ServiceSummary() {
 
       {/* Row 3 — LEFT */}
       <div
-        data-row="left"
-        className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-none`}
+        className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-[1.10] mb-2 sm:mb-3 md:mb-0`}
       >
         <span className={strongText}>APIs</span>
         <span className={`${primary} mx-4`}>Frontends</span>
@@ -102,7 +100,7 @@ export default function ServiceSummary() {
       {/* Row 4 — RIGHT */}
       <div
         data-row="right"
-        className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-none`}
+        className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-[1.10] mb-2 sm:mb-3 md:mb-0`}
       >
         <span className={primary}>Databases</span>
         <span className={`${strongText} mx-4`}>Cloud</span>
