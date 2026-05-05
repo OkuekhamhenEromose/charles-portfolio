@@ -64,7 +64,17 @@ const portfolioProjects: PortfolioProject[] = [
     githubLink: "https://github.com/OkuekhamhenEromose/chardevtravel",
   },
   {
-    id: 5,
+  id: 5,
+  title: "BemaHub API Bridge & Mapping System",
+  description:
+    "A production-focused API integration and mapping system built with WordPress (PHP), bridging frontend contracts to backend services. Involved tracing 50+ endpoints, validating authentication flows, testing APIs, and documenting full frontend-backend alignment with proof-driven verification.",
+  category: "Backend",
+  image: "/images/portfolio/backendphp.png", // replace with your screenshot file
+  demoLink: "", // optional (can leave empty or use local link if hosted)
+  githubLink: "https://github.com/your-repo-link", // replace with your actual repo
+},
+  {
+    id: 6,
     title: "CHBlog App",
     description:
       "A full-stack blogging platform with role-based authentication, protected routes, and CRUD operations.",
@@ -74,7 +84,7 @@ const portfolioProjects: PortfolioProject[] = [
     githubLink: "https://github.com/ehihameneromosele/fullblogc",
   },
   {
-    id: 6,
+    id: 7,
     title: "Listings App (Backend)",
     description:
       "A backend-driven property listings API built with Django and Django REST Framework.",
@@ -84,7 +94,7 @@ const portfolioProjects: PortfolioProject[] = [
     githubLink: "https://github.com/OkuekhamhenEromose/housing_properties",
   },
   {
-    id: 7,
+    id: 8,
     title: "Real Estate Website",
     description:
       "A responsive real estate frontend for showcasing properties for sale and rent.",
@@ -94,7 +104,7 @@ const portfolioProjects: PortfolioProject[] = [
     githubLink: "https://github.com/OkuekhamhenEromose/RealEstateModern",
   },
   {
-    id: 8,
+    id: 9,
     title: "Resume Builder",
     description:
       "A Django REST Framework–powered resume builder that generates structured, professional resumes.",
@@ -104,7 +114,7 @@ const portfolioProjects: PortfolioProject[] = [
     githubLink: "https://github.com/OkuekhamhenEromose/myresume",
   },
   {
-    id: 9,
+    id: 10,
     title: "EthaHospital Management",
     description:
       "Production-ready hospital management system with Google OAuth.",
@@ -114,7 +124,7 @@ const portfolioProjects: PortfolioProject[] = [
     githubLink: "https://github.com/OkuekhamhenEromose/dhospitalback",
   },
   {
-    id: 10,
+    id: 11,
     title: "Portfolio",
     description:
       "A personal portfolio website built with HTML, CSS, and JavaScript.",
@@ -124,7 +134,7 @@ const portfolioProjects: PortfolioProject[] = [
     githubLink: "https://github.com/OkuekhamhenEromose/portfolio-original",
   },
   {
-    id: 11,
+    id: 12,
     title: "Advanced Portfolio",
     description:
       "A next-generation portfolio built with Next.js and Framer Motion with SEO optimization.",
