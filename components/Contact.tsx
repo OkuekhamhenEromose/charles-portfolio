@@ -99,7 +99,7 @@ export default function Contact() {
   };
 
   return (
-    <section className="relative py-24 overflow-hidden">
+    <section className="relative overflow-hidden">
       <div
         aria-hidden
         className="absolute right-0 bottom-0 w-125 h-125
@@ -191,7 +191,8 @@ export default function Contact() {
                 variants={fadeInLeft}
                 whileHover={!loading ? { scale: 1.03, x: 4 } : {}}
                 whileTap={!loading ? { scale: 0.97 } : {}}
-                className={`btn w-full sm:w-auto text-sm px-8 py-3 ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
+                className={`btn w-auto self-start text-sm px-8 py-3
+           ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
               >
                 {loading ? (
                   <><Loader2 className="w-4 h-4 animate-spin" /> Sending…</>
