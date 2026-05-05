@@ -54,7 +54,7 @@ export default function MobileNav() {
 
   return (
     <>
-      <div className="fixed right-6 top-6 z-90 md:hidden">
+      <div className="mobile-nav-trigger">
         <motion.button
           ref={buttonRef}
           type="button"
@@ -97,7 +97,7 @@ export default function MobileNav() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-70 bg-background/60 md:hidden"
+              className="fixed inset-0 z-9999 bg-background/60 md:hidden"
               onClick={closeMenu}
             />
 
@@ -107,7 +107,7 @@ export default function MobileNav() {
               initial="hidden"
               animate="show"
               exit="hidden"
-              className="fixed right-0 top-0 z-80 flex h-dvh w-[88vw] max-w-95 flex-col
+              className="fixed right-0 top-0 z-9999 flex h-dvh w-[88vw] max-w-95 flex-col
                          border-l border-border bg-card shadow-[-24px_0_80px_rgb(0_0_0/0.28)] md:hidden"
             >
               <div className="flex items-center justify-between px-8 pb-7 pt-9">

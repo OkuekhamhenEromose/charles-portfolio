@@ -414,8 +414,21 @@
     mask: linear-gradient(90deg, transparent, white 15%, white 85%, transparent);
   }
 
-  /* FIX: top-level — was incorrectly nested inside @media(max-width:640px)
-     which made it a logical AND condition that never matched          */
+  .mobile-nav-trigger {
+    position: fixed !important;
+    top: calc(env(safe-area-inset-top, 0px) + 1rem) !important;
+    right: 1rem !important;
+    z-index: 9999 !important;
+    transform: translateZ(0);
+    isolation: isolate;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-nav-trigger {
+      display: none !important;
+    }
+  }
+  
   @media (prefers-reduced-motion: reduce) {
 
     .hero-marquee-track {
