@@ -69,9 +69,9 @@ const portfolioProjects: PortfolioProject[] = [
   description:
     "A production-focused API integration and mapping system built with WordPress (PHP), bridging frontend contracts to backend services. Involved tracing 50+ endpoints, validating authentication flows, testing APIs, and documenting full frontend-backend alignment with proof-driven verification.",
   category: "Backend",
-  image: "/images/portfolio/backendphp.png", // replace with your screenshot file
-  demoLink: "", // optional (can leave empty or use local link if hosted)
-  githubLink: "https://github.com/your-repo-link", // replace with your actual repo
+  image: "/images/portfolio/backendphp.png",
+  demoLink: "",
+  githubLink: "https://github.com/your-repo-link",
 },
   {
     id: 6,
@@ -190,15 +190,8 @@ const Portfolio = () => {
       ? portfolioProjects
       : portfolioProjects.filter((p) => p.category === activeCategory);
   }, [activeCategory]);
-
-  // ─── Kill existing ScrollTrigger ───────────────────────────────────────────
-  // FIX: After killing the pin, we immediately reset the window scroll to the
-  // section's natural offsetTop.  Without this, when GSAP removes its
-  // pinSpacer the browser's scroll position is left past the section, causing
-  // the next section (Testimonials) to flash into view for a moment.
   const killPortfolioScrollTrigger = useCallback(() => {
     const section = sectionRef.current;
-    // Capture section top BEFORE the kill so the pinSpacer is still in the DOM
     const sectionTop = section?.offsetTop ?? 0;
 
     if (scrollTriggerRef.current) {
@@ -216,12 +209,9 @@ const Portfolio = () => {
     if (sliderRef.current) {
       gsap.set(sliderRef.current, { x: 0 });
     }
-
-    // Snap scroll back to the section so the next section never bleeds in
     window.scrollTo(0, sectionTop);
   }, []);
 
-  // ─── Animate cards into view (staggered entrance) ──────────────────────────
   const animateCardsIn = useCallback(() => {
     const cards = sliderRef.current?.querySelectorAll<HTMLElement>("article");
     if (!cards || cards.length === 0) return;
@@ -236,13 +226,10 @@ const Portfolio = () => {
         stagger: { each: 0.07, from: "start" },
         duration: 0.55,
         ease: "back.out(1.4)",
-        // Clear so inline rotate styles + hover handlers regain full control
         clearProps: "opacity,y,scale",
       },
     );
   }, []);
-
-  // ─── Animate current cards out, then switch filter ─────────────────────────
   const handleCategoryChange = useCallback(
     async (categoryId: "all" | ProjectCategory) => {
       if (categoryId === activeCategory || isFilteringRef.current) return;
@@ -251,8 +238,6 @@ const Portfolio = () => {
       const cards = sliderRef.current?.querySelectorAll<HTMLElement>("article");
 
       if (cards && cards.length > 0) {
-        // Cards exit: slide up & fade, quick stagger from the end so the
-        // trailing cards vanish first, giving a "sweeping out" feel.
         await gsap.to(cards, {
           opacity: 0,
           y: -20,
@@ -262,15 +247,11 @@ const Portfolio = () => {
           ease: "power2.in",
         });
       }
-
-      // State change → React re-renders with new cards
       setActiveCategory(categoryId);
       isFilteringRef.current = false;
     },
     [activeCategory],
   );
-
-  // ─── Build / rebuild horizontal scroll animation ────────────────────────────
   const buildScrollAnimation = useCallback(() => {
     killPortfolioScrollTrigger();
 
@@ -287,7 +268,6 @@ const Portfolio = () => {
         : totalScrollWidth - viewportWidth * 0.6;
 
       if (scrollAmount <= 0) {
-        // Nothing to scroll — just animate cards in
         animateCardsIn();
         return;
       }
@@ -309,18 +289,11 @@ const Portfolio = () => {
 
       scrollTriggerRef.current = timeline.scrollTrigger ?? null;
       ScrollTrigger.refresh();
-
-      // Animate the freshly-rendered cards into view
       animateCardsIn();
     });
   }, [isMobile, killPortfolioScrollTrigger, animateCardsIn]);
 
-  // ─── Effect: re-run scroll animation whenever the filter/count changes ──────
   useEffect(() => {
-    // FIX: Immediately hide the newly rendered cards so they don't pop in
-    // before the entrance animation fires.  We reset them to opacity:0 right
-    // after React commits the new DOM, then `buildScrollAnimation` will
-    // reveal them with the staggered `animateCardsIn` entrance.
     const cards = sliderRef.current?.querySelectorAll<HTMLElement>("article");
     if (cards) gsap.set(cards, { opacity: 0, y: 20 });
 
@@ -334,7 +307,6 @@ const Portfolio = () => {
     };
   }, [activeCategory, filteredProjects.length, buildScrollAnimation, killPortfolioScrollTrigger]);
 
-  // ─── Section title / description entrance animation ─────────────────────────
   useGSAP(
     () => {
       gsap.from(".portfolio-title-line", {
@@ -370,7 +342,6 @@ const Portfolio = () => {
       className="portfolio-section relative min-h-screen overflow-hidden"
     >
       <div className="flex min-h-screen h-full flex-col lg:flex-row">
-        {/* ── Left panel: title + filter buttons ─────────────────────────── */}
         <div className="relative z-10 flex w-full flex-col justify-center px-6 mt-24 sm:px-10 lg:w-[35%] lg:px-14 lg:py-0">
           <div className="overflow-hidden">
             <h2 className="portfolio-title-line section-title text-foreground">
@@ -407,7 +378,6 @@ const Portfolio = () => {
                 <button
                   key={cat.id}
                   type="button"
-                  // ↓ use handleCategoryChange instead of setActiveCategory
                   onClick={() => void handleCategoryChange(cat.id)}
                   className={`
                     rounded-full border font-body font-semibold transition-all duration-300
@@ -427,8 +397,6 @@ const Portfolio = () => {
             })}
           </div>
         </div>
-
-        {/* ── Right panel: horizontal card slider ────────────────────────── */}
         <div
           className="relative flex w-full items-center lg:w-[65%]"
           style={{
@@ -446,77 +414,9 @@ const Portfolio = () => {
               const baseRotation = index % 2 === 0 ? -3 : 3;
 
               return (
-                // <article
-                //   key={project.id}
-                //   className="group relative w-70 shrink-0 overflow-hidden rounded-2xl border border-border bg-card shadow-lg transition-all duration-500 hover:shadow-2xl sm:w-85"
-                //   style={{
-                //     transform: `rotate(${baseRotation}deg)`,
-                //     transition: "transform 0.5s ease",
-                //   }}
-                //   onMouseEnter={(e) => {
-                //     e.currentTarget.style.transform = "rotate(0deg) scale(1.03)";
-                //   }}
-                //   onMouseLeave={(e) => {
-                //     e.currentTarget.style.transform = `rotate(${baseRotation}deg)`;
-                //   }}
-                // >
-                //   {/* ── Card image ── */}
-                //   <div className="relative h-48 overflow-hidden sm:h-56">
-                //     <Image
-                //       src={project.image}
-                //       alt={project.title}
-                //       fill
-                //       sizes="(max-width: 640px) 280px, (max-width: 1024px) 340px, 340px"
-                //       className="object-cover transition-transform duration-700 group-hover:scale-110"
-                //       priority={index < 2}
-                //     />
-
-                //     <span className="absolute left-3 top-3 rounded-lg bg-primary/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground backdrop-blur-sm">
-                //       {project.category}
-                //     </span>
-
-                //     {/* ── Hover overlay: action buttons ── */}
-                //     <div className="absolute inset-0 flex items-center justify-center gap-5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                //       <a
-                //         href={project.demoLink}
-                //         target="_blank"
-                //         rel="noreferrer"
-                //         aria-label={`Open live demo for ${project.title}`}
-                //         className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)]"
-                //       >
-                //         <ExternalLink size={20} />
-                //       </a>
-
-                //       <a
-                //         href={project.githubLink}
-                //         target="_blank"
-                //         rel="noreferrer"
-                //         aria-label={`Open GitHub repository for ${project.title}`}
-                //         className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)]"
-                //       >
-                //         <FaGithub size={20} />
-                //       </a>
-                //     </div>
-                //   </div>
-
-                //   {/* ── Card body ── */}
-                //   <div className="bg-card/40 p-5">
-                //     <h3 className="card-title mb-2 line-clamp-1 text-base text-primary sm:text-lg">
-                //       {project.title}
-                //     </h3>
-                //     <p className="small-text line-clamp-3">{project.description}</p>
-                //   </div>
-                // </article>
 
                 <article
                   key={project.id}
-                  /*
-                    Card widths by breakpoint:
-                      mobile (< sm)  → w-52 / 208 px  — ~1.5 cards visible on 375px
-                      sm (≥ 640)     → w-64 / 256 px
-                      md (≥ 768)     → w-72 / 288 px
-                      lg+ (desktop)  → w-80 / 320 px
-                  */
                   className="
                     group relative shrink-0 overflow-hidden rounded-2xl
                     border border-border bg-card shadow-lg
@@ -537,8 +437,7 @@ const Portfolio = () => {
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
                       priority={index < 2}
                     />
- 
-                    {/* Category badge */}
+
                     <span className="
                       absolute left-2 top-2 rounded-md bg-primary/90
                       text-primary-foreground backdrop-blur-sm font-bold uppercase tracking-wider

@@ -51,67 +51,6 @@ const testimonials = [
 export default function Testimonials({ ready }: TestimonialsProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
 
-  // useEffect(() => {
-  //   // Gate: wait until preloader has fully exited and page is visible
-  //   if (!ready) return;
-
-  //   let ctx: gsap.Context;
-
-  //   // rAF + setTimeout: ensures fonts have loaded and Portfolio's pin
-  //   // has settled its scroll-height before GSAP measures positions
-  //   const raf = requestAnimationFrame(() => {
-  //     const timer = setTimeout(() => {
-  //       ctx = gsap.context(() => {
-  //         const cards = gsap.utils.toArray<HTMLElement>(".trav-card");
-  //         if (!cards.length) return;
-
-  //         // Hide cards NOW (after delay) — not at mount — so there's
-  //         // no invisible-content flash during the preloader phase
-  //         gsap.set(cards, { autoAlpha: 0 });
-
-  //         cards.forEach((card, index) => {
-  //           // Matches Traversy exactly:
-  //           // even index (0,2,4) → slide from LEFT; odd (1,3) → from RIGHT
-  //           const fromX = index % 2 === 0 ? -150 : 150;
-
-  //           gsap.fromTo(
-  //             card,
-  //             { autoAlpha: 0, x: fromX, y: 25 },
-  //             {
-  //               autoAlpha: 1,
-  //               x: 0,
-  //               y: 0,
-  //               duration: 0.85,
-  //               ease: "power3.out",
-  //               scrollTrigger: {
-  //                 trigger: card,
-  //                 start: "top 85%",
-  //                 end: "top 35%",
-  //                 // "play"    → scroll down into view   → animate in
-  //                 // "none"    → scroll down past card   → stay visible
-  //                 // "none"    → scroll back into view   → stay visible
-  //                 // "reverse" → scroll back up past start → animate out
-  //                 toggleActions: "play none none reverse",
-  //                 invalidateOnRefresh: true,
-  //               },
-  //             }
-  //           );
-  //         });
-
-  //         // Recalculate all offsets after Portfolio pin settles
-  //         ScrollTrigger.refresh();
-  //       }, sectionRef);
-  //     }, 400); // > PAGE.TSX motion.div transition (0.7s) so layout is stable
-
-  //     return () => clearTimeout(timer);
-  //   });
-
-  //   return () => {
-  //     cancelAnimationFrame(raf);
-  //     ctx?.revert();
-  //   };
-  // }, [ready]);
-
   useLayoutEffect(() => {
   if (!ready || !sectionRef.current) return;
 

@@ -2,10 +2,6 @@
 
 import { useEffect, useRef } from "react";
 
-/**
- * ServiceSummary — text rows converge from edges to centre on scroll.
- * CHANGE: reduced row gaps and section padding for tighter spacing.
- */
 export default function ServiceSummary() {
   const sectionRef = useRef<HTMLElement>(null);
 

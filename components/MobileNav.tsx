@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import Socials from "./Socials";
 
 const navItems = [
@@ -41,15 +40,13 @@ const itemVariants: Variants = {
 
 export default function MobileNav() {
   const [isActive, setIsActive] = useState(false);
-  const pathname = usePathname();
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    setIsActive(false);
-  }, [pathname]);
+  const closeMenu = () => setIsActive(false);
 
   useEffect(() => {
     document.body.style.overflow = isActive ? "hidden" : "";
+
     return () => {
       document.body.style.overflow = "";
     };
@@ -57,15 +54,16 @@ export default function MobileNav() {
 
   return (
     <>
-      <div className="fixed right-6 top-6 z-[90] md:hidden">
+      <div className="fixed right-6 top-6 z-90 md:hidden">
         <motion.button
           ref={buttonRef}
+          type="button"
           onClick={() => setIsActive((prev) => !prev)}
           aria-label={isActive ? "Close menu" : "Open menu"}
           aria-expanded={isActive}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.92 }}
-          className="group relative flex h-[68px] w-[68px] items-center justify-center overflow-hidden rounded-full
+          className="group relative flex h-17 w-17 items-center cursor-pointer justify-center overflow-hidden rounded-full
                      border border-border bg-card shadow-[0_8px_40px_rgb(0_0_0/0.35)]
                      transition-shadow duration-300"
         >
@@ -76,7 +74,7 @@ export default function MobileNav() {
               className={`block h-[1.5px] rounded-full bg-foreground transition-all duration-300 group-hover:bg-primary-foreground ${
                 isActive
                   ? "w-9 translate-y-[0.75px] rotate-45"
-                  : "w-9 -translate-y-[5px]"
+                  : "w-9 -translate-y-1.25"
               }`}
             />
 
@@ -84,7 +82,7 @@ export default function MobileNav() {
               className={`block h-[1.5px] rounded-full bg-foreground transition-all duration-300 group-hover:bg-primary-foreground ${
                 isActive
                   ? "w-9 -translate-y-[0.75px] -rotate-45"
-                  : "w-6 translate-y-[5px]"
+                  : "w-6 translate-y-1.25"
               }`}
             />
           </span>
@@ -99,8 +97,8 @@ export default function MobileNav() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[70] bg-background/60 md:hidden"
-              onClick={() => setIsActive(false)}
+              className="fixed inset-0 z-70 bg-background/60 md:hidden"
+              onClick={closeMenu}
             />
 
             <motion.aside
@@ -109,13 +107,13 @@ export default function MobileNav() {
               initial="hidden"
               animate="show"
               exit="hidden"
-              className="fixed right-0 top-0 z-[80] flex h-dvh w-[88vw] max-w-[380px] flex-col
+              className="fixed right-0 top-0 z-80 flex h-dvh w-[88vw] max-w-95 flex-col
                          border-l border-border bg-card shadow-[-24px_0_80px_rgb(0_0_0/0.28)] md:hidden"
             >
               <div className="flex items-center justify-between px-8 pb-7 pt-9">
                 <Link
                   href="/"
-                  onClick={() => setIsActive(false)}
+                  onClick={closeMenu}
                   className="font-heading text-2xl font-black tracking-tight text-primary"
                 >
                   CE<span className="text-muted-foreground/40">.</span>
@@ -137,14 +135,14 @@ export default function MobileNav() {
                     >
                       <Link
                         href={item.href}
-                        onClick={() => setIsActive(false)}
+                        onClick={closeMenu}
                         className="group flex w-full items-center justify-between py-4"
                       >
-                        <span className="font-heading text-[2rem] font-black leading-none tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary">
+                        <span className="font-heading text-[1.2rem] font-black leading-none tracking-tight text-foreground transition-colors duration-300 group-hover:text-primary">
                           {item.name}
                         </span>
 
-                        <span className="font-mono text-[11px] text-muted-foreground transition-all duration-300 group-hover:translate-x-1 group-hover:text-primary">
+                        <span className="font-mono text-[11px] mr-4 text-muted-foreground transition-all duration-300 group-hover:translate-x-1 group-hover:text-primary">
                           {item.num}
                         </span>
                       </Link>

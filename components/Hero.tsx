@@ -192,16 +192,10 @@ export default function Hero() {
                       w-175 h-175 rounded-full bg-primary/8
                       blur-[130px] pointer-events-none"
       />
-
-      {/* ══════════════════════════════════════════════════════
-          MARQUEE STRIP — dennis sliderContainer pattern
-          Sits at the very top of the hero below the header.
-      ══════════════════════════════════════════════════════ */}
       <div
         className="mt-20 sm:mt-24 overflow-hidden border-y border-border/20
                       bg-card/10"
       >
-        {/* sliderRef — GSAP parallaxes this (like dennis's slider ref) */}
         <div ref={sliderRef} className="flex items-center">
           <div className="hero-marquee-mask w-full overflow-hidden">
   <div className="hero-marquee-track">
@@ -229,9 +223,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* ══════════════════════════════════════════════════════
-          MAIN CONTENT
-      ══════════════════════════════════════════════════════ */}
       <div
         className="flex-1 container mx-auto relative z-10
                       flex flex-col lg:flex-row items-center justify-between px-8 sm:px-10 lg:px-12 py-2 lg:py-4"
@@ -334,29 +325,6 @@ export default function Hero() {
           </div>
         </motion.div>
       </div>
-
-      {/* Scroll indicator */}
-      {/* <motion.a
-        href="/#about"
-        aria-label="Scroll to about"
-        className="absolute bottom-6 left-1/2 -translate-x-1/2
-                           flex flex-col items-center gap-2 text-muted-foreground
-                           hover:text-primary transition-colors duration-300"
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.5, duration: 0.6 }}
-      >
-        <span className="text-[10px] uppercase tracking-[0.2em] font-semibold">
-          Scroll
-        </span>
-        <motion.div
-          animate={{ y: [0, 7, 0] }}
-          transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
-        >
-          <ArrowDown className="w-4 h-4" />
-        </motion.div>
-      </motion.a> */}
-      {/* Desktop scroll indicator */}
 <ScrollIndicator
   className="hidden md:flex absolute bottom-6 left-1/2 -translate-x-1/2"
 />

@@ -4,8 +4,6 @@ import { useState, useRef, FormEvent, ChangeEvent } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import {Send, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
-// FIX #3 — import from "emailjs" (the package the user installed), not "@emailjs/browser"
-// The "emailjs" v5 package exports a default object with .send() and .sendForm()
 import emailjs from "@emailjs/browser";
 
 const fadeInDown = {

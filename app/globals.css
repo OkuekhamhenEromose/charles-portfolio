@@ -384,14 +384,11 @@
   .glow-lg      { box-shadow: 0 0 60px rgb(var(--primary) / 0.28); }
   .glow-highlight { box-shadow: 0 0 30px rgb(var(--highlight) / 0.25); }
 
-  /* Legacy — kept for any component still using it */
   .animate-slide-left {
     animation: slide-left 35s linear infinite;
     width: max-content;
   }
   .animate-slide-left:hover { animation-play-state: paused; }
-
-  /* ── Kelvin infinite scroll ──────────────────────────────────────────── */
   .skills-scroll-left {
     display: flex;
     gap: 1rem;
@@ -399,10 +396,6 @@
     flex-wrap: nowrap;
     animation: scroll-left 25s linear infinite;
   }
-
-  /* FIX: animation-direction:reverse on the SAME keyframe.
-     No position-jump because we start at translateX(0) and go right,
-     which is the visual inverse of going left. */
   .skills-scroll-right {
     display: flex;
     gap: 1.5rem;
