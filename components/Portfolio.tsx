@@ -361,20 +361,29 @@ const Portfolio = () => {
     >
       <div className="flex min-h-screen h-full flex-col lg:flex-row">
         {/* ── Left panel: title + filter buttons ─────────────────────────── */}
-        <div className="relative z-10 flex w-full flex-col justify-center px-6 py-10 sm:px-10 lg:w-[35%] lg:px-14 lg:py-0">
+        <div className="relative z-10 flex w-full flex-col justify-center px-6 mt-24 sm:px-10 lg:w-[35%] lg:px-14 lg:py-0">
           <div className="overflow-hidden">
             <h2 className="portfolio-title-line section-title text-foreground">
               My <span className="gradient-text">creative</span>
             </h2>
           </div>
 
-          <div className="mb-6 overflow-hidden">
+          <div className="mb-4 overflow-hidden">
             <h2 className="portfolio-title-line section-title text-foreground">
               projects
             </h2>
           </div>
 
-          <p className="portfolio-desc body-text mb-8 max-w-md">
+          <p
+            className="
+              portfolio-desc max-w-md font-body text-muted-foreground
+              mt-1.5 mb-3.5 leading-snug
+              text-[1rem]
+              sm:mt-3.5 sm:mb-4 sm:text-sm sm:leading-relaxed
+              md:text-[0.85rem]
+              lg:mt-0 lg:mb-8 lg:text-base lg:leading-7
+            "
+          >
             A curated collection of projects spanning full-stack apps,
             frontends, and backend APIs — each reflecting clean code, scalable
             architecture, and thoughtful design.
@@ -390,11 +399,16 @@ const Portfolio = () => {
                   type="button"
                   // ↓ use handleCategoryChange instead of setActiveCategory
                   onClick={() => void handleCategoryChange(cat.id)}
-                  className={`rounded-full border px-4 py-2 font-body text-xs font-semibold transition-all duration-300 sm:text-sm ${
-                    isActive
+                  className={`
+                    rounded-full border font-body font-semibold transition-all duration-300
+                    px-2.5 py-1 text-[0.8rem]
+                    sm:px-4 sm:py-1.5 sm:text-xs
+                    lg:py-2 lg:text-sm
+                    ${isActive
                       ? "border-primary bg-primary text-primary-foreground shadow-lg"
                       : "border-border bg-card/60 text-muted-foreground hover:border-primary/30 hover:bg-primary/10 hover:text-primary"
-                  }`}
+                    }
+                  `}
                 >
                   {cat.name}
                   <span className="ml-1 opacity-60">({cat.count})</span>
@@ -416,71 +430,152 @@ const Portfolio = () => {
         >
           <div
             ref={sliderRef}
-            className="flex flex-nowrap items-center gap-8 px-4 py-12 lg:px-8"
+            className="flex flex-nowrap items-center gap-8 py-12 px-4 lg:px-8"
           >
             {filteredProjects.map((project, index) => {
               const baseRotation = index % 2 === 0 ? -3 : 3;
 
               return (
+                // <article
+                //   key={project.id}
+                //   className="group relative w-70 shrink-0 overflow-hidden rounded-2xl border border-border bg-card shadow-lg transition-all duration-500 hover:shadow-2xl sm:w-85"
+                //   style={{
+                //     transform: `rotate(${baseRotation}deg)`,
+                //     transition: "transform 0.5s ease",
+                //   }}
+                //   onMouseEnter={(e) => {
+                //     e.currentTarget.style.transform = "rotate(0deg) scale(1.03)";
+                //   }}
+                //   onMouseLeave={(e) => {
+                //     e.currentTarget.style.transform = `rotate(${baseRotation}deg)`;
+                //   }}
+                // >
+                //   {/* ── Card image ── */}
+                //   <div className="relative h-48 overflow-hidden sm:h-56">
+                //     <Image
+                //       src={project.image}
+                //       alt={project.title}
+                //       fill
+                //       sizes="(max-width: 640px) 280px, (max-width: 1024px) 340px, 340px"
+                //       className="object-cover transition-transform duration-700 group-hover:scale-110"
+                //       priority={index < 2}
+                //     />
+
+                //     <span className="absolute left-3 top-3 rounded-lg bg-primary/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground backdrop-blur-sm">
+                //       {project.category}
+                //     </span>
+
+                //     {/* ── Hover overlay: action buttons ── */}
+                //     <div className="absolute inset-0 flex items-center justify-center gap-5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                //       <a
+                //         href={project.demoLink}
+                //         target="_blank"
+                //         rel="noreferrer"
+                //         aria-label={`Open live demo for ${project.title}`}
+                //         className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)]"
+                //       >
+                //         <ExternalLink size={20} />
+                //       </a>
+
+                //       <a
+                //         href={project.githubLink}
+                //         target="_blank"
+                //         rel="noreferrer"
+                //         aria-label={`Open GitHub repository for ${project.title}`}
+                //         className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)]"
+                //       >
+                //         <FaGithub size={20} />
+                //       </a>
+                //     </div>
+                //   </div>
+
+                //   {/* ── Card body ── */}
+                //   <div className="bg-card/40 p-5">
+                //     <h3 className="card-title mb-2 line-clamp-1 text-base text-primary sm:text-lg">
+                //       {project.title}
+                //     </h3>
+                //     <p className="small-text line-clamp-3">{project.description}</p>
+                //   </div>
+                // </article>
+
                 <article
                   key={project.id}
-                  className="group relative w-70 shrink-0 overflow-hidden rounded-2xl border border-border bg-card shadow-lg transition-all duration-500 hover:shadow-2xl sm:w-85"
-                  style={{
-                    transform: `rotate(${baseRotation}deg)`,
-                    transition: "transform 0.5s ease",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "rotate(0deg) scale(1.03)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = `rotate(${baseRotation}deg)`;
-                  }}
+                  /*
+                    Card widths by breakpoint:
+                      mobile (< sm)  → w-52 / 208 px  — ~1.5 cards visible on 375px
+                      sm (≥ 640)     → w-64 / 256 px
+                      md (≥ 768)     → w-72 / 288 px
+                      lg+ (desktop)  → w-80 / 320 px
+                  */
+                  className="
+                    group relative shrink-0 overflow-hidden rounded-2xl
+                    border border-border bg-card shadow-lg
+                    transition-all duration-500 hover:shadow-2xl
+                    w-52 sm:w-64 md:w-72 lg:w-80
+                  "
+                  style={{ transform: `rotate(${baseRotation}deg)`, transition: "transform 0.5s ease" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.transform = "rotate(0deg) scale(1.03)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.transform = `rotate(${baseRotation}deg)`; }}
                 >
-                  {/* ── Card image ── */}
-                  <div className="relative h-48 overflow-hidden sm:h-56">
+                  {/* Card image */}
+                  <div className="relative h-32 overflow-hidden sm:h-40 lg:h-48">
                     <Image
                       src={project.image}
                       alt={project.title}
                       fill
-                      sizes="(max-width: 640px) 280px, (max-width: 1024px) 340px, 340px"
+                      sizes="(max-width: 640px) 208px, (max-width: 768px) 256px, (max-width: 1024px) 288px, 320px"
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
                       priority={index < 2}
                     />
-
-                    <span className="absolute left-3 top-3 rounded-lg bg-primary/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary-foreground backdrop-blur-sm">
+ 
+                    {/* Category badge */}
+                    <span className="
+                      absolute left-2 top-2 rounded-md bg-primary/90
+                      text-primary-foreground backdrop-blur-sm font-bold uppercase tracking-wider
+                      px-2 py-0.5 text-[8px]
+                      sm:left-3 sm:top-3 sm:px-2.5 sm:text-[9px]
+                      lg:text-[10px]
+                    ">
                       {project.category}
                     </span>
-
-                    {/* ── Hover overlay: action buttons ── */}
-                    <div className="absolute inset-0 flex items-center justify-center gap-5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+ 
+                    {/* Hover action overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:gap-4">
                       <a
                         href={project.demoLink}
                         target="_blank"
                         rel="noreferrer"
                         aria-label={`Open live demo for ${project.title}`}
-                        className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)]"
+                        className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)] sm:h-11 sm:w-11 lg:h-12 lg:w-12"
                       >
-                        <ExternalLink size={20} />
+                        <ExternalLink size={15} />
                       </a>
-
                       <a
                         href={project.githubLink}
                         target="_blank"
                         rel="noreferrer"
                         aria-label={`Open GitHub repository for ${project.title}`}
-                        className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)]"
+                        className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)] sm:h-11 sm:w-11 lg:h-12 lg:w-12"
                       >
-                        <FaGithub size={20} />
+                        <FaGithub size={15} />
                       </a>
                     </div>
                   </div>
-
-                  {/* ── Card body ── */}
-                  <div className="bg-card/40 p-5">
-                    <h3 className="card-title mb-2 line-clamp-1 text-base text-primary sm:text-lg">
+ 
+                  {/* Card body */}
+                  <div className="bg-card/40 p-3 sm:p-4 lg:p-5">
+                    <h3 className="
+                      mb-1 line-clamp-1 font-heading font-bold tracking-tight text-primary
+                      text-[0.75rem] sm:text-sm lg:text-base
+                    ">
                       {project.title}
                     </h3>
-                    <p className="small-text line-clamp-3">{project.description}</p>
+                    <p className="
+                      line-clamp-2 font-body leading-relaxed text-muted-foreground
+                      text-[0.68rem] sm:text-xs sm:line-clamp-3 lg:text-sm
+                    ">
+                      {project.description}
+                    </p>
                   </div>
                 </article>
               );

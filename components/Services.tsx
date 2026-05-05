@@ -161,7 +161,7 @@ export default function Services() {
                 key={item.id}
                 variants={cardVariants}
                 whileHover={{ y: -10, scale: 1.02 }}
-                className="group relative flex w-[88%] max-w-[22rem] cursor-default flex-col
+                className="group relative flex w-[88%] max-w-88 cursor-default flex-col
                            overflow-hidden rounded-2xl border border-border bg-card p-5
                            shadow-lg transition-all duration-500
                            hover:border-primary/50 hover:shadow-[0_20px_60px_rgba(0,0,0,0.25)]

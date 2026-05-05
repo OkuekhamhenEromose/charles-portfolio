@@ -479,10 +479,10 @@ export default function Header() {
             {/* Socials row – visible xl+ */}
             <Socials className="hidden xl:flex" />
           </div>
-          {/* <div className="md:hidden">
+          <div className="md:hidden">
 
             <TopBarMenuHint />
-          </div> */}
+          </div>
 
         </div>
       </header>
