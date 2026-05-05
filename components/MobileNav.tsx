@@ -63,7 +63,7 @@ export default function MobileNav() {
           aria-expanded={isActive}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.92 }}
-          className="group relative flex h-17 w-17 items-center cursor-pointer justify-center overflow-hidden rounded-full
+          className="group relative z-10002 flex h-17 w-17 items-center cursor-pointer justify-center overflow-hidden rounded-full
                      border border-border bg-card shadow-[0_8px_40px_rgb(0_0_0/0.35)]
                      transition-shadow duration-300"
         >
@@ -97,7 +97,7 @@ export default function MobileNav() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-9999 bg-background/60 md:hidden"
+              className="fixed inset-0 z-9997 bg-background/60 md:hidden"
               onClick={closeMenu}
             />
 
@@ -107,7 +107,7 @@ export default function MobileNav() {
               initial="hidden"
               animate="show"
               exit="hidden"
-              className="fixed right-0 top-0 z-9999 flex h-dvh w-[88vw] max-w-95 flex-col
+              className="fixed right-0 top-0 z-9998 flex h-dvh w-[88vw] max-w-95 flex-col
                          border-l border-border bg-card shadow-[-24px_0_80px_rgb(0_0_0/0.28)] md:hidden"
             >
               <div className="flex items-center justify-between px-8 pb-7 pt-9">

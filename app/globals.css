@@ -420,13 +420,14 @@
   }
 
   .mobile-nav-trigger {
-    position: fixed !important;
-    top: calc(env(safe-area-inset-top, 0px) + 1rem) !important;
-    right: 1rem !important;
-    z-index: 9999 !important;
-    transform: translateZ(0);
-    isolation: isolate;
-  }
+  position: fixed !important;
+  top: calc(env(safe-area-inset-top, 0px) + 1rem) !important;
+  right: 1rem !important;
+  z-index: 10001 !important;
+  transform: translateZ(0);
+  isolation: isolate;
+  pointer-events: auto;
+}
 
   @media (min-width: 768px) {
     .mobile-nav-trigger {
