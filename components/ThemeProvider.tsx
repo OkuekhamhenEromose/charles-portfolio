@@ -24,7 +24,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme: () => {} }}>
-      <div className="dark">
+      <div className="dark w-full max-w-full overflow-x-hidden">
         {children}
       </div>
     </ThemeContext.Provider>

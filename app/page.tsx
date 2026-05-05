@@ -24,7 +24,7 @@ export default function HomePage() {
         )}
       </AnimatePresence>
       <motion.div
-        className="relative"
+        className="relative min-h-screen w-full max-w-full overflow-x-clip"
         initial={{ opacity: 0 }}
         animate={{ opacity: preloaderDone ? 1 : 0 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
@@ -38,10 +38,10 @@ export default function HomePage() {
 
         <div className="fixed inset-0 z-2 grid-dots opacity-25 pointer-events-none" />
 
-        <div className="relative z-10">
+        <div className="relative z-10 w-full max-w-full overflow-x-clip">
           <Header />
 
-          <main>
+          <main className="w-full max-w-full overflow-x-clip">
             <section id="home"><Hero /></section>
             <section id="about"><About /></section>
             <ServiceSummary />

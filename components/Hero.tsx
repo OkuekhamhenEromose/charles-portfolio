@@ -197,7 +197,7 @@ export default function Hero() {
                       bg-card/10"
       >
         <div ref={sliderRef} className="flex items-center">
-          <div className="hero-marquee-mask w-full overflow-hidden">
+          <div className="hero-marquee-mask w-full overflow-hidden max-w-[100vw]">
   <div className="hero-marquee-track">
     
     {/* GROUP 1 */}

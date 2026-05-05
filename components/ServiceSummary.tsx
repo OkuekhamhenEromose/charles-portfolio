@@ -55,12 +55,8 @@ export default function ServiceSummary() {
 
   return (
     <section
-      ref={sectionRef}
-      /* FIX: py reduced from py-6/py-10 to py-3/py-5 */
-      /* FIX: gap reduced from gap-1/gap-2 to gap-0 */
-      className="relative flex flex-col items-start justify-center
-                 overflow-hidden py-6 sm:py-8 md:py-5"
-    >
+      ref={sectionRef} className="relative flex w-full max-w-[100vw] flex-col items-start justify-center
+           overflow-x-hidden overflow-y-visible py-6 sm:py-8 md:py-5">
       {/* Row 1 — LEFT */}
       <div
         data-row="left"
@@ -74,8 +70,9 @@ export default function ServiceSummary() {
 
       {/* Row 2 — RIGHT */}
       <div
-        className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-[1.10] mb-2 sm:mb-3 md:mb-0`}
-      >
+  data-row="right"
+  className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-[1.10] mb-2 sm:mb-3 md:mb-0`}
+>
         <span className={primary}>Development</span>
         <span className={`${strongText} mx-4`}>Deployment</span>
         <span className={primary}>Development</span>
@@ -84,8 +81,9 @@ export default function ServiceSummary() {
 
       {/* Row 3 — LEFT */}
       <div
-        className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-[1.10] mb-2 sm:mb-3 md:mb-0`}
-      >
+  data-row="left"
+  className={`${base} ${sizes} flex whitespace-nowrap pl-2 leading-[1.10] mb-2 sm:mb-3 md:mb-0`}
+>
         <span className={strongText}>APIs</span>
         <span className={`${primary} mx-4`}>Frontends</span>
         <span className={`${strongText} mx-4`}>Scalability</span>
