@@ -19,11 +19,11 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative border-t border-border overflow-hidden">
+    <footer className="relative mt-6 overflow-hidden">
       {/* Top glow line */}
       <div className="absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent via-primary/40 to-transparent" />
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-12">
           {/* Brand */}
           <div>
@@ -34,8 +34,8 @@ export default function Footer() {
               CE<span className="text-muted-foreground/50">.</span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-              Full Stack Engineer crafting scalable web applications, powerful APIs,
-              and cloud-first solutions from Lagos, Nigeria.
+              Full Stack Engineer crafting scalable web applications, powerful
+              APIs, and cloud-first solutions from Lagos, Nigeria.
             </p>
             <div className="mt-5">
               <Socials />
@@ -71,29 +71,26 @@ export default function Footer() {
               Open to full-time roles, freelance projects, and collaborations.
               Reach out — let&apos;s build something great together.
             </p>
-            <Link
-              href="/#contact"
-              className="btn text-sm inline-flex"
-            >
+            <Link href="/#contact" className="btn text-sm inline-flex">
               Hire Me
             </Link>
           </div>
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground text-center sm:text-left">
+        <div className="pt-4 border-t border-border flex flex-row items-center justify-between gap-4">
+          <p className="min-w-0 flex-1 text-xs text-muted-foreground text-left leading-relaxed">
             © {year}{" "}
-            <span className="text-foreground font-medium">Charles Eromose</span>
-            . Built with Next.js, Tailwind & Framer Motion.
+            <span className="text-primary font-medium">Charles Eromose</span>.
+            Built with Next.js, Tailwind & Framer Motion.
           </p>
 
           <motion.button
             onClick={scrollTop}
             aria-label="Back to top"
-            className="w-9 h-9 rounded-full border border-border bg-card/60
-                       flex items-center justify-center
-                       hover:border-primary/50 hover:bg-accent transition-all duration-300"
+            className="shrink-0 w-9 h-9 rounded-full border border-border bg-card/60
+             flex items-center justify-center
+             hover:border-primary/50 hover:bg-accent transition-all duration-300"
             whileHover={{ y: -3, scale: 1.1 }}
             whileTap={{ scale: 0.93 }}
           >

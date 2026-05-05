@@ -191,7 +191,7 @@ export default function Contact() {
                 variants={fadeInLeft}
                 whileHover={!loading ? { scale: 1.03, x: 4 } : {}}
                 whileTap={!loading ? { scale: 0.97 } : {}}
-                className={`btn w-auto self-start text-sm px-8 py-3
+                className={`btn w-auto mx-auto sm:mx-0 text-sm px-8 py-3
            ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
               >
                 {loading ? (
