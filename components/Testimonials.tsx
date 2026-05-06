@@ -58,7 +58,7 @@ export default function Testimonials({ ready }: TestimonialsProps) {
       const cards = gsap.utils.toArray<HTMLElement>(".trav-card");
       if (!cards.length) return;
 
-      // ══════════F════════════════════════════════════════════════════════════
+      // ══════════════════════════════════════════════════════════════════════
       // THREE BUGS THIS SOLVES:
       //
       // BUG 1 — Animation only fires once:
@@ -181,12 +181,12 @@ export default function Testimonials({ ready }: TestimonialsProps) {
         });
       };
 
-      // window.addEventListener("portfolio:filter-changed", handleFilterChange);
+      window.addEventListener("portfolio:filter-changed", handleFilterChange);
 
       // Returned from gsap.context callback — cleans up the listener
-      // return () => {
-      //   window.removeEventListener("portfolio:filter-changed", handleFilterChange);
-      // };
+      return () => {
+        window.removeEventListener("portfolio:filter-changed", handleFilterChange);
+      };
     }, sectionRef);
 
     return () => ctx.revert();
