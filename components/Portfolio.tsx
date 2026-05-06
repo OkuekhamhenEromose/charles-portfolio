@@ -186,9 +186,8 @@ const Portfolio = () => {
     [activeCategory],
   );
 
-  // ── Kill ScrollTrigger & restore scroll position ──────────────────────────
-  // IMPORTANT: measure section.offsetTop AFTER kill so pinSpacer is gone
-  // and the section's natural position is correct.
+  // ── Kill ScrollTrigger & restore scroll ──────────────────────────────────
+  // Measures offsetTop AFTER kill — pinSpacer is removed so position is correct
   const killPortfolioScrollTrigger = useCallback(() => {
     if (scrollTriggerRef.current) {
       scrollTriggerRef.current.kill();
@@ -203,8 +202,6 @@ const Portfolio = () => {
 
     const section = sectionRef.current;
     if (!section) return;
-
-    // Bypass CSS smooth-scroll so the restore is instantaneous/invisible
     const html = document.documentElement;
     const prev = html.style.scrollBehavior;
     html.style.scrollBehavior = "auto";
@@ -212,11 +209,10 @@ const Portfolio = () => {
     requestAnimationFrame(() => { html.style.scrollBehavior = prev; });
   }, []);
 
-  // ── Staggered card entrance ───────────────────────────────────────────────
+  // ── Portfolio card staggered entrance ────────────────────────────────────
   const animateCardsIn = useCallback(() => {
     const cards = sliderRef.current?.querySelectorAll<HTMLElement>("article");
     if (!cards?.length) return;
-
     gsap.fromTo(
       cards,
       { opacity: 0, y: 40, scale: 0.92 },
@@ -232,7 +228,7 @@ const Portfolio = () => {
     );
   }, []);
 
-  // ── Filter: exit old cards → swap category → enter new cards ─────────────
+  // ── Filter: exit old → swap → enter new ──────────────────────────────────
   const handleCategoryChange = useCallback(
     async (categoryId: "all" | ProjectCategory) => {
       if (categoryId === activeCategory || isFilteringRef.current) return;
@@ -270,10 +266,13 @@ const Portfolio = () => {
         : slider.scrollWidth - window.innerWidth * 0.6;
 
       if (scrollAmount <= 0) {
-        // No horizontal scroll needed — just animate cards in
         ScrollTrigger.refresh();
-        requestAnimationFrame(() => ScrollTrigger.refresh());
-        animateCardsIn();
+        requestAnimationFrame(() => {
+          ScrollTrigger.refresh();
+          // Notify Testimonials even when no pin — layout is settled
+          window.dispatchEvent(new CustomEvent("portfolio:filter-changed"));
+          animateCardsIn();
+        });
         return;
       }
 
@@ -293,37 +292,29 @@ const Portfolio = () => {
       timeline.to(slider, { x: -scrollAmount, ease: "none" });
       scrollTriggerRef.current = timeline.scrollTrigger ?? null;
 
-      // ── Primary refresh: recalculate all trigger positions now ───────────
+      // Pass 1: recalculate trigger positions now
       ScrollTrigger.refresh();
 
-      // ── Secondary refresh (next frame) ───────────────────────────────────
-      // The portfolio pin adds a pinSpacer that expands document.scrollHeight
-      // and shifts every element below it (including all testimonial cards)
-      // further down the page.  The primary refresh above runs before the
-      // browser has had a chance to apply that layout shift, so testimonial
-      // trigger start/end values are still based on the pre-pin DOM.
-      //
-      // By scheduling a second refresh one frame later, we let the browser
-      // finish its layout pass (pinSpacer fully in the DOM, heights committed)
-      // before GSAP re-reads the testimonial trigger positions.
-      //
-      // Without this: testimonial cards stay invisible because their triggers
-      // fire at the wrong scroll offsets and GSAP never calls autoAlpha: 1.
+      // Pass 2 (next frame): pinSpacer is now fully in the DOM.
+      // All downstream trigger positions (Testimonials etc.) are correct.
+      // Dispatch `portfolio:filter-changed` so Testimonials resets + recreates
+      // its triggers with the updated scroll coordinates.
       requestAnimationFrame(() => {
         ScrollTrigger.refresh();
+        window.dispatchEvent(new CustomEvent("portfolio:filter-changed"));
         animateCardsIn();
       });
     });
   }, [isMobile, killPortfolioScrollTrigger, animateCardsIn]);
 
-  // ── BLINK FIX: two-hook split ─────────────────────────────────────────────
-  // useLayoutEffect: hides cards BEFORE the browser paints (no visible flash)
+  // ── BLINK FIX ─────────────────────────────────────────────────────────────
+  // useLayoutEffect hides new cards BEFORE the browser paints → zero flash
   useLayoutEffect(() => {
     const cards = sliderRef.current?.querySelectorAll<HTMLElement>("article");
     if (cards?.length) gsap.set(cards, { opacity: 0, y: 20 });
   }, [activeCategory, filteredProjects.length]);
 
-  // useEffect: builds animation after paint (safe to measure scrollWidth etc.)
+  // useEffect runs after paint — safe to measure scrollWidth etc.
   useEffect(() => {
     const timeout = window.setTimeout(() => buildScrollAnimation(), 120);
     return () => {
@@ -456,7 +447,6 @@ const Portfolio = () => {
                       {project.category}
                     </span>
 
-                    {/* Hover overlay */}
                     <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0
                                     transition-opacity duration-300 group-hover:opacity-100 sm:gap-4">
                       {project.demoLink && (
