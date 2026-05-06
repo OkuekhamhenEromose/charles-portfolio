@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useCallback,
+} from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -149,9 +156,9 @@ const Portfolio = () => {
   const [activeCategory, setActiveCategory] = useState<"all" | ProjectCategory>("all");
   const [isMobile, setIsMobile] = useState(false);
 
-  const isFilteringRef = useRef(false);
-  const sectionRef     = useRef<HTMLElement | null>(null);
-  const sliderRef      = useRef<HTMLDivElement | null>(null);
+  const isFilteringRef   = useRef(false);
+  const sectionRef       = useRef<HTMLElement | null>(null);
+  const sliderRef        = useRef<HTMLDivElement | null>(null);
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
 
   useEffect(() => {
@@ -163,71 +170,46 @@ const Portfolio = () => {
 
   const categories = useMemo(
     () => [
-      { id: "all" as const,        name: "All",        count: portfolioProjects.length },
+      { id: "all"        as const, name: "All",        count: portfolioProjects.length },
       { id: "Full-Stack" as const, name: "Full-Stack", count: portfolioProjects.filter((p) => p.category === "Full-Stack").length },
-      { id: "Frontend"  as const, name: "Frontend",   count: portfolioProjects.filter((p) => p.category === "Frontend").length },
-      { id: "Backend"   as const, name: "Backend",    count: portfolioProjects.filter((p) => p.category === "Backend").length },
+      { id: "Frontend"   as const, name: "Frontend",   count: portfolioProjects.filter((p) => p.category === "Frontend").length },
+      { id: "Backend"    as const, name: "Backend",    count: portfolioProjects.filter((p) => p.category === "Backend").length },
     ],
     [],
   );
 
-  const filteredProjects = useMemo(() =>
-    activeCategory === "all"
-      ? portfolioProjects
-      : portfolioProjects.filter((p) => p.category === activeCategory),
+  const filteredProjects = useMemo(
+    () =>
+      activeCategory === "all"
+        ? portfolioProjects
+        : portfolioProjects.filter((p) => p.category === activeCategory),
     [activeCategory],
   );
 
-  // ─────────────────────────────────────────────────────────────────────────
-  // killPortfolioScrollTrigger
-  //
-  // THE BUG THAT WAS CAUSING THE SCROLL JUMP:
-  //   The old code captured `section.offsetTop` BEFORE calling `.kill()`.
-  //   While the GSAP pinSpacer is still in the DOM it inflates
-  //   `document.scrollHeight`, so `offsetTop` is a large number that points
-  //   *past* the section (potentially inside Testimonials).  After kill() the
-  //   spacer is removed and document height shrinks, but we scrolled to the
-  //   old (too-large) value → jumped into the next section.
-  //
-  // THE FIX:
-  //   1. Kill first — this removes the pinSpacer and resets document height.
-  //   2. THEN read `section.offsetTop` — now it reflects the section's real
-  //      natural position in the document.
-  //   3. Temporarily disable `scroll-behavior: smooth` so the restore is
-  //      instantaneous and invisible to the user.
-  // ─────────────────────────────────────────────────────────────────────────
+  // ── Kill ScrollTrigger & restore scroll ────────────────────────────────────
   const killPortfolioScrollTrigger = useCallback(() => {
-    // ── 1. Kill the pin & timeline ──────────────────────────────────────────
     if (scrollTriggerRef.current) {
       scrollTriggerRef.current.kill();
       scrollTriggerRef.current = null;
     }
-
-    ScrollTrigger.getAll().forEach((trigger) => {
-      if (trigger.vars?.id === "portfolio-horizontal") trigger.kill();
+    ScrollTrigger.getAll().forEach((t) => {
+      if (t.vars?.id === "portfolio-horizontal") t.kill();
     });
 
     gsap.killTweensOf(sliderRef.current);
     if (sliderRef.current) gsap.set(sliderRef.current, { x: 0 });
 
-    // ── 2. NOW read the section's natural position (pinSpacer is gone) ──────
+    // Measure section position AFTER kill (pinSpacer removed → correct offsetTop)
     const section = sectionRef.current;
     if (!section) return;
-
-    // ── 3. Bypass CSS smooth-scroll so the restore is invisible ─────────────
     const html = document.documentElement;
-    const prevBehavior = html.style.scrollBehavior;
+    const prev = html.style.scrollBehavior;
     html.style.scrollBehavior = "auto";
-
     window.scrollTo(0, section.offsetTop);
-
-    // Restore whatever scroll-behavior was set (globals.css sets smooth on <html>)
-    requestAnimationFrame(() => {
-      html.style.scrollBehavior = prevBehavior;
-    });
+    requestAnimationFrame(() => { html.style.scrollBehavior = prev; });
   }, []);
 
-  // ─── Staggered card entrance ──────────────────────────────────────────────
+  // ── Staggered card entrance animation ─────────────────────────────────────
   const animateCardsIn = useCallback(() => {
     const cards = sliderRef.current?.querySelectorAll<HTMLElement>("article");
     if (!cards?.length) return;
@@ -242,12 +224,13 @@ const Portfolio = () => {
         stagger: { each: 0.07, from: "start" },
         duration: 0.55,
         ease: "back.out(1.4)",
+        // clearProps lets hover/rotate inline-styles take back control
         clearProps: "opacity,y,scale",
       },
     );
   }, []);
 
-  // ─── Filter click: exit old cards → swap category → enter new cards ───────
+  // ── Filter: exit → swap → enter ──────────────────────────────────────────
   const handleCategoryChange = useCallback(
     async (categoryId: "all" | ProjectCategory) => {
       if (categoryId === activeCategory || isFilteringRef.current) return;
@@ -271,7 +254,7 @@ const Portfolio = () => {
     [activeCategory],
   );
 
-  // ─── Build / rebuild horizontal scroll ───────────────────────────────────
+  // ── Build horizontal scroll animation ────────────────────────────────────
   const buildScrollAnimation = useCallback(() => {
     killPortfolioScrollTrigger();
 
@@ -303,28 +286,48 @@ const Portfolio = () => {
       });
 
       timeline.to(slider, { x: -scrollAmount, ease: "none" });
-
       scrollTriggerRef.current = timeline.scrollTrigger ?? null;
       ScrollTrigger.refresh();
       animateCardsIn();
     });
   }, [isMobile, killPortfolioScrollTrigger, animateCardsIn]);
 
-  // ─── Re-run whenever filter / card count changes ──────────────────────────
-  useEffect(() => {
-    // Hide new cards immediately so they don't pop in before the animation
+  // ══════════════════════════════════════════════════════════════════════════
+  // THE BLINK FIX — two-hook split:
+  //
+  // PROBLEM:
+  //   The old single `useEffect` called `gsap.set(cards, { opacity: 0 })`
+  //   inside the effect body. But `useEffect` runs *after* the browser has
+  //   already painted the new frame — so the freshly-rendered cards were
+  //   visible at opacity:1 for one paint cycle before being hidden.
+  //   That one-frame flash is the "blink".
+  //
+  // FIX — split into two hooks:
+  //
+  //   1. `useLayoutEffect` — fires synchronously after React commits the DOM
+  //      but BEFORE the browser paints. We hide the cards here, so the
+  //      browser never paints them at opacity:1.  Zero flash.
+  //
+  //   2. `useEffect` — fires after paint. Safe for the 120ms timer and
+  //      `buildScrollAnimation` (which measures scrollWidth etc.).
+  // ══════════════════════════════════════════════════════════════════════════
+
+  // Step 1 — hide cards before the browser paints them (no flash)
+  useLayoutEffect(() => {
     const cards = sliderRef.current?.querySelectorAll<HTMLElement>("article");
-    if (cards) gsap.set(cards, { opacity: 0, y: 20 });
+    if (cards?.length) gsap.set(cards, { opacity: 0, y: 20 });
+  }, [activeCategory, filteredProjects.length]);
 
+  // Step 2 — build scroll + animate cards in (after paint)
+  useEffect(() => {
     const timeout = window.setTimeout(() => buildScrollAnimation(), 120);
-
     return () => {
       window.clearTimeout(timeout);
       killPortfolioScrollTrigger();
     };
   }, [activeCategory, filteredProjects.length, buildScrollAnimation, killPortfolioScrollTrigger]);
 
-  // ─── Section title entrance ────────────────────────────────────────────────
+  // ── Section title entrance ────────────────────────────────────────────────
   useGSAP(
     () => {
       gsap.from(".portfolio-title-line", {
@@ -354,7 +357,7 @@ const Portfolio = () => {
     >
       <div className="flex min-h-screen h-full flex-col lg:flex-row">
 
-        {/* ── Left panel: title + filters ──────────────────────────────── */}
+        {/* ── Left panel: title + filters ────────────────────────────── */}
         <div className="relative z-10 flex w-full flex-col justify-center px-6 mt-24 sm:px-10 lg:w-[35%] lg:px-14 lg:py-0">
           <div className="overflow-hidden">
             <h2 className="portfolio-title-line section-title text-foreground">
@@ -378,7 +381,6 @@ const Portfolio = () => {
             architecture, and thoughtful design.
           </p>
 
-          {/* Filter buttons */}
           <div className="flex flex-wrap gap-2">
             {categories.map((cat) => {
               const isActive = activeCategory === cat.id;
@@ -388,7 +390,7 @@ const Portfolio = () => {
                   type="button"
                   onClick={() => void handleCategoryChange(cat.id)}
                   className={`
-                    rounded-full border font-body font-semibold transition-all duration-300
+                    rounded-full border font-body font-semibold transition-all duration-300 cursor-pointer
                     px-2.5 py-1 text-[0.8rem]
                     sm:px-4 sm:py-1.5 sm:text-xs
                     lg:py-2 lg:text-sm
@@ -406,7 +408,7 @@ const Portfolio = () => {
           </div>
         </div>
 
-        {/* ── Right panel: horizontal card slider ──────────────────────── */}
+        {/* ── Right panel: horizontal card slider ────────────────────── */}
         <div
           className="relative flex w-full items-center lg:w-[65%]"
           style={{
@@ -420,7 +422,6 @@ const Portfolio = () => {
           >
             {filteredProjects.map((project, index) => {
               const baseRotation = index % 2 === 0 ? -3 : 3;
-
               return (
                 <article
                   key={project.id}
