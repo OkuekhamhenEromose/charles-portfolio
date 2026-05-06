@@ -186,7 +186,9 @@ const Portfolio = () => {
     [activeCategory],
   );
 
-  // ── Kill ScrollTrigger & restore scroll ────────────────────────────────────
+  // ── Kill ScrollTrigger & restore scroll position ──────────────────────────
+  // IMPORTANT: measure section.offsetTop AFTER kill so pinSpacer is gone
+  // and the section's natural position is correct.
   const killPortfolioScrollTrigger = useCallback(() => {
     if (scrollTriggerRef.current) {
       scrollTriggerRef.current.kill();
@@ -199,9 +201,10 @@ const Portfolio = () => {
     gsap.killTweensOf(sliderRef.current);
     if (sliderRef.current) gsap.set(sliderRef.current, { x: 0 });
 
-    // Measure section position AFTER kill (pinSpacer removed → correct offsetTop)
     const section = sectionRef.current;
     if (!section) return;
+
+    // Bypass CSS smooth-scroll so the restore is instantaneous/invisible
     const html = document.documentElement;
     const prev = html.style.scrollBehavior;
     html.style.scrollBehavior = "auto";
@@ -209,7 +212,7 @@ const Portfolio = () => {
     requestAnimationFrame(() => { html.style.scrollBehavior = prev; });
   }, []);
 
-  // ── Staggered card entrance animation ─────────────────────────────────────
+  // ── Staggered card entrance ───────────────────────────────────────────────
   const animateCardsIn = useCallback(() => {
     const cards = sliderRef.current?.querySelectorAll<HTMLElement>("article");
     if (!cards?.length) return;
@@ -224,13 +227,12 @@ const Portfolio = () => {
         stagger: { each: 0.07, from: "start" },
         duration: 0.55,
         ease: "back.out(1.4)",
-        // clearProps lets hover/rotate inline-styles take back control
         clearProps: "opacity,y,scale",
       },
     );
   }, []);
 
-  // ── Filter: exit → swap → enter ──────────────────────────────────────────
+  // ── Filter: exit old cards → swap category → enter new cards ─────────────
   const handleCategoryChange = useCallback(
     async (categoryId: "all" | ProjectCategory) => {
       if (categoryId === activeCategory || isFilteringRef.current) return;
@@ -254,7 +256,7 @@ const Portfolio = () => {
     [activeCategory],
   );
 
-  // ── Build horizontal scroll animation ────────────────────────────────────
+  // ── Build / rebuild horizontal scroll ────────────────────────────────────
   const buildScrollAnimation = useCallback(() => {
     killPortfolioScrollTrigger();
 
@@ -268,6 +270,9 @@ const Portfolio = () => {
         : slider.scrollWidth - window.innerWidth * 0.6;
 
       if (scrollAmount <= 0) {
+        // No horizontal scroll needed — just animate cards in
+        ScrollTrigger.refresh();
+        requestAnimationFrame(() => ScrollTrigger.refresh());
         animateCardsIn();
         return;
       }
@@ -287,38 +292,38 @@ const Portfolio = () => {
 
       timeline.to(slider, { x: -scrollAmount, ease: "none" });
       scrollTriggerRef.current = timeline.scrollTrigger ?? null;
+
+      // ── Primary refresh: recalculate all trigger positions now ───────────
       ScrollTrigger.refresh();
-      animateCardsIn();
+
+      // ── Secondary refresh (next frame) ───────────────────────────────────
+      // The portfolio pin adds a pinSpacer that expands document.scrollHeight
+      // and shifts every element below it (including all testimonial cards)
+      // further down the page.  The primary refresh above runs before the
+      // browser has had a chance to apply that layout shift, so testimonial
+      // trigger start/end values are still based on the pre-pin DOM.
+      //
+      // By scheduling a second refresh one frame later, we let the browser
+      // finish its layout pass (pinSpacer fully in the DOM, heights committed)
+      // before GSAP re-reads the testimonial trigger positions.
+      //
+      // Without this: testimonial cards stay invisible because their triggers
+      // fire at the wrong scroll offsets and GSAP never calls autoAlpha: 1.
+      requestAnimationFrame(() => {
+        ScrollTrigger.refresh();
+        animateCardsIn();
+      });
     });
   }, [isMobile, killPortfolioScrollTrigger, animateCardsIn]);
 
-  // ══════════════════════════════════════════════════════════════════════════
-  // THE BLINK FIX — two-hook split:
-  //
-  // PROBLEM:
-  //   The old single `useEffect` called `gsap.set(cards, { opacity: 0 })`
-  //   inside the effect body. But `useEffect` runs *after* the browser has
-  //   already painted the new frame — so the freshly-rendered cards were
-  //   visible at opacity:1 for one paint cycle before being hidden.
-  //   That one-frame flash is the "blink".
-  //
-  // FIX — split into two hooks:
-  //
-  //   1. `useLayoutEffect` — fires synchronously after React commits the DOM
-  //      but BEFORE the browser paints. We hide the cards here, so the
-  //      browser never paints them at opacity:1.  Zero flash.
-  //
-  //   2. `useEffect` — fires after paint. Safe for the 120ms timer and
-  //      `buildScrollAnimation` (which measures scrollWidth etc.).
-  // ══════════════════════════════════════════════════════════════════════════
-
-  // Step 1 — hide cards before the browser paints them (no flash)
+  // ── BLINK FIX: two-hook split ─────────────────────────────────────────────
+  // useLayoutEffect: hides cards BEFORE the browser paints (no visible flash)
   useLayoutEffect(() => {
     const cards = sliderRef.current?.querySelectorAll<HTMLElement>("article");
     if (cards?.length) gsap.set(cards, { opacity: 0, y: 20 });
   }, [activeCategory, filteredProjects.length]);
 
-  // Step 2 — build scroll + animate cards in (after paint)
+  // useEffect: builds animation after paint (safe to measure scrollWidth etc.)
   useEffect(() => {
     const timeout = window.setTimeout(() => buildScrollAnimation(), 120);
     return () => {
