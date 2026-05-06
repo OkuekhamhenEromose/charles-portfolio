@@ -64,15 +64,15 @@ const portfolioProjects: PortfolioProject[] = [
     githubLink: "https://github.com/OkuekhamhenEromose/chardevtravel",
   },
   {
-  id: 5,
-  title: "BemaHub API Bridge & Mapping System",
-  description:
-    "A production-focused API integration and mapping system built with WordPress (PHP), bridging frontend contracts to backend services. Involved tracing 50+ endpoints, validating authentication flows, testing APIs, and documenting full frontend-backend alignment with proof-driven verification.",
-  category: "Backend",
-  image: "/images/portfolio/backendphp.png",
-  demoLink: "",
-  githubLink: "https://github.com/your-repo-link",
-},
+    id: 5,
+    title: "BemaHub API Bridge & Mapping System",
+    description:
+      "A production-focused API integration and mapping system built with WordPress (PHP), bridging frontend contracts to backend services. Involved tracing 50+ endpoints, validating authentication flows, testing APIs, and documenting full frontend-backend alignment with proof-driven verification.",
+    category: "Backend",
+    image: "/images/portfolio/backendphp.png",
+    demoLink: "",
+    githubLink: "https://github.com/your-repo-link",
+  },
   {
     id: 6,
     title: "CHBlog App",
@@ -149,72 +149,88 @@ const Portfolio = () => {
   const [activeCategory, setActiveCategory] = useState<"all" | ProjectCategory>("all");
   const [isMobile, setIsMobile] = useState(false);
 
-  // Guard against concurrent filter clicks mid-animation
   const isFilteringRef = useRef(false);
-
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const sliderRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef     = useRef<HTMLElement | null>(null);
+  const sliderRef      = useRef<HTMLDivElement | null>(null);
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
 
   useEffect(() => {
-    const checkScreen = () => setIsMobile(window.innerWidth < 1024);
-    checkScreen();
-    window.addEventListener("resize", checkScreen);
-    return () => window.removeEventListener("resize", checkScreen);
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
   const categories = useMemo(
     () => [
-      { id: "all" as const, name: "All", count: portfolioProjects.length },
-      {
-        id: "Full-Stack" as const,
-        name: "Full-Stack",
-        count: portfolioProjects.filter((p) => p.category === "Full-Stack").length,
-      },
-      {
-        id: "Frontend" as const,
-        name: "Frontend",
-        count: portfolioProjects.filter((p) => p.category === "Frontend").length,
-      },
-      {
-        id: "Backend" as const,
-        name: "Backend",
-        count: portfolioProjects.filter((p) => p.category === "Backend").length,
-      },
+      { id: "all" as const,        name: "All",        count: portfolioProjects.length },
+      { id: "Full-Stack" as const, name: "Full-Stack", count: portfolioProjects.filter((p) => p.category === "Full-Stack").length },
+      { id: "Frontend"  as const, name: "Frontend",   count: portfolioProjects.filter((p) => p.category === "Frontend").length },
+      { id: "Backend"   as const, name: "Backend",    count: portfolioProjects.filter((p) => p.category === "Backend").length },
     ],
     [],
   );
 
-  const filteredProjects = useMemo(() => {
-    return activeCategory === "all"
+  const filteredProjects = useMemo(() =>
+    activeCategory === "all"
       ? portfolioProjects
-      : portfolioProjects.filter((p) => p.category === activeCategory);
-  }, [activeCategory]);
-  const killPortfolioScrollTrigger = useCallback(() => {
-    const section = sectionRef.current;
-    const sectionTop = section?.offsetTop ?? 0;
+      : portfolioProjects.filter((p) => p.category === activeCategory),
+    [activeCategory],
+  );
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // killPortfolioScrollTrigger
+  //
+  // THE BUG THAT WAS CAUSING THE SCROLL JUMP:
+  //   The old code captured `section.offsetTop` BEFORE calling `.kill()`.
+  //   While the GSAP pinSpacer is still in the DOM it inflates
+  //   `document.scrollHeight`, so `offsetTop` is a large number that points
+  //   *past* the section (potentially inside Testimonials).  After kill() the
+  //   spacer is removed and document height shrinks, but we scrolled to the
+  //   old (too-large) value → jumped into the next section.
+  //
+  // THE FIX:
+  //   1. Kill first — this removes the pinSpacer and resets document height.
+  //   2. THEN read `section.offsetTop` — now it reflects the section's real
+  //      natural position in the document.
+  //   3. Temporarily disable `scroll-behavior: smooth` so the restore is
+  //      instantaneous and invisible to the user.
+  // ─────────────────────────────────────────────────────────────────────────
+  const killPortfolioScrollTrigger = useCallback(() => {
+    // ── 1. Kill the pin & timeline ──────────────────────────────────────────
     if (scrollTriggerRef.current) {
       scrollTriggerRef.current.kill();
       scrollTriggerRef.current = null;
     }
 
     ScrollTrigger.getAll().forEach((trigger) => {
-      if (trigger.vars?.id === "portfolio-horizontal") {
-        trigger.kill();
-      }
+      if (trigger.vars?.id === "portfolio-horizontal") trigger.kill();
     });
 
     gsap.killTweensOf(sliderRef.current);
-    if (sliderRef.current) {
-      gsap.set(sliderRef.current, { x: 0 });
-    }
-    window.scrollTo(0, sectionTop);
+    if (sliderRef.current) gsap.set(sliderRef.current, { x: 0 });
+
+    // ── 2. NOW read the section's natural position (pinSpacer is gone) ──────
+    const section = sectionRef.current;
+    if (!section) return;
+
+    // ── 3. Bypass CSS smooth-scroll so the restore is invisible ─────────────
+    const html = document.documentElement;
+    const prevBehavior = html.style.scrollBehavior;
+    html.style.scrollBehavior = "auto";
+
+    window.scrollTo(0, section.offsetTop);
+
+    // Restore whatever scroll-behavior was set (globals.css sets smooth on <html>)
+    requestAnimationFrame(() => {
+      html.style.scrollBehavior = prevBehavior;
+    });
   }, []);
 
+  // ─── Staggered card entrance ──────────────────────────────────────────────
   const animateCardsIn = useCallback(() => {
     const cards = sliderRef.current?.querySelectorAll<HTMLElement>("article");
-    if (!cards || cards.length === 0) return;
+    if (!cards?.length) return;
 
     gsap.fromTo(
       cards,
@@ -230,14 +246,15 @@ const Portfolio = () => {
       },
     );
   }, []);
+
+  // ─── Filter click: exit old cards → swap category → enter new cards ───────
   const handleCategoryChange = useCallback(
     async (categoryId: "all" | ProjectCategory) => {
       if (categoryId === activeCategory || isFilteringRef.current) return;
       isFilteringRef.current = true;
 
       const cards = sliderRef.current?.querySelectorAll<HTMLElement>("article");
-
-      if (cards && cards.length > 0) {
+      if (cards?.length) {
         await gsap.to(cards, {
           opacity: 0,
           y: -20,
@@ -247,25 +264,25 @@ const Portfolio = () => {
           ease: "power2.in",
         });
       }
+
       setActiveCategory(categoryId);
       isFilteringRef.current = false;
     },
     [activeCategory],
   );
+
+  // ─── Build / rebuild horizontal scroll ───────────────────────────────────
   const buildScrollAnimation = useCallback(() => {
     killPortfolioScrollTrigger();
 
     const section = sectionRef.current;
-    const slider = sliderRef.current;
+    const slider  = sliderRef.current;
     if (!section || !slider) return;
 
     requestAnimationFrame(() => {
-      const totalScrollWidth = slider.scrollWidth;
-      const viewportWidth = window.innerWidth;
-
       const scrollAmount = isMobile
-        ? totalScrollWidth - viewportWidth + 40
-        : totalScrollWidth - viewportWidth * 0.6;
+        ? slider.scrollWidth - window.innerWidth + 40
+        : slider.scrollWidth - window.innerWidth * 0.6;
 
       if (scrollAmount <= 0) {
         animateCardsIn();
@@ -293,13 +310,13 @@ const Portfolio = () => {
     });
   }, [isMobile, killPortfolioScrollTrigger, animateCardsIn]);
 
+  // ─── Re-run whenever filter / card count changes ──────────────────────────
   useEffect(() => {
+    // Hide new cards immediately so they don't pop in before the animation
     const cards = sliderRef.current?.querySelectorAll<HTMLElement>("article");
     if (cards) gsap.set(cards, { opacity: 0, y: 20 });
 
-    const timeout = window.setTimeout(() => {
-      buildScrollAnimation();
-    }, 120);
+    const timeout = window.setTimeout(() => buildScrollAnimation(), 120);
 
     return () => {
       window.clearTimeout(timeout);
@@ -307,6 +324,7 @@ const Portfolio = () => {
     };
   }, [activeCategory, filteredProjects.length, buildScrollAnimation, killPortfolioScrollTrigger]);
 
+  // ─── Section title entrance ────────────────────────────────────────────────
   useGSAP(
     () => {
       gsap.from(".portfolio-title-line", {
@@ -315,21 +333,14 @@ const Portfolio = () => {
         stagger: 0.15,
         duration: 0.8,
         ease: "power2.out",
-        scrollTrigger: {
-          trigger: ".portfolio-section",
-          start: "top 60%",
-        },
+        scrollTrigger: { trigger: ".portfolio-section", start: "top 60%" },
       });
-
       gsap.from(".portfolio-desc", {
         opacity: 0,
         y: 30,
         duration: 0.6,
         delay: 0.4,
-        scrollTrigger: {
-          trigger: ".portfolio-section",
-          start: "top 50%",
-        },
+        scrollTrigger: { trigger: ".portfolio-section", start: "top 50%" },
       });
     },
     { scope: sectionRef },
@@ -342,6 +353,8 @@ const Portfolio = () => {
       className="portfolio-section relative min-h-screen overflow-hidden"
     >
       <div className="flex min-h-screen h-full flex-col lg:flex-row">
+
+        {/* ── Left panel: title + filters ──────────────────────────────── */}
         <div className="relative z-10 flex w-full flex-col justify-center px-6 mt-24 sm:px-10 lg:w-[35%] lg:px-14 lg:py-0">
           <div className="overflow-hidden">
             <h2 className="portfolio-title-line section-title text-foreground">
@@ -355,25 +368,20 @@ const Portfolio = () => {
             </h2>
           </div>
 
-          <p
-            className="
-              portfolio-desc max-w-md font-body text-muted-foreground
-              mt-1.5 mb-3.5 leading-snug
-              text-[1rem]
-              sm:mt-3.5 sm:mb-4 sm:text-sm sm:leading-relaxed
-              md:text-[0.85rem]
-              lg:mt-0 lg:mb-8 lg:text-base lg:leading-7
-            "
-          >
+          <p className="portfolio-desc max-w-md font-body text-muted-foreground
+                        mt-1.5 mb-3.5 leading-snug text-[1rem]
+                        sm:mt-3.5 sm:mb-4 sm:text-sm sm:leading-relaxed
+                        md:text-[0.85rem]
+                        lg:mt-0 lg:mb-8 lg:text-base lg:leading-7">
             A curated collection of projects spanning full-stack apps,
             frontends, and backend APIs — each reflecting clean code, scalable
             architecture, and thoughtful design.
           </p>
 
+          {/* Filter buttons */}
           <div className="flex flex-wrap gap-2">
             {categories.map((cat) => {
               const isActive = activeCategory === cat.id;
-
               return (
                 <button
                   key={cat.id}
@@ -397,13 +405,13 @@ const Portfolio = () => {
             })}
           </div>
         </div>
+
+        {/* ── Right panel: horizontal card slider ──────────────────────── */}
         <div
           className="relative flex w-full items-center lg:w-[65%]"
           style={{
-            WebkitMaskImage:
-              "linear-gradient(to right, transparent -10%, black 50%, black 100%)",
-            maskImage:
-              "linear-gradient(to right, transparent -10%, black 50%, black 100%)",
+            WebkitMaskImage: "linear-gradient(to right, transparent -10%, black 50%, black 100%)",
+            maskImage:       "linear-gradient(to right, transparent -10%, black 50%, black 100%)",
           }}
         >
           <div
@@ -414,15 +422,12 @@ const Portfolio = () => {
               const baseRotation = index % 2 === 0 ? -3 : 3;
 
               return (
-
                 <article
                   key={project.id}
-                  className="
-                    group relative shrink-0 overflow-hidden rounded-2xl
-                    border border-border bg-card shadow-lg
-                    transition-all duration-500 hover:shadow-2xl
-                    w-52 sm:w-64 md:w-72 lg:w-80
-                  "
+                  className="group relative shrink-0 overflow-hidden rounded-2xl
+                             border border-border bg-card shadow-lg
+                             transition-all duration-500 hover:shadow-2xl
+                             w-52 sm:w-64 md:w-72 lg:w-80"
                   style={{ transform: `rotate(${baseRotation}deg)`, transition: "transform 0.5s ease" }}
                   onMouseEnter={(e) => { e.currentTarget.style.transform = "rotate(0deg) scale(1.03)"; }}
                   onMouseLeave={(e) => { e.currentTarget.style.transform = `rotate(${baseRotation}deg)`; }}
@@ -438,51 +443,55 @@ const Portfolio = () => {
                       priority={index < 2}
                     />
 
-                    <span className="
-                      absolute left-2 top-2 rounded-md bg-primary/90
-                      text-primary-foreground backdrop-blur-sm font-bold uppercase tracking-wider
-                      px-2 py-0.5 text-[8px]
-                      sm:left-3 sm:top-3 sm:px-2.5 sm:text-[9px]
-                      lg:text-[10px]
-                    ">
+                    <span className="absolute left-2 top-2 rounded-md bg-primary/90
+                                     text-primary-foreground backdrop-blur-sm font-bold uppercase tracking-wider
+                                     px-2 py-0.5 text-[8px]
+                                     sm:left-3 sm:top-3 sm:px-2.5 sm:text-[9px] lg:text-[10px]">
                       {project.category}
                     </span>
- 
-                    {/* Hover action overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:gap-4">
-                      <a
-                        href={project.demoLink}
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label={`Open live demo for ${project.title}`}
-                        className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)] sm:h-11 sm:w-11 lg:h-12 lg:w-12"
-                      >
-                        <ExternalLink size={15} />
-                      </a>
+
+                    {/* Hover overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0
+                                    transition-opacity duration-300 group-hover:opacity-100 sm:gap-4">
+                      {project.demoLink && (
+                        <a
+                          href={project.demoLink}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label={`Open live demo for ${project.title}`}
+                          className="flex h-9 w-9 items-center justify-center rounded-full
+                                     bg-primary text-primary-foreground shadow-lg
+                                     transition-all duration-300 hover:scale-110
+                                     hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)]
+                                     sm:h-11 sm:w-11 lg:h-12 lg:w-12"
+                        >
+                          <ExternalLink size={15} />
+                        </a>
+                      )}
                       <a
                         href={project.githubLink}
                         target="_blank"
                         rel="noreferrer"
                         aria-label={`Open GitHub repository for ${project.title}`}
-                        className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)] sm:h-11 sm:w-11 lg:h-12 lg:w-12"
+                        className="flex h-9 w-9 items-center justify-center rounded-full
+                                   bg-primary text-primary-foreground shadow-lg
+                                   transition-all duration-300 hover:scale-110
+                                   hover:shadow-[0_0_20px_rgb(var(--primary)/0.6)]
+                                   sm:h-11 sm:w-11 lg:h-12 lg:w-12"
                       >
                         <FaGithub size={15} />
                       </a>
                     </div>
                   </div>
- 
+
                   {/* Card body */}
                   <div className="bg-card/40 p-3 sm:p-4 lg:p-5">
-                    <h3 className="
-                      mb-1 line-clamp-1 font-heading font-bold tracking-tight text-primary
-                      text-[0.75rem] sm:text-sm lg:text-base
-                    ">
+                    <h3 className="mb-1 line-clamp-1 font-heading font-bold tracking-tight text-primary
+                                   text-[0.75rem] sm:text-sm lg:text-base">
                       {project.title}
                     </h3>
-                    <p className="
-                      line-clamp-2 font-body leading-relaxed text-muted-foreground
-                      text-[0.68rem] sm:text-xs sm:line-clamp-3 lg:text-sm
-                    ">
+                    <p className="line-clamp-2 font-body leading-relaxed text-muted-foreground
+                                  text-[0.68rem] sm:text-xs sm:line-clamp-3 lg:text-sm">
                       {project.description}
                     </p>
                   </div>
