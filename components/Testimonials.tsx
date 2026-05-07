@@ -58,35 +58,6 @@ export default function Testimonials({ ready }: TestimonialsProps) {
       const cards = gsap.utils.toArray<HTMLElement>(".trav-card");
       if (!cards.length) return;
 
-      // ══════════════════════════════════════════════════════════════════════
-      // THREE BUGS THIS SOLVES:
-      //
-      // BUG 1 — Animation only fires once:
-      //   The old `fromTo` + `toggleActions: "play none none reverse"` used a
-      //   SINGLE trigger. "play" fires only when crossing the start going
-      //   forward (scroll down). If you scroll back up past the start and then
-      //   scroll down again, the trigger is already "played" → no re-animation.
-      //   Fix: use `onEnter` + `onEnterBack` callbacks so the animation fires
-      //   from BOTH directions every time the card enters the viewport.
-      //
-      // BUG 2 — Category click while testimonials visible breaks animation:
-      //   Portfolio's `ScrollTrigger.refresh()` recalculates trigger positions.
-      //   Cards already inside their trigger zone have state = "active", so
-      //   `onEnter` won't re-fire after a refresh — cards stay invisible.
-      //   Fix: Portfolio dispatches `portfolio:filter-changed`. Testimonials
-      //   listens, kills all its triggers, resets card states, recreates
-      //   triggers fresh. New triggers fire `onEnter` based on current position.
-      //
-      // BUG 3 — Slide-back fires too late when scrolling up:
-      //   A single trigger with `start: "top 88%"` fires its reverse when the
-      //   card's TOP edge scrolls back above 88% viewport (near bottom of
-      //   screen). The card is almost fully off the bottom before reversing.
-      //   Fix: separate TRIGGER B with `start: "center top"` fires `onLeaveBack`
-      //   when the card's CENTRE hits the viewport top — exactly when 50% of
-      //   the card has scrolled above the fold.
-      // ══════════════════════════════════════════════════════════════════════
-
-      // Helpers — defined once, referenced in both setup and event handler
       const fromX = (i: number) => (i % 2 === 0 ? -160 : 160);
 
       const animIn = (card: HTMLElement) =>
@@ -106,22 +77,23 @@ export default function Testimonials({ ready }: TestimonialsProps) {
           x: fromX(i),
           y: 55,
           scale: 0.96,
-          duration: 0.55,
-          ease: "power2.in",
+          // ── Slower than before (was 0.55s) so the slide-out feels
+          //    intentional rather than snapping away.
+          duration: 0.75,
+          ease: "power2.inOut",
           overwrite: true,
         });
 
-      // Set every card to its hidden off-screen state before first paint
+      // ── Set every card to its hidden off-screen state ──────────────────
       cards.forEach((card, i) => {
         gsap.set(card, { autoAlpha: 0, x: fromX(i), y: 55, scale: 0.96 });
       });
 
-      // ── Create both triggers for one card ─────────────────────────────
       const setupCard = (card: HTMLElement, i: number) => {
-        // TRIGGER A — ENTRY
-        // `onEnter`     → scroll DOWN: card enters from below at 88% viewport
-        // `onEnterBack` → scroll DOWN again after having exited the top:
-        //                 card re-enters from above, slides back in
+        // ── TRIGGER A — ENTRY ────────────────────────────────────────────
+        // Fires on both scroll directions so the card slides in whether the
+        // user is scrolling down (first view) or scrolling back down after
+        // having left the section (re-entry).
         ScrollTrigger.create({
           id: `trav-in-${i}`,
           trigger: card,
@@ -131,16 +103,30 @@ export default function Testimonials({ ready }: TestimonialsProps) {
           invalidateOnRefresh: true,
         });
 
-        // TRIGGER B — EARLY EXIT (scroll-up)
-        // `start: "center top"` = card's vertical centre is at viewport top.
-        // At this point exactly 50% of the card has scrolled above the fold.
-        // `onLeaveBack` fires when scrolling UP past this point →
-        // card slides back off to its left/right off-screen position
-        // immediately when "almost half" of it has left the viewport.
+        // ── TRIGGER B — EXIT on scroll-up ────────────────────────────────
+        //
+        // WHY "center 35%" INSTEAD OF THE PREVIOUS "center top":
+        //
+        // "center top"  = card's centre at the viewport's TOP edge.
+        //   At that moment only the BOTTOM half of the card is visible,
+        //   clinging to the very top of the screen.  The 0.55 s animOut
+        //   then plays while the card is barely in view → felt like the
+        //   card snapped away "too quickly" before the user could see it.
+        //
+        // "center 35%" = card's centre at 35 % down from the viewport top.
+        //   Geometry for a typical 400 px card in an 800 px viewport:
+        //     • card top    = 35 % − 25 % =  10 % from viewport top  (visible)
+        //     • card centre = 35 %                                     (visible)
+        //     • card bottom = 35 % + 25 % =  60 % from viewport top  (visible)
+        //   The card is ~90 % visible — clearly "midway in view" — when
+        //   `onLeaveBack` fires.  The user sees the card slide left/right
+        //   from a fully readable position rather than from a barely-there
+        //   sliver at the top edge.  The longer animOut (0.75 s) then gives
+        //   the exit enough screen time to feel deliberate and smooth.
         ScrollTrigger.create({
           id: `trav-out-${i}`,
           trigger: card,
-          start: "center top",
+          start: "center 35%",
           onLeaveBack: () => animOut(card, i),
           invalidateOnRefresh: true,
         });
@@ -148,42 +134,32 @@ export default function Testimonials({ ready }: TestimonialsProps) {
 
       cards.forEach((card, i) => setupCard(card, i));
 
-      // ── Initial double-refresh ─────────────────────────────────────────
-      // Pass 1: recalculate positions now (portfolio pin may already be live)
+      // ── Double-refresh (same rationale as Portfolio) ───────────────────
       ScrollTrigger.refresh();
-      // Pass 2 (next frame): browser commits pinSpacer layout — all
-      // downstream trigger positions are now based on correct coordinates
       requestAnimationFrame(() => ScrollTrigger.refresh());
 
-      // ── FIX 2: re-trigger when Portfolio filter changes ────────────────
-      // Portfolio dispatches this event after its secondary refresh, once
-      // the pinSpacer layout is fully committed.  We kill every trigger,
-      // reset all cards, and recreate triggers fresh so `onEnter` fires
-      // correctly for cards already visible in the viewport.
+      // ── Re-trigger when Portfolio filter changes ───────────────────────
+      // Portfolio dispatches `portfolio:filter-changed` after its secondary
+      // refresh so that pinSpacer layout is settled before we recalculate.
       const handleFilterChange = () => {
-        // Kill all existing card triggers
         cards.forEach((_, i) => {
           ScrollTrigger.getById(`trav-in-${i}`)?.kill();
           ScrollTrigger.getById(`trav-out-${i}`)?.kill();
         });
 
-        // Reset every card to off-screen hidden state
         cards.forEach((card, i) => {
           gsap.set(card, { autoAlpha: 0, x: fromX(i), y: 55, scale: 0.96 });
         });
 
-        // One frame later: refresh layout, recreate triggers
         requestAnimationFrame(() => {
           ScrollTrigger.refresh();
           cards.forEach((card, i) => setupCard(card, i));
-          // Second refresh after recreation to settle any remaining shifts
           requestAnimationFrame(() => ScrollTrigger.refresh());
         });
       };
 
       window.addEventListener("portfolio:filter-changed", handleFilterChange);
 
-      // Returned from gsap.context callback — cleans up the listener
       return () => {
         window.removeEventListener("portfolio:filter-changed", handleFilterChange);
       };
