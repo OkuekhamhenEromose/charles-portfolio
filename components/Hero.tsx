@@ -32,7 +32,6 @@ const fadeUp: Variants = {
   },
 };
 
-/* Custom code block — no react-syntax-highlighter dependency */
 const codeLines = [
   { t: "kw", v: "const " },
   { t: "fn", v: "profile" },
@@ -41,10 +40,7 @@ const codeLines = [
   { t: "str", v: '  role:         "Full Stack Engineer",' },
   { t: "str", v: '  experience:   "4+ years",' },
   { t: "cm", v: "  stack: {" },
-  {
-    t: "str",
-    v: '    frontend: ["React", "Next.js", "TypeScript", "Tailwind"],',
-  },
+  { t: "str", v: '    frontend: ["React", "Next.js", "TypeScript", "Tailwind"],' },
   { t: "str", v: '    backend:  ["Django", "Node.js", "Python", "Express"],' },
   { t: "str", v: '    database: ["PostgreSQL", "MongoDB", "MySQL"],' },
   { t: "str", v: '    cloud:    ["AWS", "Docker", "Vercel", "Netlify"],' },
@@ -64,7 +60,7 @@ function CodeBlock() {
   return (
     <div
       className="rounded-xl overflow-hidden border border-border/60
-                    shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
+                 shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
       style={{ background: "rgba(10,10,22,0.93)" }}
     >
       <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/5">
@@ -103,7 +99,6 @@ function ScrollIndicator({ className = "" }: { className?: string }) {
       <span className="text-[10px] uppercase tracking-[0.2em] font-semibold">
         Scroll
       </span>
-
       <motion.div
         animate={{ y: [0, 7, 0] }}
         transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
@@ -116,9 +111,7 @@ function ScrollIndicator({ className = "" }: { className?: string }) {
 
 export default function Hero() {
   const globeRef = useRef<HTMLVideoElement>(null);
-
-  /* ── Dennis marquee refs ── */
-  const sliderRef = useRef<HTMLDivElement>(null); // container that GSAP parallaxes
+  const sliderRef = useRef<HTMLDivElement>(null);
   const firstTextRef = useRef<HTMLParagraphElement>(null);
   const secondTextRef = useRef<HTMLParagraphElement>(null);
   const xPct = useRef(0);
@@ -130,7 +123,7 @@ export default function Hero() {
     globeRef.current?.play().catch(() => {});
   }, []);
 
-  /* ── Dennis sliding marquee (exact port of landing/index.js) ── */
+  /* Dennis sliding marquee */
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -154,7 +147,6 @@ export default function Hero() {
       const { ScrollTrigger } = await import("gsap/ScrollTrigger");
       gsap.registerPlugin(ScrollTrigger);
 
-      /* Parallax on the whole slider container as user scrolls */
       if (sliderRef.current) {
         const tween = gsap.to(sliderRef.current, {
           scrollTrigger: {
@@ -189,43 +181,40 @@ export default function Hero() {
       <div
         aria-hidden
         className="absolute -left-40 top-1/2 -translate-y-1/2
-                      w-175 h-175 rounded-full bg-primary/8
-                      blur-[130px] pointer-events-none"
+                   w-175 h-175 rounded-full bg-primary/8
+                   blur-[130px] pointer-events-none"
       />
+
       <div
         className="mt-20 sm:mt-24 overflow-hidden border-y border-border/20
-                      bg-card/10"
+                   bg-card/10"
       >
         <div ref={sliderRef} className="flex items-center">
           <div className="hero-marquee-mask w-full overflow-hidden max-w-[100vw]">
-  <div className="hero-marquee-track">
-    
-    {/* GROUP 1 */}
-    <div className="hero-marquee-group">
-      {Array.from({ length: 10 }).map((_, i) => (
-        <span key={`g1-${i}`} className="hero-marquee-item">
-          Software Engineer — Scalable Systems — Open to All Time Zones —
-        </span>
-      ))}
-    </div>
-
-    {/* GROUP 2 (duplicate for seamless loop) */}
-    <div className="hero-marquee-group">
-      {Array.from({ length: 10 }).map((_, i) => (
-        <span key={`g2-${i}`} className="hero-marquee-item">
-          Software Engineer — Scalable Systems — Open to All Time Zones —
-        </span>
-      ))}
-    </div>
-
-  </div>
-</div>
+            <div className="hero-marquee-track">
+              <div className="hero-marquee-group">
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <span key={`g1-${i}`} className="hero-marquee-item">
+                    Software Engineer — Scalable Systems — Open to All Time Zones —
+                  </span>
+                ))}
+              </div>
+              <div className="hero-marquee-group">
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <span key={`g2-${i}`} className="hero-marquee-item">
+                    Software Engineer — Scalable Systems — Open to All Time Zones —
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div
         className="flex-1 container mx-auto relative z-10
-                      flex flex-col lg:flex-row items-center justify-between px-8 sm:px-10 lg:px-12 py-2 lg:py-4"
+                   flex flex-col lg:flex-row items-center justify-between
+                   px-8 sm:px-10 lg:px-12 py-2 lg:py-4"
       >
         {/* LEFT */}
         <motion.div
@@ -235,7 +224,6 @@ export default function Hero() {
           initial="hidden"
           animate="visible"
         >
-          {/* Headline */}
           <motion.h1
             variants={fadeDown}
             className="font-heading font-black leading-[1.02] tracking-tight
@@ -251,15 +239,14 @@ export default function Hero() {
             variants={fadeDown}
             className="text-foreground text-base md:text-lg mb-2 max-w-md leading-normal"
           >
-            Full Stack Engineer — delivering scalable web systems, high-performance APIs & cloud solutions used in production.
+            Full Stack Engineer — delivering scalable web systems,
+            high-performance APIs &amp; cloud solutions used in production.
           </motion.p>
 
-          {/* Code block */}
           <motion.div variants={zoomIn} className="w-full max-w-135 mb-8">
             <CodeBlock />
           </motion.div>
 
-          {/* CTAs */}
           <motion.div
             variants={stagger}
             className="flex flex-wrap gap-4 justify-center lg:justify-start"
@@ -273,9 +260,28 @@ export default function Hero() {
             >
               View My Work
             </motion.a>
+
+            {/* ══════════════════════════════════════════════════════════════
+                CV DOWNLOAD FIX
+                ─────────────────────────────────────────────────────────────
+                The old code used a dynamic import + createElement approach
+                that referenced `charlesEromoseCV` — a commented-out import
+                that never resolved, so the click did nothing.
+
+                The correct approach for Next.js:
+                  1. Place your CV at  /public/charles-eromose-cv.pdf
+                  2. Reference it with a plain <a> (or motion.a) using the
+                     root-relative path  "/charles-eromose-cv.pdf"
+                  3. Add the `download` attribute — browsers will save the
+                     file to disk instead of navigating to it.
+                  4. Optionally pass a value to `download` to control the
+                     saved filename: download="Charles_Eromose_CV.pdf"
+
+                No JavaScript needed — the browser handles it natively.
+            ══════════════════════════════════════════════════════════════ */}
             <motion.a
-              href="/charles-eromose-cv.pdf"
-              download
+              href="/CharlesEromose.pdf"
+              download="CharlesEromose.pdf"
               variants={fadeUp}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
@@ -284,6 +290,7 @@ export default function Hero() {
               Download CV
             </motion.a>
           </motion.div>
+
           <ScrollIndicator className="mt-8 md:hidden" />
         </motion.div>
 
@@ -302,11 +309,11 @@ export default function Hero() {
             <div
               aria-hidden
               className="absolute inset-0 rounded-full blur-3xl opacity-25
-                                        bg-primary scale-75 animate-pulse"
+                         bg-primary scale-75 animate-pulse"
             />
             <div
               className="relative w-65 h-65 sm:w-85 sm:h-85
-                            md:w-105 md:h-105 lg:w-115 lg:h-115"
+                         md:w-105 md:h-105 lg:w-115 lg:h-115"
             >
               <video
                 ref={globeRef}
@@ -325,9 +332,8 @@ export default function Hero() {
           </div>
         </motion.div>
       </div>
-<ScrollIndicator
-  className="hidden md:flex absolute bottom-6 left-1/2 -translate-x-1/2"
-/>
+
+      <ScrollIndicator className="hidden md:flex absolute bottom-6 left-1/2 -translate-x-1/2" />
     </section>
   );
 }
