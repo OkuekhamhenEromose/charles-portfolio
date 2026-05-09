@@ -76,7 +76,7 @@ const portfolioProjects: PortfolioProject[] = [
     description:
       "A production-focused API integration and mapping system built with WordPress (PHP), bridging frontend contracts to backend services. Involved tracing 50+ endpoints, validating authentication flows, testing APIs, and documenting full frontend-backend alignment with proof-driven verification.",
     category: "Backend",
-    image: "/images/portfolio/backendphp.png",
+    image: "/images/portfolio/Screenshot 2026-04-30 071435.png",
     demoLink: "",
     githubLink: "https://github.com/your-repo-link",
   },
