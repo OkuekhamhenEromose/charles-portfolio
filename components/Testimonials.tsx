@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Quote } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+// updated folders
 
 gsap.registerPlugin(ScrollTrigger);
 
