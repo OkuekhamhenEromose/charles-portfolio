@@ -2,33 +2,23 @@
 
 /**
  * CompaniesWorked — inline SVG brand logos
- *
- * JPEGs with black backgrounds can't be cleanly composited on a dark
- * background via CSS alone. Instead, each logo is an inline SVG path
- * rendered in rgb(var(--foreground)), so it always adapts to the theme,
- * is perfectly visible, and every logo sits in the exact same 200 × 64
- * bounding box with identical visual weight.
+ * Responsive grid: 2 cols (mobile) → 3 cols (sm) → 5 cols (lg)
+ * Each logo cell is a fixed-ratio box so all logos are identical size.
  */
 
 function PaystackLogo() {
   return (
     <svg viewBox="0 0 200 64" fill="none" xmlns="http://www.w3.org/2000/svg"
-      aria-label="Paystack" role="img">
-      {/* Stacked bars icon */}
-      <rect x="8"  y="14" width="28" height="8"  rx="4" fill="rgb(var(--foreground))"/>
-      <rect x="8"  y="28" width="22" height="8"  rx="4" fill="rgb(var(--foreground))"/>
-      <rect x="8"  y="42" width="16" height="8"  rx="4" fill="rgb(var(--foreground))"/>
-      {/* wordmark */}
+      aria-label="Paystack" role="img" width="100%" height="100%">
+      <rect x="8"  y="14" width="28" height="8" rx="4" fill="rgb(var(--foreground))"/>
+      <rect x="8"  y="28" width="22" height="8" rx="4" fill="rgb(var(--foreground))"/>
+      <rect x="8"  y="42" width="16" height="8" rx="4" fill="rgb(var(--foreground))"/>
       <text
         x="44" y="42"
         fontFamily="system-ui, -apple-system, sans-serif"
-        fontWeight="700"
-        fontSize="22"
-        fill="rgb(var(--foreground))"
-        letterSpacing="-0.5"
-      >
-        paystack
-      </text>
+        fontWeight="700" fontSize="22"
+        fill="rgb(var(--foreground))" letterSpacing="-0.5"
+      >paystack</text>
     </svg>
   );
 }
@@ -36,30 +26,20 @@ function PaystackLogo() {
 function SlackLogo() {
   return (
     <svg viewBox="0 0 200 64" fill="none" xmlns="http://www.w3.org/2000/svg"
-      aria-label="Slack" role="img">
-      {/* Slack hashtag icon — simplified monochrome */}
+      aria-label="Slack" role="img" width="100%" height="100%">
       <g transform="translate(8, 10)">
-        {/* top-left pill */}
         <rect x="0"  y="0"  width="11" height="26" rx="5.5" fill="rgb(var(--foreground))"/>
-        {/* top-right pill */}
         <rect x="15" y="0"  width="11" height="26" rx="5.5" fill="rgb(var(--foreground))"/>
-        {/* bottom-left pill */}
         <rect x="0"  y="18" width="11" height="26" rx="5.5" fill="rgb(var(--foreground))"/>
-        {/* bottom-right pill */}
         <rect x="15" y="18" width="11" height="26" rx="5.5" fill="rgb(var(--foreground))"/>
-        {/* horizontal connectors */}
         <rect x="0"  y="13" width="26" height="11" rx="5.5" fill="rgb(var(--foreground))"/>
       </g>
       <text
         x="48" y="42"
         fontFamily="'Lato', system-ui, sans-serif"
-        fontWeight="700"
-        fontSize="26"
-        fill="rgb(var(--foreground))"
-        letterSpacing="-0.3"
-      >
-        slack
-      </text>
+        fontWeight="700" fontSize="26"
+        fill="rgb(var(--foreground))" letterSpacing="-0.3"
+      >slack</text>
     </svg>
   );
 }
@@ -67,33 +47,22 @@ function SlackLogo() {
 function AmazonLogo() {
   return (
     <svg viewBox="0 0 200 64" fill="none" xmlns="http://www.w3.org/2000/svg"
-      aria-label="Amazon" role="img">
+      aria-label="Amazon" role="img" width="100%" height="100%">
       <text
         x="16" y="40"
         fontFamily="system-ui, -apple-system, sans-serif"
-        fontWeight="700"
-        fontSize="30"
-        fill="rgb(var(--foreground))"
-        letterSpacing="-0.5"
-      >
-        amazon
-      </text>
-      {/* Arrow smile — the iconic underline curve */}
+        fontWeight="700" fontSize="30"
+        fill="rgb(var(--foreground))" letterSpacing="-0.5"
+      >amazon</text>
       <path
         d="M 22 50 Q 78 62 148 49"
-        stroke="rgb(var(--foreground))"
-        strokeWidth="3"
-        strokeLinecap="round"
-        fill="none"
+        stroke="rgb(var(--foreground))" strokeWidth="3"
+        strokeLinecap="round" fill="none"
       />
-      {/* Arrowhead */}
       <path
         d="M 141 45 L 148 49 L 140 53"
-        stroke="rgb(var(--foreground))"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
+        stroke="rgb(var(--foreground))" strokeWidth="3"
+        strokeLinecap="round" strokeLinejoin="round" fill="none"
       />
     </svg>
   );
@@ -102,18 +71,13 @@ function AmazonLogo() {
 function JumiaLogo() {
   return (
     <svg viewBox="0 0 200 64" fill="none" xmlns="http://www.w3.org/2000/svg"
-      aria-label="Jumia" role="img">
+      aria-label="Jumia" role="img" width="100%" height="100%">
       <text
         x="12" y="42"
         fontFamily="system-ui, -apple-system, sans-serif"
-        fontWeight="800"
-        fontSize="30"
-        fill="rgb(var(--foreground))"
-        letterSpacing="3"
-      >
-        JUMIA
-      </text>
-      {/* Star badge — tucked right after the A in JUMIA */}
+        fontWeight="800" fontSize="30"
+        fill="rgb(var(--foreground))" letterSpacing="3"
+      >JUMIA</text>
       <polygon
         points="152,18 154,25 161,25 155.5,29 157.5,36 152,32 146.5,36 148.5,29 143,25 150,25"
         fill="rgb(var(--foreground))"
@@ -125,17 +89,13 @@ function JumiaLogo() {
 function GoogleLogo() {
   return (
     <svg viewBox="0 0 200 64" fill="none" xmlns="http://www.w3.org/2000/svg"
-      aria-label="Google" role="img">
+      aria-label="Google" role="img" width="100%" height="100%">
       <text
         x="12" y="44"
         fontFamily="'Product Sans', 'Google Sans', system-ui, sans-serif"
-        fontWeight="400"
-        fontSize="34"
-        fill="rgb(var(--foreground))"
-        letterSpacing="-0.5"
-      >
-        Google
-      </text>
+        fontWeight="400" fontSize="34"
+        fill="rgb(var(--foreground))" letterSpacing="-0.5"
+      >Google</text>
     </svg>
   );
 }
@@ -157,12 +117,10 @@ export default function CompaniesWorked() {
           {/* ── Header ─────────────────────────────────────────────── */}
           <div className="companies-worked-header">
             <span className="section-tag">Trusted Collaboration</span>
-
             <h2>
               Companies &amp; Platforms{" "}
               <span>I&apos;ve Worked With</span>
             </h2>
-
             <p>
               Building scalable frontend systems, APIs, cloud-powered
               applications, and polished digital experiences for modern
@@ -170,19 +128,38 @@ export default function CompaniesWorked() {
             </p>
           </div>
 
-          {/* ── Logo strip — every logo in the same 200 × 64 box ───── */}
-          <div className="relative z-10 flex flex-wrap items-center justify-center gap-x-2 gap-y-6 lg:gap-x-4">
+          {/* ── Logo grid ──────────────────────────────────────────── */}
+          {/*
+            Mobile  (< sm):  2 columns
+            Tablet  (sm–lg): 3 columns
+            Desktop (≥ lg):  5 columns — all on one row
+          */}
+          <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-3">
             {companies.map(({ name, Logo }) => (
               <div
                 key={name}
                 className="
-                  opacity-40 hover:opacity-100
-                  transition-all duration-300 hover:scale-105
-                  shrink-0
+                  group relative overflow-hidden
+                  flex items-center justify-center
+                  p-4 sm:p-5
+                  opacity-50 hover:opacity-100
+                  hover:-translate-y-1
+                  transition-all duration-300
                 "
-                style={{ width: "160px", height: "56px" }}
+                /* aspect-ratio keeps every cell the same height on all screens */
+                style={{ aspectRatio: "200 / 80" }}
               >
-                <Logo />
+                {/* Subtle hover glow overlay */}
+                <div className="
+                  absolute inset-0 opacity-0 group-hover:opacity-100
+                  bg-linear-to-br from-primary/8 to-transparent
+                  transition-opacity duration-300 pointer-events-none
+                " />
+
+                {/* SVG logo — fills the cell, viewBox handles proportions */}
+                <div className="relative z-10 w-full h-full">
+                  <Logo />
+                </div>
               </div>
             ))}
           </div>

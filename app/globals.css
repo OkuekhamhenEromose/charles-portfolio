@@ -275,15 +275,6 @@
 .companies-worked-wrapper {
   position: relative;
   overflow: hidden;
-  /* border-radius: 2rem;
-  border: 1px solid rgb(var(--border) / 0.9);
-  background:
-    linear-gradient(
-      180deg,
-      rgb(var(--card) / 0.82),
-      rgb(var(--surface) / 0.72)
-    );
-  backdrop-filter: blur(18px); */
   padding: 4rem 2rem;
   box-shadow:
     0 24px 80px rgb(0 0 0 / 0.24),
