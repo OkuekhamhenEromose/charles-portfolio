@@ -21,9 +21,9 @@ const services = [
     desc: "Intuitive, user-centered interfaces that combine aesthetics with functionality to engage and convert users.",
     tag: "Design",
     accent: "from-pink-500/20 to-rose-500/10",
-    numberColor: "group-hover:text-pink-500/35",
-    tagColor: "group-hover:text-pink-500",
-    tagBg: "group-hover:bg-pink-500/10",
+    numberColor: "text-pink-500/20 group-hover:text-pink-500/35",
+    tagColor: "text-pink-500 group-hover:text-pink-500",
+    tagBg: "bg-pink-500/10 group-hover:bg-pink-500/10",
     iconColor: "group-hover:text-pink-500",
     iconBg: "group-hover:bg-pink-500",
   },
@@ -34,9 +34,9 @@ const services = [
     desc: "End-to-end development from responsive frontends to powerful backends, APIs, and databases.",
     tag: "Engineering",
     accent: "from-primary/20 to-cyan-500/10",
-    numberColor: "group-hover:text-primary/35",
-    tagColor: "group-hover:text-primary",
-    tagBg: "group-hover:bg-primary/10",
+    numberColor: "text-primary/20 group-hover:text-primary/35",
+    tagColor: "text-primary group-hover:text-primary",
+    tagBg: "bg-primary/10 group-hover:bg-primary/10",
     iconColor: "group-hover:text-primary",
     iconBg: "group-hover:bg-primary",
   },
@@ -47,9 +47,9 @@ const services = [
     desc: "Websites and apps that adapt seamlessly across all devices with consistent speed and performance.",
     tag: "Frontend",
     accent: "from-blue-500/20 to-indigo-500/10",
-    numberColor: "group-hover:text-blue-500/35",
-    tagColor: "group-hover:text-blue-500",
-    tagBg: "group-hover:bg-blue-500/10",
+    numberColor: "text-blue-500/20 group-hover:text-blue-500/35",
+    tagColor: "text-blue-500 group-hover:text-blue-500",
+    tagBg: "bg-blue-500/10 group-hover:bg-blue-500/10",
     iconColor: "group-hover:text-blue-500",
     iconBg: "group-hover:bg-blue-500",
   },
@@ -60,9 +60,9 @@ const services = [
     desc: "Systems engineered to handle traffic growth and maintain high performance under load.",
     tag: "Backend",
     accent: "from-violet-500/20 to-purple-500/10",
-    numberColor: "group-hover:text-violet-500/35",
-    tagColor: "group-hover:text-violet-500",
-    tagBg: "group-hover:bg-violet-500/10",
+    numberColor: "text-violet-500/20 group-hover:text-violet-500/35",
+    tagColor: "text-violet-500 group-hover:text-violet-500",
+    tagBg: "bg-violet-500/10 group-hover:bg-violet-500/10",
     iconColor: "group-hover:text-violet-500",
     iconBg: "group-hover:bg-violet-500",
   },
@@ -73,9 +73,9 @@ const services = [
     desc: "AWS deployments, Docker containerisation, and CI/CD pipelines for fast, reliable delivery.",
     tag: "Cloud",
     accent: "from-amber-500/20 to-orange-500/10",
-    numberColor: "group-hover:text-amber-500/35",
-    tagColor: "group-hover:text-amber-500",
-    tagBg: "group-hover:bg-amber-500/10",
+    numberColor: "text-amber-500/20 group-hover:text-amber-500/35",
+    tagColor: "text-amber-500 group-hover:text-amber-500",
+    tagBg: "bg-amber-500/10 group-hover:bg-amber-500/10",
     iconColor: "group-hover:text-amber-500",
     iconBg: "group-hover:bg-amber-500",
   },
@@ -86,9 +86,9 @@ const services = [
     desc: "Designing, optimising, and maintaining SQL/NoSQL databases for secure, efficient data handling.",
     tag: "Data",
     accent: "from-emerald-500/20 to-teal-500/10",
-    numberColor: "group-hover:text-emerald-500/35",
-    tagColor: "group-hover:text-emerald-500",
-    tagBg: "group-hover:bg-emerald-500/10",
+    numberColor: "text-emerald-500/20 group-hover:text-emerald-500/35",
+    tagColor: "text-emerald-500 group-hover:text-emerald-500",
+    tagBg: "bg-emerald-500/10 group-hover:bg-emerald-500/10",
     iconColor: "group-hover:text-emerald-500",
     iconBg: "group-hover:bg-emerald-500",
   },
@@ -133,11 +133,9 @@ export default function Services() {
           transition={{ duration: 0.75, ease: "easeOut" }}
         >
           <span className="section-tag mb-3 inline-flex">What I Offer</span>
-
           <h2 className="section-title mt-3 text-foreground">
             My <span className="gradient-text">Services</span>
           </h2>
-
           <p className="body-text mx-auto mt-4 max-w-lg">
             From concept to cloud — full-spectrum engineering and design
             tailored to your goals.
@@ -161,34 +159,64 @@ export default function Services() {
                 key={item.id}
                 variants={cardVariants}
                 whileHover={{ y: -10, scale: 1.02 }}
-                className="group relative flex w-[88%] max-w-88 cursor-default flex-col
+                className="group relative flex w-[88%] max-w-88 cursor-pointer flex-col
                            overflow-hidden rounded-2xl border border-border bg-card p-5
                            shadow-lg transition-all duration-500
                            hover:border-primary/50 hover:shadow-[0_20px_60px_rgba(0,0,0,0.25)]
                            sm:w-full sm:max-w-none sm:gap-5 sm:p-7"
               >
-                <div
-                  className={`pointer-events-none absolute inset-0 bg-linear-to-br ${item.accent}
-                              opacity-0 transition-opacity duration-500 group-hover:opacity-100`}
+                {/*
+                  ── Entire card is a link to /#portfolio ─────────────────
+                  The Link covers the full card via absolute inset-0.
+                  All other content sits above it via relative z-10.
+                */}
+                <Link
+                  href="/#portfolio"
+                  className="absolute inset-0 z-20"
+                  aria-label={`${item.title} — view portfolio`}
                 />
 
+                {/*
+                  ── Accent gradient overlay ───────────────────────────────
+                  On desktop: opacity-0 → opacity-100 on group-hover.
+                  On mobile (no hover): always opacity-60 so the color
+                  identity of each card is visible without needing a tap.
+                */}
+                <div
+                  className={`pointer-events-none absolute inset-0 bg-linear-to-br ${item.accent}
+                              opacity-60 transition-opacity duration-500
+                              sm:opacity-0 sm:group-hover:opacity-100`}
+                />
+
+                {/*
+                  ── Large background number ───────────────────────────────
+                  Mobile: always visible in the card's accent color.
+                  Desktop: muted until hover, then switches to accent color.
+                */}
                 <span
                   className={`pointer-events-none absolute bottom-3 right-4 select-none
                               font-heading text-[5rem] font-black leading-none
-                              text-muted-foreground/10 transition-colors duration-500
-                              sm:text-[6rem] sm:text-muted-foreground/15 ${item.numberColor}`}
+                              transition-colors duration-500
+                              sm:text-[6rem] sm:text-muted-foreground/15
+                              ${item.numberColor}`}
                 >
                   {String(item.id).padStart(2, "0")}
                 </span>
 
+                {/*
+                  ── Tag pill ─────────────────────────────────────────────
+                  Mobile: always colored. Desktop: muted → colored on hover.
+                */}
                 <span
-                  className={`relative z-10 mb-5 self-start rounded-full bg-muted/60 px-3 py-1
-                              text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground
-                              transition-colors duration-300 sm:mb-0 ${item.tagBg} ${item.tagColor}`}
+                  className={`relative z-10 mb-5 self-start rounded-full px-3 py-1
+                              text-[10px] font-bold uppercase tracking-[0.15em]
+                              transition-colors duration-300 sm:mb-0
+                              ${item.tagBg} ${item.tagColor}`}
                 >
                   {item.tag}
                 </span>
 
+                {/* ── Icon + Title row ──────────────────────────────────── */}
                 <div className="relative z-10 flex items-start justify-between gap-3">
                   <div className="flex min-w-0 items-start gap-3">
                     <div
@@ -219,6 +247,7 @@ export default function Services() {
                   />
                 </div>
 
+                {/* ── Description ──────────────────────────────────────── */}
                 <p
                   className="relative z-10 mt-2 pl-12 text-[0.82rem] leading-5 text-muted-foreground
                              transition-colors duration-300 group-hover:text-foreground/80
@@ -227,16 +256,20 @@ export default function Services() {
                   {item.desc}
                 </p>
 
-                <Link
-                  href="/#portfolio"
-                  className="relative z-10 mt-5 inline-flex translate-y-2 items-center
+                {/*
+                  ── "See examples" label ──────────────────────────────────
+                  Desktop only (hidden on mobile — whole card is tappable).
+                  Slides up and fades in on hover.
+                */}
+                <span
+                  className="relative z-10 mt-5 hidden translate-y-2 items-center
                              gap-1.5 text-xs font-bold uppercase tracking-wider text-primary
                              opacity-0 transition-all duration-300 hover:underline
                              group-hover:translate-y-0 group-hover:opacity-100
-                             sm:mt-auto"
+                             sm:mt-auto sm:inline-flex"
                 >
                   See examples <ArrowUpRight className="h-3.5 w-3.5" />
-                </Link>
+                </span>
               </motion.div>
             );
           })}
