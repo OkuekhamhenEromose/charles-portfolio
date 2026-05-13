@@ -122,13 +122,25 @@
            hover:scale-[1.03] active:scale-[0.97];
   }
 
-  .nav-link {
+  /* .nav-link {
     @apply relative text-muted-foreground font-medium transition-colors duration-300 hover:text-primary;
   }
   .nav-link::after {
     content: "";
     @apply absolute bottom-[-4px] left-0 w-0 h-[2px] bg-primary rounded-full transition-all duration-300;
-  }
+  } */
+   .nav-link {
+  @apply relative text-muted-foreground font-medium
+         transition-all duration-300 hover:text-primary;
+}
+
+.nav-link::after {
+  content: none;
+}
+
+.nav-link.active {
+  @apply text-primary;
+}
   .nav-link:hover::after, .nav-link.active::after { @apply w-full; }
   .nav-link.active { @apply text-primary; }
 

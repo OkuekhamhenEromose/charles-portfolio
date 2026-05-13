@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Socials from "./Socials";
 import { ArrowUp } from "lucide-react";
+import Image from "next/image";
 
 const navLinks = [
   { name: "Home", href: "/#home" },
@@ -78,23 +79,36 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-4 border-t border-border flex flex-row items-center justify-between gap-4">
-          <p className="min-w-0 flex-1 text-xs text-muted-foreground text-left leading-relaxed">
-            © {year}{" "}
-            <span className="text-primary font-medium">Charles Eromose</span>.
-            Built with Next.js, Tailwind & Framer Motion.
+        <div className="pt-4 border-t border-border relative flex items-center justify-center">
+          <p className="text-sm text-muted-foreground text-center leading-relaxed flex items-center gap-2 flex-wrap">
+            © {year}
+            <span className="flex items-center gap-2">
+              <Image
+                src="/icon.png"
+                alt="Karoxia Logo"
+                width={16}
+                height={16}
+                className="rounded-sm object-cover"
+                priority
+              />
+
+              <span className="text-primary font-semibold tracking-wide">
+                Karoxia
+              </span>
+            </span>
+            <span className="text-muted-foreground/80">
+              — Proudly built with Next.js, Tailwind CSS & Framer Motion.
+            </span>
           </p>
 
           <motion.button
             onClick={scrollTop}
             aria-label="Back to top"
-            className="shrink-0 w-9 h-9 rounded-full border border-border bg-card/60
-             flex items-center justify-center
-             hover:border-primary/50 hover:bg-accent transition-all duration-300"
+            className="absolute right-0 shrink-0 w-9 h-9 rounded-full border border-border bg-card/60 flex items-center justify-center hover:border-primary/50 hover:bg-accent transition-all duration-300"
             whileHover={{ y: -3, scale: 1.1 }}
             whileTap={{ scale: 0.93 }}
           >
-            <ArrowUp className="w-4 h-4 text-muted-foreground" />
+            <ArrowUp className="w-4 h-4 text-muted-foreground cursor-pointer" />
           </motion.button>
         </div>
       </div>
