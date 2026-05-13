@@ -91,10 +91,6 @@ export default function Testimonials({ ready }: TestimonialsProps) {
       });
 
       const setupCard = (card: HTMLElement, i: number) => {
-        // ── TRIGGER A — ENTRY ────────────────────────────────────────────
-        // Fires on both scroll directions so the card slides in whether the
-        // user is scrolling down (first view) or scrolling back down after
-        // having left the section (re-entry).
         ScrollTrigger.create({
           id: `trav-in-${i}`,
           trigger: card,
@@ -103,27 +99,6 @@ export default function Testimonials({ ready }: TestimonialsProps) {
           onEnterBack: () => animIn(card),
           invalidateOnRefresh: true,
         });
-
-        // ── TRIGGER B — EXIT on scroll-up ────────────────────────────────
-        //
-        // WHY "center 35%" INSTEAD OF THE PREVIOUS "center top":
-        //
-        // "center top"  = card's centre at the viewport's TOP edge.
-        //   At that moment only the BOTTOM half of the card is visible,
-        //   clinging to the very top of the screen.  The 0.55 s animOut
-        //   then plays while the card is barely in view → felt like the
-        //   card snapped away "too quickly" before the user could see it.
-        //
-        // "center 35%" = card's centre at 35 % down from the viewport top.
-        //   Geometry for a typical 400 px card in an 800 px viewport:
-        //     • card top    = 35 % − 25 % =  10 % from viewport top  (visible)
-        //     • card centre = 35 %                                     (visible)
-        //     • card bottom = 35 % + 25 % =  60 % from viewport top  (visible)
-        //   The card is ~90 % visible — clearly "midway in view" — when
-        //   `onLeaveBack` fires.  The user sees the card slide left/right
-        //   from a fully readable position rather than from a barely-there
-        //   sliver at the top edge.  The longer animOut (0.75 s) then gives
-        //   the exit enough screen time to feel deliberate and smooth.
         ScrollTrigger.create({
           id: `trav-out-${i}`,
           trigger: card,

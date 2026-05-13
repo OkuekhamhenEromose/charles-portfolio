@@ -10,6 +10,7 @@ import ServiceSummary from "@/components/ServiceSummary";
 import Services from "@/components/Services";
 import Portfolio from "@/components/Portfolio";
 import Testimonials from "@/components/Testimonials";
+import CompaniesWorked from "@/components/CompaniesWorked";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 
@@ -48,6 +49,7 @@ export default function HomePage() {
             <section id="services"><Services /></section>
             <Portfolio />
             <Testimonials ready={preloaderDone} />
+            <CompaniesWorked />
             <section id="contact"><Contact /></section>
           </main>
 
