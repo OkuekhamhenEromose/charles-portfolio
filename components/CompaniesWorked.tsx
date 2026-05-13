@@ -315,8 +315,10 @@ export default function CompaniesWorked() {
                   group relative overflow-hidden
                   flex items-center justify-center
                   p-2 sm:p-4 lg:p-5
-                  opacity-50 hover:opacity-100
-                  hover:-translate-y-1
+                  opacity-100 md:opacity-50
+                  md:hover:opacity-100
+                  md:hover:border-primary/40
+                  md:hover:-translate-y-1
                   transition-all duration-300
                 "
                 style={{ aspectRatio: "200 / 80" }}
