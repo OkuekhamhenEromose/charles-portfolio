@@ -79,7 +79,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-4 border-t border-border relative flex items-center justify-center">
+        <div className="pt-4 border-t border-border relative flex flex-col sm:flex-row gap-2 items-center justify-center">
           <p className="text-sm text-muted-foreground text-center leading-relaxed flex items-center gap-2 flex-wrap">
             © {year}
             <span className="flex items-center gap-2">
