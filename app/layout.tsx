@@ -43,6 +43,32 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/*
+         * ── Scroll-restoration kill switch ────────────────────────────────
+         * This runs as a blocking inline script BEFORE React hydrates and
+         * BEFORE the browser has a chance to restore the saved scroll position.
+         * It is the only reliable way to prevent the browser jumping to a
+         * mid-page scroll position on hard reload.
+         *
+         * dangerouslySetInnerHTML is intentional and safe here — the script
+         * contains no user input and no dynamic data.
+         */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function () {
+                try {
+                  if ('scrollRestoration' in history) {
+                    history.scrollRestoration = 'manual';
+                  }
+                  window.scrollTo(0, 0);
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${inter.variable} ${clashDisplay.variable} ${margareth.variable} ${firaCode.variable} font-body antialiased`}
       >
