@@ -52,14 +52,11 @@ const services = [
     tagColor: "text-pink-500",
     tagBg: "bg-pink-500/10",
     // icon wrapper bg: coloured on mobile, muted on desktop-default, coloured on desktop-hover
-    iconBg:
-      "bg-pink-500/80 sm:bg-muted/70 sm:group-hover:bg-pink-500",
+    iconBg: "bg-pink-500/80 sm:bg-muted/70 sm:group-hover:bg-pink-500",
     // icon svg: white on mobile (sits on coloured bg), muted on desktop-default, white on desktop-hover
-    iconColor:
-      "text-white sm:text-muted-foreground sm:group-hover:text-white",
+    iconColor: "text-white sm:text-muted-foreground sm:group-hover:text-white",
     // title: accent on mobile, foreground on desktop-default, primary on desktop-hover
-    titleColor:
-      "text-pink-500 sm:text-foreground sm:group-hover:text-primary",
+    titleColor: "text-pink-500 sm:text-foreground sm:group-hover:text-primary",
   },
   {
     id: 2,
@@ -72,12 +69,9 @@ const services = [
       "text-primary/45 sm:text-muted-foreground/15 sm:group-hover:text-primary/40",
     tagColor: "text-primary",
     tagBg: "bg-primary/10",
-    iconBg:
-      "bg-teal-500/80 sm:bg-muted/70 sm:group-hover:bg-teal-500",
-    iconColor:
-      "text-white sm:text-muted-foreground sm:group-hover:text-white",
-    titleColor:
-      "text-teal-400 sm:text-foreground sm:group-hover:text-primary",
+    iconBg: "bg-teal-500/80 sm:bg-muted/70 sm:group-hover:bg-teal-500",
+    iconColor: "text-white sm:text-muted-foreground sm:group-hover:text-white",
+    titleColor: "text-teal-400 sm:text-foreground sm:group-hover:text-primary",
   },
   {
     id: 3,
@@ -90,12 +84,9 @@ const services = [
       "text-blue-500/45 sm:text-muted-foreground/15 sm:group-hover:text-blue-500/40",
     tagColor: "text-blue-500",
     tagBg: "bg-blue-500/10",
-    iconBg:
-      "bg-blue-500/80 sm:bg-muted/70 sm:group-hover:bg-blue-500",
-    iconColor:
-      "text-white sm:text-muted-foreground sm:group-hover:text-white",
-    titleColor:
-      "text-blue-400 sm:text-foreground sm:group-hover:text-primary",
+    iconBg: "bg-blue-500/80 sm:bg-muted/70 sm:group-hover:bg-blue-500",
+    iconColor: "text-white sm:text-muted-foreground sm:group-hover:text-white",
+    titleColor: "text-blue-400 sm:text-foreground sm:group-hover:text-primary",
   },
   {
     id: 4,
@@ -108,10 +99,8 @@ const services = [
       "text-violet-500/45 sm:text-muted-foreground/15 sm:group-hover:text-violet-500/40",
     tagColor: "text-violet-500",
     tagBg: "bg-violet-500/10",
-    iconBg:
-      "bg-violet-500/80 sm:bg-muted/70 sm:group-hover:bg-violet-500",
-    iconColor:
-      "text-white sm:text-muted-foreground sm:group-hover:text-white",
+    iconBg: "bg-violet-500/80 sm:bg-muted/70 sm:group-hover:bg-violet-500",
+    iconColor: "text-white sm:text-muted-foreground sm:group-hover:text-white",
     titleColor:
       "text-violet-400 sm:text-foreground sm:group-hover:text-primary",
   },
@@ -126,12 +115,9 @@ const services = [
       "text-amber-500/45 sm:text-muted-foreground/15 sm:group-hover:text-amber-500/40",
     tagColor: "text-amber-500",
     tagBg: "bg-amber-500/10",
-    iconBg:
-      "bg-amber-500/80 sm:bg-muted/70 sm:group-hover:bg-amber-500",
-    iconColor:
-      "text-white sm:text-muted-foreground sm:group-hover:text-white",
-    titleColor:
-      "text-amber-400 sm:text-foreground sm:group-hover:text-primary",
+    iconBg: "bg-amber-500/80 sm:bg-muted/70 sm:group-hover:bg-amber-500",
+    iconColor: "text-white sm:text-muted-foreground sm:group-hover:text-white",
+    titleColor: "text-amber-400 sm:text-foreground sm:group-hover:text-primary",
   },
   {
     id: 6,
@@ -144,10 +130,8 @@ const services = [
       "text-emerald-500/45 sm:text-muted-foreground/15 sm:group-hover:text-emerald-500/40",
     tagColor: "text-emerald-500",
     tagBg: "bg-emerald-500/10",
-    iconBg:
-      "bg-emerald-500/80 sm:bg-muted/70 sm:group-hover:bg-emerald-500",
-    iconColor:
-      "text-white sm:text-muted-foreground sm:group-hover:text-white",
+    iconBg: "bg-emerald-500/80 sm:bg-muted/70 sm:group-hover:bg-emerald-500",
+    iconColor: "text-white sm:text-muted-foreground sm:group-hover:text-white",
     titleColor:
       "text-emerald-400 sm:text-foreground sm:group-hover:text-primary",
   },
@@ -185,7 +169,6 @@ export default function Services() {
       />
 
       <div className="relative z-10 mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-12">
-
         {/* ── Section header ─────────────────────────────────────── */}
         <motion.div
           className="mb-12 text-center sm:mb-16"
@@ -229,13 +212,7 @@ export default function Services() {
                  */
                 whileHover={{ y: -8, scale: 1.01 }}
                 transition={{ type: "spring", stiffness: 280, damping: 22 }}
-                className="group relative flex w-[88%] max-w-88 cursor-pointer flex-col
-                           overflow-hidden rounded-2xl border border-border bg-card p-5
-                           shadow-lg
-                           /* ↓ Only transition colours/shadows — NOT transform (Framer owns that) */
-                           transition-[border-color,box-shadow,background-color] duration-400
-                           hover:border-primary/50 hover:shadow-[0_20px_60px_rgba(0,0,0,0.25)]
-                           sm:w-full sm:max-w-none sm:gap-5 sm:p-7"
+                className="group relative flex w-[88%] max-w-88 cursor-pointer flex-col overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-lg transition duration-300 hover:border-primary/50 hover:shadow- 0_20px_60px_rgba(0,0,0,0.25)] sm:w-full sm:max-w-none sm:gap-5 sm:p-7"
               >
                 {/* Full-card link (sits above gradient, below content) */}
                 <Link
@@ -281,7 +258,6 @@ export default function Services() {
                 {/* ── Icon + Title row ──────────────────────────────── */}
                 <div className="relative z-10 flex items-start justify-between gap-3">
                   <div className="flex min-w-0 items-start gap-3">
-
                     {/*
                       Icon wrapper
                       ─ Mobile : accent bg (/80) + white icon → immediately readable
