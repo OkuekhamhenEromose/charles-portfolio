@@ -112,33 +112,35 @@ function ScrollIndicator({ className = "" }: { className?: string }) {
 export default function Hero() {
   const globeRef = useRef<HTMLVideoElement>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
-  const firstTextRef = useRef<HTMLParagraphElement>(null);
-  const secondTextRef = useRef<HTMLParagraphElement>(null);
+  const rafRef = useRef<number | null>(null);
   const xPct = useRef(0);
   const dir = useRef(-1);
-  const rafRef = useRef<number | null>(null);
 
   /* Globe autoplay */
   useEffect(() => {
     globeRef.current?.play().catch(() => {});
   }, []);
 
-  /* Dennis sliding marquee */
+  /* Marquee RAF loop — direction flips on scroll via GSAP ScrollTrigger */
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     let cleanupST: (() => void) | undefined;
 
+    // The track is two identical groups side-by-side (total width = 2 × group).
+    // We animate xPercent from 0 → -50 (one full group width) then loop back.
+    // Using percentage of the TRACK element keeps it viewport-independent —
+    // this is what makes it work correctly on narrow mobile screens.
     const loop = () => {
-      if (xPct.current < -100) xPct.current = 0;
-      else if (xPct.current > 0) xPct.current = -100;
+      // Clamp within 0 → -50 range and wrap
+      if (xPct.current <= -50) xPct.current = 0;
+      else if (xPct.current > 0) xPct.current = -50;
 
-      if (firstTextRef.current)
-        firstTextRef.current.style.transform = `translateX(${xPct.current}%)`;
-      if (secondTextRef.current)
-        secondTextRef.current.style.transform = `translateX(${xPct.current}%)`;
+      if (sliderRef.current) {
+        sliderRef.current.style.transform = `translateX(${xPct.current}%)`;
+      }
 
-      xPct.current += 0.08 * dir.current;
+      xPct.current += 0.02 * dir.current; // speed — lower = slower
       rafRef.current = requestAnimationFrame(loop);
     };
 
@@ -147,24 +149,15 @@ export default function Hero() {
       const { ScrollTrigger } = await import("gsap/ScrollTrigger");
       gsap.registerPlugin(ScrollTrigger);
 
-      if (sliderRef.current) {
-        const tween = gsap.to(sliderRef.current, {
-          scrollTrigger: {
-            trigger: document.documentElement,
-            scrub: 0.25,
-            start: 0,
-            end: window.innerHeight,
-            onUpdate: (e) => {
-              dir.current = e.direction * -1;
-            },
-          },
-          x: "-500px",
-        });
-        cleanupST = () => {
-          tween.scrollTrigger?.kill();
-          tween.kill();
-        };
-      }
+      ScrollTrigger.create({
+        trigger: document.documentElement,
+        scrub: 0.25,
+        start: 0,
+        end: window.innerHeight,
+        onUpdate: (e) => {
+          dir.current = e.direction * -1;
+        },
+      });
 
       rafRef.current = requestAnimationFrame(loop);
     })();
@@ -185,27 +178,44 @@ export default function Hero() {
                    blur-[130px] pointer-events-none"
       />
 
+      {/*
+        ── Marquee strip ────────────────────────────────────────────────────
+        KEY FIX: The outer wrapper uses `overflow-hidden` (not clip) so the
+        scrolling track can extend beyond the viewport width without creating
+        a horizontal scrollbar. `max-w-[100vw]` has been REMOVED — it was
+        constraining the track width on mobile and causing the clipped look.
+
+        The inner `sliderRef` div holds TWO identical groups back-to-back.
+        The RAF loop translates it by percentage of its own width (0 → -50%),
+        which equals exactly one group, then snaps back to 0 — seamless loop
+        regardless of screen width.
+      */}
       <div
-        className="mt-20 sm:mt-24 overflow-hidden border-y border-border/20
-                   bg-card/10"
+        className="mt-20 sm:mt-24 overflow-hidden border-y border-border/20 bg-card/10"
       >
-        <div ref={sliderRef} className="flex items-center">
-          <div className="hero-marquee-mask w-full overflow-hidden max-w-[100vw]">
-            <div className="hero-marquee-track">
-              <div className="hero-marquee-group">
-                {Array.from({ length: 10 }).map((_, i) => (
-                  <span key={`g1-${i}`} className="hero-marquee-item">
-                    Software Engineer — Scalable Systems — Open to All Time Zones —
-                  </span>
-                ))}
-              </div>
-              <div className="hero-marquee-group">
-                {Array.from({ length: 10 }).map((_, i) => (
-                  <span key={`g2-${i}`} className="hero-marquee-item">
-                    Software Engineer — Scalable Systems — Open to All Time Zones —
-                  </span>
-                ))}
-              </div>
+        {/* Fade-edge mask — only on sides, not clipping the scroll track */}
+        <div className="hero-marquee-mask">
+          {/* The track — translateX is set by RAF loop via inline style */}
+          <div
+            ref={sliderRef}
+            className="flex items-center w-max will-change-transform"
+            style={{ transform: "translateX(0%)" }}
+          >
+            {/* Group 1 */}
+            <div className="hero-marquee-group">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <span key={`g1-${i}`} className="hero-marquee-item">
+                  Software Engineer — Scalable Systems — Open to All Time Zones —
+                </span>
+              ))}
+            </div>
+            {/* Group 2 — identical duplicate for seamless loop */}
+            <div className="hero-marquee-group">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <span key={`g2-${i}`} className="hero-marquee-item">
+                  Software Engineer — Scalable Systems — Open to All Time Zones —
+                </span>
+              ))}
             </div>
           </div>
         </div>
@@ -261,24 +271,6 @@ export default function Hero() {
               View My Work
             </motion.a>
 
-            {/* ══════════════════════════════════════════════════════════════
-                CV DOWNLOAD FIX
-                ─────────────────────────────────────────────────────────────
-                The old code used a dynamic import + createElement approach
-                that referenced `charlesEromoseCV` — a commented-out import
-                that never resolved, so the click did nothing.
-
-                The correct approach for Next.js:
-                  1. Place your CV at  /public/charles-eromose-cv.pdf
-                  2. Reference it with a plain <a> (or motion.a) using the
-                     root-relative path  "/charles-eromose-cv.pdf"
-                  3. Add the `download` attribute — browsers will save the
-                     file to disk instead of navigating to it.
-                  4. Optionally pass a value to `download` to control the
-                     saved filename: download="Charles_Eromose_CV.pdf"
-
-                No JavaScript needed — the browser handles it natively.
-            ══════════════════════════════════════════════════════════════ */}
             <motion.a
               href="/CharlesEromose.pdf"
               download="CharlesEromose.pdf"

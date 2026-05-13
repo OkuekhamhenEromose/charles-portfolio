@@ -65,7 +65,7 @@ export default function HomePage() {
       </AnimatePresence>
 
       <motion.div
-        className="relative min-h-screen w-full max-w-full overflow-x-clip"
+        className="relative min-h-screen w-full max-w-full overflow-x-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: preloaderDone ? 1 : 0 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
@@ -80,10 +80,10 @@ export default function HomePage() {
         <div className="fixed inset-0 z-1 bg-black/50 transition-colors duration-700" />
         <div className="fixed inset-0 z-2 grid-dots opacity-25 pointer-events-none" />
 
-        <div className="relative z-10 w-full max-w-full overflow-x-clip">
+        <div className="relative z-10 w-full max-w-full overflow-x-hidden">
           <Header />
 
-          <main className="w-full max-w-full overflow-x-clip">
+          <main className="w-full max-w-full overflow-x-hidden">
             <section id="home"><Hero /></section>
             <section id="about"><About /></section>
             <ServiceSummary />
