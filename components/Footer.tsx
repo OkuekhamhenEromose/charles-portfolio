@@ -34,7 +34,7 @@ const fullWidth: React.CSSProperties = {
  */
 const innerContainer: React.CSSProperties = {
   width: "100%",
-  maxWidth: "1280px",
+  maxWidth: "min(1440px, 100vw)",
   marginLeft: "auto",
   marginRight: "auto",
   boxSizing: "border-box",
@@ -62,7 +62,12 @@ export default function Footer() {
       FIX: footer gets an explicit fullWidth inline style so Edge never
       shrinks it inside the three nested overflow-x:hidden ancestors.
     */
-    <footer className="relative mt-6 overflow-hidden" style={fullWidth}>
+    <footer className="relative mt-6 overflow-hidden" style={{
+  width: "100%",
+  maxWidth: "100vw",
+  overflowX: "clip",
+  boxSizing: "border-box",
+}}>
       {/* Top glow line */}
       <div className="absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent via-primary/40 to-transparent" />
 
@@ -147,7 +152,7 @@ export default function Footer() {
         */}
         <div
           className="pt-4 border-t border-border flex flex-col sm:flex-row
-                     gap-2 items-center justify-center"
+gap-2 items-center justify-between w-full"
           style={{ position: "relative", width: "100%", boxSizing: "border-box" }}
         >
           <p className="text-sm text-muted-foreground text-center leading-relaxed
@@ -175,7 +180,7 @@ export default function Footer() {
           <motion.button
             onClick={scrollTop}
             aria-label="Back to top"
-            className="absolute right-0 shrink-0 w-9 h-9 rounded-full border
+            className="shrink-0 w-9 h-9 rounded-full border
                        border-border bg-card/60 flex items-center justify-center
                        hover:border-primary/50 hover:bg-accent
                        transition-all duration-300"

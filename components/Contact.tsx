@@ -74,7 +74,7 @@ const fullWidth: React.CSSProperties = {
  */
 const innerContainer: React.CSSProperties = {
   width: "100%",
-  maxWidth: "1280px",
+  maxWidth: "min(1440px, 100vw)",
   marginLeft: "auto",
   marginRight: "auto",
   boxSizing: "border-box",
@@ -135,7 +135,12 @@ export default function Contact() {
       FIX: section gets explicit fullWidth inline style so Edge never shrinks
       it inside the three nested overflow-x:hidden ancestors.
     */
-    <section className="relative overflow-hidden" style={fullWidth}>
+    <section className="relative overflow-hidden" style={{
+  width: "100%",
+  maxWidth: "100vw",
+  overflowX: "clip",
+  boxSizing: "border-box",
+}}>
       {/* Ambient glow */}
       <div
         aria-hidden
@@ -191,9 +196,12 @@ export default function Contact() {
           viewport width anchor set above, not the compounded content-box.
         */}
         <div
-          className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start"
-          style={fullWidth}
-        >
+  className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-10 items-start w-full"
+  style={{
+    width: "100%",
+    minWidth: 0,
+  }}
+>
 
           {/* ── Left: Contact form ─────────────────────────────────── */}
           <motion.div
