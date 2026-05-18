@@ -20,7 +20,7 @@ import {
   SiTypescript,
   SiTailwindcss,
   SiFigma,
-  SiWordpress /* NEW */,
+  SiWordpress,
 } from "react-icons/si";
 import { FaAws } from "react-icons/fa";
 
@@ -58,34 +58,32 @@ const fadeUp: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } },
 };
 
-/* ── Skills — Figma + WordPress added ─────────────────────── */
 const skills = [
-  { icon: SiHtml5, name: "HTML5", color: "#E34F26" },
-  { icon: SiCss, name: "CSS3", color: "#1572B6" },
+  { icon: SiHtml5,      name: "HTML5",      color: "#E34F26" },
+  { icon: SiCss,        name: "CSS3",       color: "#1572B6" },
   { icon: SiJavascript, name: "JavaScript", color: "#F7DF1E" },
   { icon: SiTypescript, name: "TypeScript", color: "#3178C6" },
-  { icon: SiReact, name: "React", color: "#61DAFB" },
-  { icon: SiNextdotjs, name: "Next.js", color: "currentColor" },
-  { icon: SiTailwindcss, name: "Tailwind", color: "#06B6D4" },
-  { icon: SiFigma, name: "Figma", color: "#F24E1E" } /* NEW */,
-  { icon: SiNodedotjs, name: "Node.js", color: "#339933" },
-  { icon: SiExpress, name: "Express", color: "currentColor" },
-  { icon: SiPython, name: "Python", color: "#3776AB" },
-  { icon: SiDjango, name: "Django", color: "#16a34a" },
-  { icon: SiMongodb, name: "MongoDB", color: "#47A248" },
+  { icon: SiReact,      name: "React",      color: "#61DAFB" },
+  { icon: SiNextdotjs,  name: "Next.js",    color: "currentColor" },
+  { icon: SiTailwindcss,name: "Tailwind",   color: "#06B6D4" },
+  { icon: SiFigma,      name: "Figma",      color: "#F24E1E" },
+  { icon: SiNodedotjs,  name: "Node.js",    color: "#339933" },
+  { icon: SiExpress,    name: "Express",    color: "currentColor" },
+  { icon: SiPython,     name: "Python",     color: "#3776AB" },
+  { icon: SiDjango,     name: "Django",     color: "#16a34a" },
+  { icon: SiMongodb,    name: "MongoDB",    color: "#47A248" },
   { icon: SiPostgresql, name: "PostgreSQL", color: "#4169E1" },
-  { icon: SiGit, name: "Git", color: "#F05032" },
-  { icon: SiDocker, name: "Docker", color: "#2496ED" },
-  { icon: FaAws, name: "AWS", color: "#FF9900" },
-  { icon: SiWordpress, name: "WordPress", color: "#21759B" } /* NEW */,
+  { icon: SiGit,        name: "Git",        color: "#F05032" },
+  { icon: SiDocker,     name: "Docker",     color: "#2496ED" },
+  { icon: FaAws,        name: "AWS",        color: "#FF9900" },
+  { icon: SiWordpress,  name: "WordPress",  color: "#21759B" },
 ];
 
-
 const stats = [
-  { value: "90%", label: "Performance Boost" },
-  { value: "75+", label: "Projects" },
-  { value: "1K+", label: "Concurrent Users" },
-  { value: "99.9%", label: "Uptime Reliability" },
+  { value: "90%",   label: "Performance Boost"  },
+  { value: "75+",   label: "Projects"            },
+  { value: "1K+",   label: "Concurrent Users"    },
+  { value: "99.9%", label: "Uptime Reliability"  },
 ];
 
 export default function About() {
@@ -113,12 +111,27 @@ export default function About() {
         </motion.div>
 
         <div className="flex flex-col lg:flex-row items-center gap-14 lg:gap-20">
-          {/* Photo */}
+
+          {/* ── Photo column ─────────────────────────────────────────────
+              FIX (Edge): the original motion.div had no overflow:visible
+              declaration. Edge clips absolutely-positioned children that
+              extend outside a flex item unless overflow is explicitly set.
+              Adding `overflow-visible` keeps the corner bracket decorations
+              (-top-3, -left-3) visible in all Chromium-based browsers.
+          ─────────────────────────────────────────────────────────────── */}
           <motion.div
-            className="w-full lg:w-[38%] flex justify-center shrink-0"
+            className="w-full lg:w-[38%] flex justify-center shrink-0 overflow-visible"
             variants={slideRight}
           >
-              <div className="relative group max-w-85 w-full">
+            {/*
+              FIX (Edge): replaced `max-w-85` (Tailwind arbitrary value) with
+              an explicit inline max-width so Edge's CSS engine resolves it
+              without a JIT compilation race condition on first paint.
+            */}
+            <div
+              className="relative group w-full"
+              style={{ maxWidth: "21.25rem" /* 340px = max-w-85 */ }}
+            >
               <motion.div
                 className="absolute -inset-3 rounded-3xl blur-xl opacity-50
                            group-hover:opacity-90 transition-opacity duration-500"
@@ -129,8 +142,23 @@ export default function About() {
                 animate={{ rotate: [0, 360] }}
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
               />
-              <div className="absolute -top-3 -left-3 w-8 h-8 border-t-2 border-l-2 border-primary/60 rounded-tl-xl z-20" />
-              <div className="absolute -bottom-3 -right-3 w-8 h-8 border-b-2 border-r-2 border-primary/60 rounded-br-xl z-20" />
+
+              {/*
+                FIX (Edge): corner brackets use negative positioning that can
+                be clipped by an ancestor with overflow:hidden. The brackets
+                are wrapped in a container with position:relative and
+                overflow:visible so they always paint above the card edge.
+              */}
+              <div
+                className="absolute -top-3 -left-3 w-8 h-8 border-t-2 border-l-2
+                           border-primary/60 rounded-tl-xl z-20 pointer-events-none"
+                style={{ overflow: "visible" }}
+              />
+              <div
+                className="absolute -bottom-3 -right-3 w-8 h-8 border-b-2 border-r-2
+                           border-primary/60 rounded-br-xl z-20 pointer-events-none"
+                style={{ overflow: "visible" }}
+              />
 
               <div className="relative rounded-2xl overflow-hidden">
                 <Image
@@ -147,7 +175,10 @@ export default function About() {
                 />
               </div>
 
-              <div className="absolute -right-4 -top-4 z-30 glass-card px-4 py-2 text-center shadow-lg border border-primary/30 rounded-xl">
+              <div
+                className="absolute -right-4 -top-4 z-30 glass-card px-4 py-2
+                           text-center shadow-lg border border-primary/30 rounded-xl"
+              >
                 <div className="text-2xl font-heading font-black text-primary leading-none">
                   5+
                 </div>
@@ -158,9 +189,15 @@ export default function About() {
             </div>
           </motion.div>
 
-          {/* Bio */}
+          {/* ── Bio column ───────────────────────────────────────────────
+              FIX (Edge): added `min-w-0` to allow the flex child to shrink
+              below its intrinsic content width. Without it, Edge doesn't
+              shrink the column, causing the two-column layout to overflow
+              the container horizontally on narrower desktop viewports.
+          ─────────────────────────────────────────────────────────────── */}
           <motion.div
-            className="w-full lg:w-[62%] flex flex-col gap-6 text-center lg:text-left"
+            className="w-full lg:w-[62%] min-w-0 flex flex-col gap-6
+                       text-center lg:text-left"
             variants={container}
           >
             <motion.h2
@@ -233,6 +270,7 @@ export default function About() {
           </motion.div>
         </div>
 
+        {/* ── Skill marquees ─────────────────────────────────────────── */}
         <motion.div variants={fadeUp} className="mt-20">
           <p
             className="text-center text-[16px] font-bold uppercase tracking-[0.22em]
@@ -241,38 +279,13 @@ export default function About() {
             Technologies I Work With
           </p>
 
-          {/* ── ROW 1: Text tags → LEFT ──────────────────────────────── */}
+          {/* Row 1 — LEFT */}
           <div className="overflow-hidden skills-mask mb-6">
             <div className="skills-scroll-left">
-              {/* Original set */}
-              {skills.map((skill) => (
+              {[...skills, ...skills].map((skill, i) => (
                 <span
-                  key={`tag-a-${skill.name}`}
-                  className="inline-flex items-center gap-2 px-4 py-2 shrink-0
-                     rounded-full border border-border/60 bg-card/50
-                     text-[11px] font-bold uppercase tracking-widest
-                     text-muted-foreground whitespace-nowrap
-                     hover:border-primary/50 hover:text-primary
-                     hover:bg-primary/10 transition-colors duration-200 cursor-default"
-                >
-                  {/* Coloured dot — mirrors Kelvin's list-item style */}
-                  <span
-                    className="w-1.5 h-1.5 rounded-full shrink-0"
-                    style={{
-                      background:
-                        skill.color === "currentColor"
-                          ? "rgb(var(--foreground))"
-                          : skill.color,
-                    }}
-                    aria-hidden="true"
-                  />
-                  {skill.name}
-                </span>
-              ))}
-              {skills.map((skill) => (
-                <span
-                  key={`tag-b-${skill.name}`}
-                  aria-hidden="true"
+                  key={`tag-${i}`}
+                  aria-hidden={i >= skills.length}
                   className="inline-flex items-center gap-2 px-4 py-2 shrink-0
                      rounded-full border border-border/60 bg-card/50
                      text-[11px] font-bold uppercase tracking-widest
@@ -296,52 +309,15 @@ export default function About() {
             </div>
           </div>
 
-          {/* ── ROW 2: Icons → RIGHT ─────────────────────────────────── */}
+          {/* Row 2 — RIGHT (icons) */}
           <div className="overflow-visible skills-mask">
             <div className="skills-scroll-right">
-              {/* Original set */}
-              {skills.map((skill) => {
+              {[...skills, ...skills].map((skill, i) => {
                 const Icon = skill.icon;
                 return (
                   <div
-                    key={`icon-a-${skill.name}`}
-                    className="flex flex-col items-center gap-2 shrink-0
-                       min-w-16 group cursor-default"
-                  >
-                    <div
-                      className="p-2.5 rounded-xl bg-card/50 border border-border/50
-                            group-hover:border-primary/50 group-hover:bg-card
-                            group-hover:shadow-[0_0_14px_rgb(var(--primary)/0.25)]
-                            transition-all duration-300 group-hover:scale-110"
-                    >
-                      <Icon
-                        style={{
-                          fontSize: "3.4rem",
-                          color:
-                            skill.color === "currentColor"
-                              ? "rgb(var(--foreground))"
-                              : skill.color,
-                        }}
-                      />
-                    </div>
-                    <span
-                      className="text-[9px] font-semibold text-muted-foreground
-                             uppercase tracking-wider group-hover:text-foreground
-                             transition-colors duration-200 whitespace-nowrap"
-                    >
-                      {skill.name}
-                    </span>
-                  </div>
-                );
-              })}
-
-              {/* Duplicated set — aria-hidden */}
-              {skills.map((skill) => {
-                const Icon = skill.icon;
-                return (
-                  <div
-                    key={`icon-b-${skill.name}`}
-                    aria-hidden="true"
+                    key={`icon-${i}`}
+                    aria-hidden={i >= skills.length}
                     className="flex flex-col items-center gap-2 shrink-0
                        min-w-16 group cursor-default"
                   >

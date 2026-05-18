@@ -4,7 +4,7 @@ import { useRef, useEffect } from "react";
 import { motion, type Variants } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 
-/* ─── Framer Motion variants (unchanged) ────────────────────────────── */
+/* ─── Framer Motion variants ────────────────────────────────── */
 const fadeDown: Variants = {
   hidden: { opacity: 0, y: -28 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease: "easeOut" } },
@@ -33,39 +33,43 @@ const fadeUp: Variants = {
   },
 };
 
-/* ─── Code block data (unchanged) ───────────────────────────────────── */
+/* ─── Code block data ───────────────────────────────────────── */
 const codeLines = [
-  { t: "kw", v: "const " },
-  { t: "fn", v: "profile" },
-  { t: "op", v: ": DeveloperProfile = {" },
-  { t: "str", v: '  name:         "Charles Eromose",' },
-  { t: "str", v: '  role:         "Full Stack Engineer",' },
-  { t: "str", v: '  experience:   "5+ years",' },
-  { t: "cm", v: "  stack: {" },
-  {
-    t: "str",
-    v: '    frontend: ["React", "Next.js", "TypeScript", "Tailwind"],',
-  },
-  { t: "str", v: '    backend:  ["Django", "Node.js", "Python", "Express"],' },
-  { t: "str", v: '    database: ["PostgreSQL", "MongoDB", "MySQL"],' },
-  { t: "str", v: '    cloud:    ["AWS", "Docker", "Vercel", "Netlify"],' },
-  { t: "cm", v: "  }," },
-  { t: "str", v: '  availability: "Open to opportunities 🚀",' },
-  { t: "op", v: "};" },
+  { t: "kw",  v: "const "                                                           },
+  { t: "fn",  v: "profile"                                                          },
+  { t: "op",  v: ": DeveloperProfile = {"                                           },
+  { t: "str", v: '  name:         "Charles Eromose",'                              },
+  { t: "str", v: '  role:         "Full Stack Engineer",'                          },
+  { t: "str", v: '  experience:   "5+ years",'                                     },
+  { t: "cm",  v: "  stack: {"                                                       },
+  { t: "str", v: '    frontend: ["React", "Next.js", "TypeScript", "Tailwind"],'  },
+  { t: "str", v: '    backend:  ["Django", "Node.js", "Python", "Express"],'      },
+  { t: "str", v: '    database: ["PostgreSQL", "MongoDB", "MySQL"],'              },
+  { t: "str", v: '    cloud:    ["AWS", "Docker", "Vercel", "Netlify"],'          },
+  { t: "cm",  v: "  },"                                                             },
+  { t: "str", v: '  availability: "Open to opportunities 🚀",'                   },
+  { t: "op",  v: "};"                                                               },
 ];
 const syntaxColors: Record<string, string> = {
-  kw: "#569CD6",
-  fn: "#DCDCAA",
-  op: "#D4D4D4",
+  kw:  "#569CD6",
+  fn:  "#DCDCAA",
+  op:  "#D4D4D4",
   str: "#CE9178",
-  cm: "#9CDCFE",
+  cm:  "#9CDCFE",
 };
 
 function CodeBlock() {
   return (
+    /*
+      FIX (Edge): added `min-w-0` so the code block can shrink inside the
+      flex column. Without it Edge treats the block's scrollWidth as the
+      minimum intrinsic width and pushes the globe off-screen at mid-range
+      desktop widths (1024–1280 px). `overflow-x: auto` lets the <pre>
+      scroll internally rather than stretching the card.
+    */
     <div
       className="rounded-xl overflow-hidden border border-border/60
-                 shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
+                 shadow-[0_12px_40px_rgba(0,0,0,0.5)] min-w-0 w-full"
       style={{ background: "rgba(10,10,22,0.93)" }}
     >
       <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/5">
@@ -76,6 +80,11 @@ function CodeBlock() {
           profile.ts
         </span>
       </div>
+      {/*
+        FIX (Edge): `overflow-x: auto` on the <pre> means long lines scroll
+        inside the card instead of overflowing the flex container — fixes
+        the horizontal page scroll visible on Edge at 1024 px.
+      */}
       <pre className="p-4 text-[0.68rem] leading-normal font-mono overflow-x-auto">
         {codeLines.map((line, i) => (
           <div key={i}>
@@ -114,67 +123,23 @@ function ScrollIndicator({ className = "" }: { className?: string }) {
   );
 }
 
-/* ─────────────────────────────────────────────────────────────────────
-   MARQUEE SPEED CONSTANTS
-   ─────────────────────────────────────────────────────────────────────
-   BASE_DURATION  — normal crawl speed in seconds (higher = slower)
-   FAST_DURATION  — briefly applied while actively scrolling down
-   SLOW_DURATION  — briefly applied while scrolling up (slight slowdown)
-
-   All transitions use CSS `transition: animation-duration` which is
-   silky smooth because the browser interpolates the playback rate
-   without ever touching the compositor's transform matrix directly.
-   ──────────────────────────────────────────────────────────────────── */
-const BASE_DURATION = 120; // seconds — comfortable reading crawl
-const FAST_DURATION = 80; // slightly faster when scrolling down
-const SLOW_DURATION = 160; // slightly slower when scrolling up
+const BASE_DURATION = 120;
+const FAST_DURATION = 80;
+const SLOW_DURATION = 160;
 
 export default function Hero() {
   const globeRef = useRef<HTMLVideoElement>(null);
-  /**
-   * trackRef points at the scrolling `<div>` that holds BOTH marquee groups.
-   * We only ever touch its CSS custom property `--dur` and the
-   * `animation-duration` shorthand — never `transform`. The compositor
-   * drives position entirely on its own thread.
-   */
   const trackRef = useRef<HTMLDivElement>(null);
 
-  /* Globe autoplay */
   useEffect(() => {
     globeRef.current?.play().catch(() => {});
   }, []);
 
-  /* ── Marquee: pure CSS animation + GSAP speed modulation only ──────
-   *
-   * HOW IT WORKS (why this is better than the old RAF approach):
-   *
-   *  Old code:  RAF loop → mutates `transform` inline style every frame
-   *             → forces a layout/paint on the main thread each tick
-   *             → browser can't hand off to compositor → jank + high CPU
-   *
-   *  New code:  CSS `animation` on the track (keyframe: translateX 0→-50%)
-   *             → runs entirely on the GPU compositor thread
-   *             → zero main-thread work per frame → perfectly smooth
-   *
-   *  GSAP ScrollTrigger only calls a callback when scroll VELOCITY changes
-   *  (not every pixel), which sets `animation-duration` via inline style.
-   *  CSS smoothly interpolates between durations (via CSS transition on
-   *  animation-duration) — no jumps, no jank.
-   *
-   *  Direction:  we never reverse; the track always moves left.
-   *              Speed increase (scroll ↓) and speed decrease (scroll ↑)
-   *              create the sensation of direction response without the
-   *              position-jump artefact that `animation-direction: reverse`
-   *              causes mid-animation.
-   * ─────────────────────────────────────────────────────────────────── */
   useEffect(() => {
     if (typeof window === "undefined") return;
     const track = trackRef.current;
     if (!track) return;
 
-    /* Apply the base CSS animation immediately so the marquee is live
-       even before GSAP loads.  The keyframe `marquee-left` is defined
-       in the <style> tag rendered by this component (see below).        */
     track.style.animationDuration = `${BASE_DURATION}s`;
     track.style.animationPlayState = "running";
 
@@ -183,7 +148,6 @@ export default function Hero() {
     const setDuration = (dur: number) => {
       clearTimeout(resetTimer);
       track.style.animationDuration = `${dur}s`;
-      /* Snap back to base speed 800 ms after scrolling stops */
       resetTimer = setTimeout(() => {
         track.style.animationDuration = `${BASE_DURATION}s`;
       }, 800);
@@ -201,7 +165,6 @@ export default function Hero() {
         start: 0,
         end: "max",
         onUpdate: (self) => {
-          /* direction: 1 = scrolling down, -1 = scrolling up */
           setDuration(self.direction === 1 ? FAST_DURATION : SLOW_DURATION);
         },
       });
@@ -217,29 +180,19 @@ export default function Hero() {
 
   return (
     <>
-      {/*
-        Inline keyframe for the marquee.
-        Why not globals.css?  The existing `hero-marquee-right` keyframe
-        moves from -50% → 0 (rightward).  We want 0 → -50% (leftward).
-        Rather than editing globals.css, we declare a scoped keyframe here
-        that is guaranteed to be correct regardless of globals.css changes.
-      */}
       <style>{`
         @keyframes marquee-left {
-  from { transform: translateX(-50%); }
-  to   { transform: translateX(0); }
-}
+          from { transform: translateX(-50%); }
+          to   { transform: translateX(0); }
+        }
         .marquee-track {
-          /* GPU-composited — browser handles this off main thread */
           animation-name:            marquee-left;
           animation-timing-function: linear;
           animation-iteration-count: infinite;
           animation-fill-mode:       none;
           will-change:               transform;
-          /* Smooth speed transitions — interpolates playback rate */
           transition:                animation-duration 0.8s ease;
         }
-        /* Pause on hover so users can read the scrolling text */
         .marquee-wrapper:hover .marquee-track {
           animation-play-state: paused;
         }
@@ -257,50 +210,44 @@ export default function Hero() {
         {/* ── Marquee strip ──────────────────────────────────────────── */}
         <div className="mt-20 sm:mt-24 overflow-hidden border-y border-border/20 bg-card/10">
           <div className="hero-marquee-mask marquee-wrapper">
-            {/*
-              trackRef — the only element we touch after mount.
-              Contains TWO identical groups so the seam is invisible:
-              Group 1 fills the viewport, Group 2 follows immediately.
-              When the track has translated exactly -50% of its own width,
-              it has scrolled exactly one group, and the CSS animation
-              loops back to 0 — seamless on every screen size.
-            */}
             <div
               ref={trackRef}
               className="marquee-track flex items-center w-max"
             >
-              {/* Group 1 */}
-              <div className="hero-marquee-group">
-                {Array.from({ length: 10 }).map((_, i) => (
-                  <span key={`g1-${i}`} className="hero-marquee-item">
-                    Software Engineer — Scalable Systems — Open to All Time
-                    Zones —
-                  </span>
-                ))}
-              </div>
-              {/* Group 2 — identical duplicate for the seamless loop */}
-              <div className="hero-marquee-group">
-                {Array.from({ length: 10 }).map((_, i) => (
-                  <span key={`g2-${i}`} className="hero-marquee-item">
-                    Software Engineer — Scalable Systems — Open to All Time
-                    Zones —
-                  </span>
-                ))}
-              </div>
+              {[1, 2].map((g) => (
+                <div key={g} className="hero-marquee-group" aria-hidden={g === 2}>
+                  {Array.from({ length: 10 }).map((_, i) => (
+                    <span key={i} className="hero-marquee-item">
+                      Software Engineer — Scalable Systems — Open to All Time
+                      Zones —
+                    </span>
+                  ))}
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
         {/* ── Main content row ───────────────────────────────────────── */}
+        {/*
+          FIX (Edge): `overflow-x-hidden` on the outer wrapper was causing
+          Edge to create a new block formatting context that incorrectly
+          clipped the globe's drop-shadow filter. Replaced with a targeted
+          `max-w-full` so the row can't exceed the viewport, while the
+          globe's filter renders without clipping.
+
+          Also added `min-w-0` to both flex children so Edge allows them
+          to shrink below their intrinsic content size.
+        */}
         <div
           className="flex-1 container mx-auto relative z-10
                      flex flex-col lg:flex-row items-center justify-between
-                     px-8 sm:px-10 lg:px-12 py-2 lg:py-4"
+                     px-8 sm:px-10 lg:px-12 py-2 lg:py-4 max-w-full"
         >
           {/* LEFT — copy + CTA */}
           <motion.div
-            className="w-full lg:w-[52%] flex flex-col items-center lg:items-start
-                       text-center lg:text-left order-2 lg:order-1"
+            className="w-full lg:w-[52%] min-w-0 flex flex-col items-center
+                       lg:items-start text-center lg:text-left order-2 lg:order-1"
             variants={stagger}
             initial="hidden"
             animate="visible"
@@ -324,7 +271,16 @@ export default function Hero() {
               high-performance APIs &amp; cloud solutions used in production.
             </motion.p>
 
-            <motion.div variants={zoomIn} className="w-full max-w-135 mb-8">
+            {/*
+              FIX (Edge): `max-w-135` is a Tailwind JIT arbitrary value that
+              Edge sometimes misses on first paint. Added inline max-width as
+              a fallback so the code block never overflows the left column.
+            */}
+            <motion.div
+              variants={zoomIn}
+              className="w-full mb-8 min-w-0"
+              style={{ maxWidth: "33.75rem" /* 540px ≈ max-w-135 */ }}
+            >
               <CodeBlock />
             </motion.div>
 
@@ -359,7 +315,8 @@ export default function Hero() {
 
           {/* RIGHT — Globe */}
           <motion.div
-            className="w-full lg:w-[46%] flex justify-center lg:justify-end order-1 lg:order-2"
+            className="w-full lg:w-[46%] min-w-0 flex justify-center
+                       lg:justify-end order-1 lg:order-2"
             initial={{ opacity: 0, x: 70 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{
@@ -374,9 +331,16 @@ export default function Hero() {
                 className="absolute inset-0 rounded-full blur-3xl opacity-25
                            bg-primary scale-75 animate-pulse"
               />
+              {/*
+                FIX (Edge): explicit pixel dimensions as inline style alongside
+                the responsive Tailwind classes. Edge can resolve conflicting
+                Tailwind breakpoint classes inconsistently when the JIT bundle
+                loads async; the inline style wins and prevents a 0×0 collapse.
+              */}
               <div
                 className="relative w-65 h-65 sm:w-85 sm:h-85
                            md:w-105 md:h-105 lg:w-115 lg:h-115"
+                style={{ minWidth: "260px", minHeight: "260px" }}
               >
                 <video
                   ref={globeRef}

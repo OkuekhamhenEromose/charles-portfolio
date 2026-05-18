@@ -2,44 +2,9 @@
 
 import { useState, useRef, FormEvent, ChangeEvent } from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { Send, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import emailjs from "@emailjs/browser";
 
-// ════════════════════════════════════════════════════════════════════════════
-// EMAILJS SETUP GUIDE — read before changing any of the IDs below
-// ════════════════════════════════════════════════════════════════════════════
-//
-// 1. Go to https://emailjs.com → Dashboard → Email Services
-//    Connect your Gmail / Outlook account. Copy the SERVICE ID.
-//
-// 2. Dashboard → Email Templates → create a template.
-//    In the template body use these EXACT variable names (they map to the
-//    `name` attributes on your form inputs below):
-//
-//      {{from_name}}    ← sender's name
-//      {{from_email}}   ← sender's email  (set this as "Reply-To" in the
-//                          template "Reply To" field so you can reply
-//                          directly to the submitter from your inbox)
-//      {{subject}}      ← message subject
-//      {{message}}      ← message body
-//
-//    Example template body:
-//      You received a new message from {{from_name}} ({{from_email}}).
-//      Subject: {{subject}}
-//      ---
-//      {{message}}
-//
-// 3. Dashboard → Account → Public Key. Copy it.
-//
-// 4. Paste all three values into the constants below.
-//    Do NOT commit real keys to a public repo — use .env.local:
-//      NEXT_PUBLIC_EMAILJS_SERVICE_ID=service_xxxxxxx
-//      NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=template_xxxxxxx
-//      NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=xxxxxxxxxxxxxxxx
-//    Then reference them as process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID etc.
-//
-// ════════════════════════════════════════════════════════════════════════════
 const EMAILJS_SERVICE_ID  = "service_i3co2is";
 const EMAILJS_TEMPLATE_ID = "template_jvifwwf";
 const EMAILJS_PUBLIC_KEY  = "8TSj0kj-2cY_yk4X2";
@@ -118,13 +83,6 @@ export default function Contact() {
 
     setLoading(true);
     try {
-      // ── sendForm reads form input `name` attributes and maps them to
-      //    EmailJS template variables automatically. ──────────────────────
-      // WHY sendForm instead of send():
-      //   sendForm(serviceId, templateId, formElement, publicKey) reads the
-      //   HTML form's `name` attributes directly — no manual object needed.
-      //   This is the most reliable approach because EmailJS sees exactly
-      //   what the template expects, with no key-mismatch risk.
       await emailjs.sendForm(
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
@@ -203,15 +161,6 @@ export default function Contact() {
               I&apos;m a Software Engineer driven by innovation and results.
             </motion.p>
 
-            {/* ══════════════════════════════════════════════════════════════
-                FORM — input `name` attributes MUST match your EmailJS template
-                variable names exactly (see the setup guide at the top).
-
-                  name="from_name"   → {{from_name}}  in template
-                  name="from_email"  → {{from_email}} in template (+ Reply-To)
-                  name="subject"     → {{subject}}    in template
-                  name="message"     → {{message}}    in template
-            ══════════════════════════════════════════════════════════════ */}
             <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
               <motion.input
                 type="text"
@@ -291,14 +240,44 @@ export default function Contact() {
               variants={fadeInRight}
               className="rounded-2xl overflow-hidden border border-border shadow-lg"
             >
-              <Image
-                src="/images/contact/addresslocation.png"
-                alt="Ikeja, Lagos location map"
-                width={600}
-                height={600}
-                className="w-full object-cover"
-                style={{ minHeight: 400 }}
-              />
+              {/*
+                FIX (Edge): next/image with style={{ minHeight }} applies the
+                style to the <img> element itself, which Edge's layout engine
+                ignores when the image hasn't loaded yet — collapsing the
+                container to 0 height and preventing the image from painting.
+
+                Solution: wrap in an explicit-height container div so the
+                dimensions exist in the DOM before the image loads. Use a
+                plain <img> tag (unoptimized) so Edge never receives a WebP
+                srcset it might mishandle, and object-fit is applied via CSS
+                on the element with a known height to anchor it.
+              */}
+              <div
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  minHeight: 400,
+                  display: "block",
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/contact/addresslocation.png"
+                  alt="Ikeja, Lagos location map"
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    height: "100%",
+                    minHeight: 400,
+                    objectFit: "cover",
+                    /* Force Edge to treat this as a block-level replaced element
+                       so it inherits the container height correctly */
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                  }}
+                />
+              </div>
             </motion.div>
           </motion.div>
         </div>
