@@ -217,7 +217,7 @@ export default function About() {
             >
               I&apos;m{" "}
               <strong className="text-primary">Charles Eromose Okuekhahmen</strong>
-              , a Full Stack Engineer with 4+ years building everything from
+              , a Full Stack Engineer with 5+ years building everything from
               school management systems to e-commerce marketplaces. I specialise
               in clean UIs, efficient APIs, and secure, scalable databases.
             </motion.p>
