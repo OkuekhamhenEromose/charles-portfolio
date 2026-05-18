@@ -259,8 +259,8 @@ export default function About() {
               variants={fadeUp}
               className="flex gap-4 justify-center lg:justify-start flex-wrap"
             >
-              <Link href="/#portfolio" className="btn text-sm">View Projects</Link>
-              <Link href="/#contact"   className="btn-outline text-sm">Hire Me</Link>
+              <Link href="#portfolio" className="btn text-sm">View Projects</Link>
+              <Link href="#contact"   className="btn-outline text-sm">Hire Me</Link>
             </motion.div>
           </motion.div>
         </div>

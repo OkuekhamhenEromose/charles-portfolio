@@ -8,12 +8,12 @@ import Socials from "./Socials";
 import MobileNav from "./MobileNav";
 
 const navItems = [
-  { name: "Home",         href: "/#home"         },
-  { name: "About",        href: "/#about"        },
-  { name: "Services",     href: "/#services"     },
-  { name: "Portfolio",    href: "/#portfolio"    },
-  { name: "Testimonials", href: "/#testimonials" },
-  { name: "Contact",      href: "/#contact"      },
+  { name: "Home",         href: "#home"         },
+  { name: "About",        href: "#about"        },
+  { name: "Services",     href: "#services"     },
+  { name: "Portfolio",    href: "#portfolio"    },
+  { name: "Testimonials", href: "#testimonials" },
+  { name: "Contact",      href: "#contact"      },
 ];
 
 export default function Header() {

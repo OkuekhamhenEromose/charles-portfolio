@@ -18,43 +18,68 @@ export default function HomePage() {
   const [preloaderDone, setPreloaderDone] = useState(false);
 
   useEffect(() => {
-    // ── 1. Kill browser scroll restoration immediately ──────────────────
-    // "manual" stops the browser from jumping to the last scroll position.
-    if ("scrollRestoration" in history) {
-      history.scrollRestoration = "manual";
-    }
+  // Disable browser scroll restoration
+  if ("scrollRestoration" in window.history) {
+    window.history.scrollRestoration = "manual";
+  }
 
-    // ── 2. Hard-reset scroll to top on every mount ──────────────────────
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  // Remove any hash immediately
+  if (window.location.hash) {
+    window.history.replaceState(
+      null,
+      "",
+      window.location.pathname
+    );
+  }
 
-    // ── 3. Lock body scroll while the preloader is visible ──────────────
-    // This prevents any scroll event (touch, keyboard, etc.) from moving
-    // the page before the preloader exits.
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
+  // HARD reset scroll BEFORE paint
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+  window.scrollTo(0, 0);
 
-    return () => {
-      // Restore on unmount (shouldn't happen in practice, but safe)
-      document.documentElement.style.overflow = "";
-      document.body.style.overflow = "";
-    };
-  }, []);
+  // Lock scrolling completely during preload
+  document.documentElement.style.overflow = "hidden";
+  document.body.style.overflow = "hidden";
+  document.body.style.position = "fixed";
+  document.body.style.width = "100%";
+  document.body.style.top = "0";
+
+  return () => {
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+    document.body.style.position = "";
+    document.body.style.width = "";
+    document.body.style.top = "";
+  };
+}, []);
 
   const handlePreloaderComplete = () => {
-    // ── 4. Re-scroll to absolute top once preloader exits ───────────────
-    // Framer's exit animation takes ~0.8s — wait for it to fully clear,
-    // then snap to top and unlock scrolling.
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  // Force absolute top again
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
 
-    setTimeout(() => {
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: "auto",
+  });
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
       document.documentElement.style.overflow = "";
       document.body.style.overflow = "";
-      // One final scroll reset after overflow is restored, in case
-      // the browser tried to jump while overflow was hidden.
-      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
+      document.body.style.position = "";
+      document.body.style.width = "";
+      document.body.style.top = "";
+
+      // Final hard reset
+      window.scrollTo(0, 0);
+
       setPreloaderDone(true);
-    }, 50);
-  };
+    });
+  });
+};
 
   return (
     <>

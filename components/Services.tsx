@@ -216,7 +216,7 @@ export default function Services() {
               >
                 {/* Full-card link (sits above gradient, below content) */}
                 <Link
-                  href="/#portfolio"
+                  href="#portfolio"
                   className="absolute inset-0 z-20"
                   aria-label={`${item.title} — view portfolio`}
                 />

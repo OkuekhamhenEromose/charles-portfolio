@@ -6,12 +6,12 @@ import Link from "next/link";
 import Socials from "./Socials";
 
 const navItems = [
-  { name: "Home", href: "/#home", num: "01" },
-  { name: "About", href: "/#about", num: "02" },
-  { name: "Services", href: "/#services", num: "03" },
-  { name: "Portfolio", href: "/#portfolio", num: "04" },
-  { name: "Testimonials", href: "/#testimonials", num: "05" },
-  { name: "Contact", href: "/#contact", num: "06" },
+  { name: "Home", href: "#home", num: "01" },
+  { name: "About", href: "#about", num: "02" },
+  { name: "Services", href: "#services", num: "03" },
+  { name: "Portfolio", href: "#portfolio", num: "04" },
+  { name: "Testimonials", href: "#testimonials", num: "05" },
+  { name: "Contact", href: "#contact", num: "06" },
 ];
 
 const panelVariants: Variants = {

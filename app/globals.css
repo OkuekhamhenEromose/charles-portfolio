@@ -60,7 +60,7 @@
   * { @apply border-border; }
   html { scroll-behavior: smooth; @apply font-body; width: 100%;
   max-width: 100%;
-  overflow-x: hidden; }
+  overflow-x: hidden; scroll-padding-top: 0 }
   body { @apply bg-background text-foreground antialiased; font-feature-settings: "kern" 1, "liga" 1; position: relative; }
   .dark {
   width: 100%;

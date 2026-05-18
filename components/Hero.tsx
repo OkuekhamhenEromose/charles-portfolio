@@ -102,7 +102,7 @@ function CodeBlock() {
 function ScrollIndicator({ className = "" }: { className?: string }) {
   return (
     <motion.a
-      href="/#about"
+      href="#about"
       aria-label="Scroll to about"
       className={`flex flex-col items-center gap-2 text-muted-foreground
                   hover:text-primary transition-colors duration-300 ${className}`}
@@ -289,7 +289,7 @@ export default function Hero() {
               className="flex flex-wrap gap-4 justify-center lg:justify-start"
             >
               <motion.a
-                href="/#portfolio"
+                href="#portfolio"
                 variants={fadeUp}
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}

@@ -45,12 +45,12 @@ const innerContainer: React.CSSProperties = {
 };
 
 const navLinks = [
-  { name: "Home",         href: "/#home"         },
-  { name: "About",        href: "/#about"        },
-  { name: "Services",     href: "/#services"     },
-  { name: "Portfolio",    href: "/#portfolio"    },
-  { name: "Testimonials", href: "/#testimonials" },
-  { name: "Contact",      href: "/#contact"      },
+  { name: "Home",         href: "#home"         },
+  { name: "About",        href: "#about"        },
+  { name: "Services",     href: "#services"     },
+  { name: "Portfolio",    href: "#portfolio"    },
+  { name: "Testimonials", href: "#testimonials" },
+  { name: "Contact",      href: "#contact"      },
 ];
 
 export default function Footer() {
@@ -138,7 +138,7 @@ export default function Footer() {
               Open to full-time roles, freelance projects, and collaborations.
               Reach out — let&apos;s build something great together.
             </p>
-            <Link href="/#contact" className="btn text-sm inline-flex">
+            <Link href="#contact" className="btn text-sm inline-flex">
               Hire Me
             </Link>
           </div>
