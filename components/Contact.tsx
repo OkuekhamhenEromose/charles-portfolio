@@ -59,12 +59,6 @@ interface StatusMsg {
 }
 
 /* ── Shared inline-style objects ─────────────────────────────────────────── */
-/** Full viewport width anchor — replaces reliance on overflow-x:hidden parent */
-const fullWidth: React.CSSProperties = {
-  width: "100%",
-  boxSizing: "border-box",
-};
-
 /**
  * Inner content container.
  * Replaces `container mx-auto px-4 sm:px-6 lg:px-8`.
