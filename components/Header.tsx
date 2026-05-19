@@ -19,21 +19,44 @@ const navItems = [
 export default function Header() {
   const [socialsOpen, setSocialsOpen] = useState(false);
   const [isScrolled,  setIsScrolled]  = useState(false);
+  const [isVisible,   setIsVisible]   = useState(true);
 
+  /* ── Hide on scroll-down / show on scroll-up ────────────────────────────
+     Logic ported from Jane's Header.js:
+       • scrolling DOWN  → hide header + close socials dropdown
+       • scrolling UP    → reveal header
+     isScrolled is kept as a separate flag so the glass/blur style still
+     activates correctly whenever the header is visible and past 50 px.
+  ───────────────────────────────────────────────────────────────────────── */
   useEffect(() => {
-    let lastY = window.scrollY;
+    let lastScrollY = window.scrollY;
 
-    const onScroll = () => {
-      const y = window.scrollY;
-      setIsScrolled(y > 50);
-      if (y > lastY) setSocialsOpen(false);
-      lastY = y;
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+
+      if (currentY > lastScrollY) {
+        // Scrolling DOWN → hide
+        setIsVisible(false);
+        setSocialsOpen(false);
+      } else {
+        // Scrolling UP → show
+        setIsVisible(true);
+      }
+
+      // Glass/blur effect: active whenever page is scrolled past 50 px
+      setIsScrolled(currentY > 50);
+
+      lastScrollY = currentY;
     };
 
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    // Run once on mount so initial state is correct
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  /* ── Close socials when clicking outside its container ─────────────── */
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       if (!(e.target as Element)?.closest(".socials-container"))
@@ -46,15 +69,24 @@ export default function Header() {
   return (
     <>
       <header
-        className={`fixed left-0 right-0 top-0 z-50 transition-all duration-500 ${
-          isScrolled
+        className={`
+          fixed left-0 right-0 top-0 z-50
+          transition-all duration-500
+          ${isScrolled
             ? "border-b border-border/60 bg-card/70 py-3 shadow-[0_18px_60px_rgb(0_0_0/0.18)] backdrop-blur-2xl"
             : "border-b border-transparent bg-transparent py-5"
-        }`}
+          }
+          ${isVisible
+            ? "translate-y-0 opacity-100"
+            : "-translate-y-full opacity-0"
+          }
+        `}
       >
-        <div className="mx-auto max-w-7xl px-8 sm:px-10 lg:px-12
-                        flex items-center justify-between pointer-events-auto">
-
+        <div
+          className="mx-auto max-w-7xl px-8 sm:px-10 lg:px-12
+                     flex items-center justify-between pointer-events-auto"
+        >
+          {/* Logo */}
           <Link
             href="/"
             className="text-4xl font-heading font-black text-primary tracking-tight
@@ -63,13 +95,16 @@ export default function Header() {
             CE<span className="text-muted-foreground/50">.</span>
           </Link>
 
+          {/* Desktop nav pill */}
           <nav
-            className={`hidden md:flex items-center gap-0.5 px-5 py-2.5 rounded-full
-                        transition-all duration-300 border backdrop-blur-2xl ${
-                          isScrolled
-                            ? "bg-card/70 border-border/60"
-                            : "bg-card/45 border-border/50 shadow-[0_4px_20px_rgba(0,0,0,0.16)]"
-                        }`}
+            className={`
+              hidden md:flex items-center gap-0.5 px-5 py-2.5 rounded-full
+              transition-all duration-300 border backdrop-blur-2xl
+              ${isScrolled
+                ? "bg-card/70 border-border/60"
+                : "bg-card/45 border-border/50 shadow-[0_4px_20px_rgba(0,0,0,0.16)]"
+              }
+            `}
           >
             {navItems.map((item) => (
               <a
@@ -82,8 +117,11 @@ export default function Header() {
               </a>
             ))}
           </nav>
+
+          {/* Right-side controls (desktop) */}
           <div className="hidden md:flex items-center gap-2">
-            {/* Socials toggle – visible md → xl */}
+
+            {/* Socials toggle — visible md → xl */}
             <div className="xl:hidden socials-container relative">
               <motion.button
                 onClick={(e) => {
@@ -93,12 +131,14 @@ export default function Header() {
                 aria-label="Social links"
                 whileHover={{ scale: 1.06 }}
                 whileTap={{ scale: 0.94 }}
-                className={`p-2 rounded-full border transition-all duration-300
-                            ${
-                              socialsOpen
-                                ? "bg-accent border-primary/50 text-primary"
-                                : "bg-card/60 backdrop-blur-md border-border/60 text-muted-foreground"
-                            } hover:border-primary/40`}
+                className={`
+                  p-2 rounded-full border transition-all duration-300
+                  ${socialsOpen
+                    ? "bg-accent border-primary/50 text-primary"
+                    : "bg-card/60 backdrop-blur-md border-border/60 text-muted-foreground"
+                  }
+                  hover:border-primary/40
+                `}
               >
                 <Share2
                   className={`w-4 h-4 transition-transform duration-300
@@ -128,14 +168,14 @@ export default function Header() {
               </AnimatePresence>
             </div>
 
-            {/* Socials row – visible xl+ */}
+            {/* Socials row — visible xl+ */}
             <Socials className="hidden xl:flex" />
           </div>
-          <div className="md:hidden">
 
+          {/* Mobile hamburger hint (only at top of page) */}
+          <div className="md:hidden">
             <TopBarMenuHint />
           </div>
-
         </div>
       </header>
 
@@ -144,6 +184,7 @@ export default function Header() {
   );
 }
 
+/* ── Mobile hamburger — only renders while near the top of the page ─────── */
 function TopBarMenuHint() {
   const [atTop, setAtTop] = useState(true);
 
